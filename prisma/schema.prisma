@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model School {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  createdAt DateTime @default(now())
+
+  classes  Class[]
+  admins   Admin[]
+  teachers Teacher[]
+}
+
+enum AdminRole {
+  PRINCIPAL
+  ACADEMIC_INCHARGE
+}
+
+model Admin {
+  id        String    @id @default(cuid())
+  name      String
+  empCode   String    @unique
+  pin       String
+  role      AdminRole
+  schoolId  String
+  school    School    @relation(fields: [schoolId], references: [id])
+  createdAt DateTime  @default(now())
+}
+
+model Teacher {
+  id        String   @id @default(cuid())
+  name      String
+  empCode   String   @unique
+  pin       String
+  schoolId  String
+  school    School   @relation(fields: [schoolId], references: [id])
+  classes   Class[]
+  createdAt DateTime @default(now())
+}
+
+model Class {
+  id        String  @id @default(cuid())
+  grade     Int
+  section   String
+  schoolId  String
+  teacherId String?
+
+  school   School    @relation(fields: [schoolId], references: [id])
+  teacher  Teacher?  @relation(fields: [teacherId], references: [id])
+  students Student[]
+}
+
+model Student {
+  id              String   @id @default(cuid())
+  name            String
+  admissionNumber String   @unique
+  pin             String
+  classId         String
+  class           Class    @relation(fields: [classId], references: [id])
+  createdAt       DateTime @default(now())
+
+  progress         StudentProgress?
+  sessions         ReadingSession[]
+  speakingProgress SpeakingProgress?
+  speakingSessions SpeakingSession[]
+}
+
+enum GradeBand {
+  BAND_1_2
+  BAND_3_5
+  BAND_6_8
+  BAND_9_10
+}
+
+model StudentProgress {
+  id             String    @id @default(cuid())
+  studentId      String    @unique
+  student        Student   @relation(fields: [studentId], references: [id])
+  currentLevel   Int       @default(1)
+  gradeBand      GradeBand
+  totalSessions  Int       @default(0)
+  passedSessions Int       @default(0)  // passes at current level; resets to 0 on level-up
+  avgWpm         Float     @default(0)
+  avgAccuracy    Float     @default(0)
+  updatedAt      DateTime  @updatedAt
+}
+
+model ReadingPassage {
+  id        String    @id @default(cuid())
+  title     String
+  content   String
+  wordCount Int
+  gradeBand GradeBand
+  level     Int
+  topic     String
+  createdAt DateTime  @default(now())
+
+  sessions ReadingSession[]
+}
+
+enum SessionStatus {
+  IN_PROGRESS
+  COMPLETED
+  NEEDS_REVIEW
+}
+
+enum TopicMode {
+  AI
+  SCRIPTED
+}
+
+model ConversationTopic {
+  id          String    @id @default(cuid())
+  title       String
+  gradeBand   GradeBand
+  level       Int
+  character   String
+  openingLine String
+  mode        TopicMode @default(SCRIPTED)
+  script      Json?
+  sessions    SpeakingSession[]
+  createdAt   DateTime  @default(now())
+}
+
+model SpeakingSession {
+  id           String            @id @default(cuid())
+  studentId    String
+  topicId      String
+  student      Student           @relation(fields: [studentId], references: [id])
+  topic        ConversationTopic @relation(fields: [topicId], references: [id])
+  startedAt    DateTime          @default(now())
+  completedAt  DateTime?
+  turns        Json?
+  totalWords   Int?
+  durationSec  Int?
+  wpm          Float?
+  fluencyScore Float?
+  status       SessionStatus     @default(IN_PROGRESS)
+  createdAt    DateTime          @default(now())
+}
+
+model SpeakingProgress {
+  id             String    @id @default(cuid())
+  studentId      String    @unique
+  student        Student   @relation(fields: [studentId], references: [id])
+  currentLevel   Int       @default(1)
+  passedSessions Int       @default(0)
+  totalSessions  Int       @default(0)
+  avgWpm         Float     @default(0)
+  avgFluency     Float     @default(0)
+  updatedAt      DateTime  @updatedAt
+}
+
+model ReadingSession {
+  id          String         @id @default(cuid())
+  studentId   String
+  passageId   String
+  student     Student        @relation(fields: [studentId], references: [id])
+  passage     ReadingPassage @relation(fields: [passageId], references: [id])
+  startedAt   DateTime       @default(now())
+  completedAt DateTime?
+  durationSec Int?
+  transcript  String?
+  wpm         Float?
+  accuracy    Float?
+  missedWords String[]
+  wrongWords  Json?
+  status      SessionStatus  @default(IN_PROGRESS)
+  teacherNote String?
+  createdAt   DateTime       @default(now())
+}
