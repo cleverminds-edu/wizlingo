@@ -4,15 +4,15 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import ConversationSession from "@/components/ConversationSession";
-import { CHARACTER_INFO, ScriptTurn, TopicScript } from "@/lib/speaking-topics";
-import { TurnRecord } from "@/lib/speaking-score";
+import { CHARACTER_INFO } from "@/lib/speaking-topics";
+import { TurnRecord, getSpeakingLevelConfig } from "@/lib/speaking-score";
+import { GradeBand } from "@/app/generated/prisma/client";
 
 interface TopicData {
   id: string;
   title: string;
   character: string;
   openingLine: string;
-  script: TopicScript;
   level: number;
   gradeBand: string;
 }
@@ -28,6 +28,9 @@ interface SessionResult {
   leveledUp: boolean;
   newLevel: number;
   passedSessions: number;
+  aiFeedback?: string;
+  newBadges?: string[];
+  certificateVerifyCode?: string | null;
 }
 
 const LEVEL_INFO = [
@@ -204,6 +207,43 @@ function SessionPageInner() {
               ))}
             </div>
 
+            {/* AI Coach Feedback */}
+            {result.aiFeedback && (
+              <div className="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-2xl p-5 border border-indigo-500/30">
+                <p className="text-indigo-300 font-bold mb-2 text-sm">🧙 WizLingo Coach says:</p>
+                <p className="text-white text-sm leading-relaxed">{result.aiFeedback}</p>
+              </div>
+            )}
+
+            {/* New Badges */}
+            {result.newBadges && result.newBadges.length > 0 && (
+              <div className="bg-yellow-500/10 rounded-2xl p-4 border border-yellow-500/20">
+                <p className="text-yellow-300 font-bold mb-3 text-sm">
+                  🏅 New Badge{result.newBadges.length > 1 ? "s" : ""} Earned!
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {result.newBadges.map((badge) => (
+                    <span key={badge}
+                      className="bg-yellow-500/20 text-yellow-200 px-3 py-1.5 rounded-full border border-yellow-500/30 text-sm font-bold">
+                      {{
+                        SPARK: "✨ Spark",
+                        WORD_WIZARD: "📚 Word Wizard",
+                        VOICE_WIZARD: "🎤 Voice Wizard",
+                        LANGUAGE_WIZARD: "🧙 Language Wizard",
+                        GRAND_WIZARD: "👑 Grand Wizard",
+                      }[badge] ?? badge}
+                    </span>
+                  ))}
+                </div>
+                {result.certificateVerifyCode && (
+                  <a href={`/certificate/${result.certificateVerifyCode}`} target="_blank"
+                    className="inline-block mt-3 text-xs text-emerald-400 hover:text-emerald-300 underline underline-offset-2 font-semibold">
+                    🎓 View your Language Wizard Certificate →
+                  </a>
+                )}
+              </div>
+            )}
+
             {/* Actions */}
             <div className="flex gap-4">
               <button onClick={() => router.push("/student/speaking")}
@@ -220,15 +260,21 @@ function SessionPageInner() {
         )}
 
         {/* Live conversation */}
-        {phase === "conversation" && topic && sessionId && (
-          <ConversationSession
-            sessionId={sessionId}
-            character={topic.character}
-            openingLine={topic.openingLine}
-            turns={(topic.script?.turns ?? []) as ScriptTurn[]}
-            onComplete={handleComplete}
-          />
-        )}
+        {phase === "conversation" && topic && sessionId && (() => {
+          const cfg = getSpeakingLevelConfig(topic.gradeBand as GradeBand, topic.level);
+          return (
+            <ConversationSession
+              sessionId={sessionId}
+              character={topic.character}
+              openingLine={topic.openingLine}
+              topicTitle={topic.title}
+              gradeBand={topic.gradeBand}
+              maxTurns={cfg.turns}
+              turnTimeSec={cfg.turnTimeSec}
+              onComplete={handleComplete}
+            />
+          );
+        })()}
       </div>
     </div>
   );

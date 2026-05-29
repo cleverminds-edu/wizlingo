@@ -64,17 +64,27 @@ const TOPIC_EMOJIS: Record<string, string> = {
   "Democracy, Youth, and Civic Life": "🗳️",
 };
 
+const FEMALE_CHARACTERS = ["Meera", "Priya"];
+const MALE_CHARACTERS   = ["Arjun", "Rohan"];
+
 export default function SpeakingHomePage() {
   const router = useRouter();
-  const [data, setData] = useState<PageData | null>(null);
+  const [data, setData]       = useState<PageData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError]     = useState("");
   const [starting, setStarting] = useState<string | null>(null);
+  const [studentGender, setStudentGender] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/speaking/topics", { credentials: "include" })
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then(setData)
+    // Fetch student gender and topics in parallel
+    Promise.all([
+      fetch("/api/auth/me", { credentials: "include" }).then(r => r.ok ? r.json() : null),
+      fetch("/api/speaking/topics", { credentials: "include" }).then(r => r.ok ? r.json() : Promise.reject(r.status)),
+    ])
+      .then(([me, topicsData]) => {
+        if (me?.gender) setStudentGender(me.gender);
+        setData(topicsData);
+      })
       .catch((e) => {
         if (e === 401) router.push("/login");
         else setError("Could not load topics. Please try again.");
@@ -142,7 +152,7 @@ export default function SpeakingHomePage() {
         <div className={`rounded-3xl p-8 mb-8 text-white bg-gradient-to-br ${levelInfo.color} shadow-2xl relative overflow-hidden`}>
           <div className="absolute -right-8 -top-8 text-[150px] leading-none opacity-10 select-none">🎤</div>
           <div className="relative z-10">
-            <p className="text-white/70 text-sm font-semibold uppercase tracking-widest mb-2">SpeakSmart · Conversation Practice</p>
+            <p className="text-white/70 text-sm font-semibold uppercase tracking-widest mb-2">WizLingo · Conversation Practice</p>
             <h1 className="text-4xl font-black mb-2">Choose a Topic</h1>
             <p className="text-white/80 text-lg">
               Pick something you like — then have a real conversation with your practice partner!
@@ -166,16 +176,40 @@ export default function SpeakingHomePage() {
 
         {/* Topic grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {(data?.topics ?? []).map((topic) => {
+          {(data?.topics ?? [])
+            // Sort: gender-matched characters first
+            .slice()
+            .sort((a, b) => {
+              if (!studentGender) return 0;
+              const matchedChars = studentGender === "FEMALE" ? FEMALE_CHARACTERS : MALE_CHARACTERS;
+              const aMatch = matchedChars.includes(a.character) ? -1 : 1;
+              const bMatch = matchedChars.includes(b.character) ? -1 : 1;
+              return aMatch - bMatch;
+            })
+            .map((topic) => {
             const char = CHARACTER_INFO[topic.character] ?? { emoji: "🤖", from: "", tagline: "" };
             const emoji = TOPIC_EMOJIS[topic.title] ?? "💬";
             const isLoading = starting === topic.id;
+            const isGenderMatch = studentGender
+              ? (studentGender === "FEMALE" ? FEMALE_CHARACTERS : MALE_CHARACTERS).includes(topic.character)
+              : false;
 
             return (
               <button key={topic.id} onClick={() => startSession(topic.id)}
                 disabled={!!starting}
-                className="group text-left bg-white/10 backdrop-blur-sm border border-white/20 rounded-3xl p-6 hover:bg-white/15 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed">
-                <div className="text-4xl mb-3">{isLoading ? "⏳" : emoji}</div>
+                className={`group text-left backdrop-blur-sm rounded-3xl p-6 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed border ${
+                  isGenderMatch
+                    ? "bg-indigo-500/15 border-indigo-400/40 hover:bg-indigo-500/20"
+                    : "bg-white/10 border-white/20 hover:bg-white/15"
+                }`}>
+                <div className="flex items-start justify-between mb-3">
+                  <span className="text-4xl">{isLoading ? "⏳" : emoji}</span>
+                  {isGenderMatch && (
+                    <span className="text-xs bg-indigo-500/30 text-indigo-200 px-2.5 py-1 rounded-full border border-indigo-400/30 font-semibold">
+                      ✨ Best match
+                    </span>
+                  )}
+                </div>
                 <h3 className="text-white font-bold text-lg mb-1">{topic.title}</h3>
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-xl">{char.emoji}</span>

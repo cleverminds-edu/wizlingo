@@ -98,7 +98,7 @@ export default function AdminDashboard() {
           <div className="flex items-center gap-3">
             <Image src="/edvanta-logo1.png" alt="Edvanta" width={100} height={28} />
             <div className="border-l pl-3">
-              <p className="text-sm font-bold text-gray-800">ReadSmart</p>
+              <p className="text-sm font-bold text-gray-800">WizLingo</p>
               <p className="text-xs text-gray-500">Principal / Admin Dashboard</p>
             </div>
           </div>

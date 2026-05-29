@@ -1,6 +1,8 @@
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { scoreReading, gradeToBand, getLevelConfig } from "@/lib/scoring";
+import { checkAndAwardBadges } from "@/lib/badges";
+import { getReadingFeedback } from "@/lib/ai-feedback";
 
 const PASSES_TO_LEVEL_UP = 3;
 
@@ -19,7 +21,7 @@ export async function POST(request: Request) {
     where: { id: sessionId },
     include: {
       passage: true,
-      student: { include: { class: true, progress: true } },
+      student: { include: { class: true, progress: true, speakingProgress: true } },
     },
   });
   if (!readingSession) {
@@ -86,7 +88,38 @@ export async function POST(request: Request) {
     },
   });
 
+  const isFirstEverSession =
+    (student.progress?.totalSessions ?? 0) === 0 &&
+    (student.speakingProgress?.totalSessions ?? 0) === 0;
+
+  const { newBadges, certificateVerifyCode } = await checkAndAwardBadges(student.id, {
+    type: "reading",
+    passed: score.passed,
+    leveledUp,
+    currentLevelBeforeUpdate: level,
+    isFirstEverSession,
+  });
+
   const config = getLevelConfig(gradeBand, level);
+
+  let aiFeedback = "";
+  try {
+    aiFeedback = await getReadingFeedback({
+      studentName: student.name,
+      grade: student.class.grade,
+      level,
+      wpm: Math.round(score.wpm),
+      targetWpm: config.targetWpm,
+      accuracy: Math.round(score.accuracy),
+      minAccuracy: config.minAccuracy,
+      missedWords: score.missedWords,
+      passed: score.passed,
+      leveledUp,
+    });
+  } catch {
+    // AI feedback is non-critical — session result still succeeds
+  }
+
   return Response.json({
     ...score,
     transcript,
@@ -95,5 +128,8 @@ export async function POST(request: Request) {
     leveledUp,
     newLevel: nextLevel,
     passedSessions: nextPassed,
+    newBadges,
+    certificateVerifyCode,
+    aiFeedback,
   });
 }

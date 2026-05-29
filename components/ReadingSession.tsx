@@ -13,6 +13,9 @@ interface ScoreResult {
   passed: boolean; transcript: string;
   targetWpm: number; minAccuracy: number;
   leveledUp: boolean; newLevel: number; passedSessions: number;
+  aiFeedback?: string;
+  newBadges?: string[];
+  certificateVerifyCode?: string | null;
 }
 interface Props {
   passage: Passage; sessionId: string; timeLimitSec: number;
@@ -294,6 +297,41 @@ export default function ReadingSession({ passage, sessionId, timeLimitSec, onCom
                   </span>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* AI Coach Feedback */}
+          {score.aiFeedback && (
+            <div className="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-2xl p-5 border border-indigo-500/30">
+              <p className="text-indigo-300 font-bold mb-2 text-sm">🧙 WizLingo Coach says:</p>
+              <p className="text-white text-sm leading-relaxed">{score.aiFeedback}</p>
+            </div>
+          )}
+
+          {/* New Badges */}
+          {score.newBadges && score.newBadges.length > 0 && (
+            <div className="bg-yellow-500/10 rounded-2xl p-4 border border-yellow-500/20">
+              <p className="text-yellow-300 font-bold mb-3 text-sm">🏅 New Badge{score.newBadges.length > 1 ? "s" : ""} Earned!</p>
+              <div className="flex flex-wrap gap-2">
+                {score.newBadges.map((badge) => (
+                  <span key={badge}
+                    className="bg-yellow-500/20 text-yellow-200 px-3 py-1.5 rounded-full border border-yellow-500/30 text-sm font-bold">
+                    {{
+                      SPARK: "✨ Spark",
+                      WORD_WIZARD: "📚 Word Wizard",
+                      VOICE_WIZARD: "🎤 Voice Wizard",
+                      LANGUAGE_WIZARD: "🧙 Language Wizard",
+                      GRAND_WIZARD: "👑 Grand Wizard",
+                    }[badge] ?? badge}
+                  </span>
+                ))}
+              </div>
+              {score.certificateVerifyCode && (
+                <a href={`/certificate/${score.certificateVerifyCode}`} target="_blank"
+                  className="inline-block mt-3 text-xs text-emerald-400 hover:text-emerald-300 underline underline-offset-2 font-semibold">
+                  🎓 View your Language Wizard Certificate →
+                </a>
+              )}
             </div>
           )}
 

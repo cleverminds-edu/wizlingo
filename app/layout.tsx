@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Edvanta ReadSmart – Reading Skills Platform",
-  description: "AI-powered reading assessment for Grade I–X by Edvanta",
+  title: "WizLingo – Reading & Speaking Skills Platform",
+  description: "AI-powered reading and speaking practice for Grade I–X by Edvanta",
 };
 
 export default function RootLayout({

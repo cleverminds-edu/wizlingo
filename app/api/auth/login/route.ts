@@ -20,6 +20,10 @@ export async function POST(request: Request) {
     if (!student || student.pin !== pin) {
       return Response.json({ error: "Invalid admission number or PIN" }, { status: 401 });
     }
+    // School portal only accepts SCHOOL accounts; PUBLIC accounts use a separate login path
+    if (student.accountType !== "SCHOOL") {
+      return Response.json({ error: "Invalid admission number or PIN" }, { status: 401 });
+    }
     const token = signToken({ id: student.id, role: "student", classId: student.classId });
     return Response.json(
       { ok: true, name: student.name },

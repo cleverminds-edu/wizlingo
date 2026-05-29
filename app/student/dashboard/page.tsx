@@ -25,7 +25,17 @@ interface StudentData {
     createdAt: string;
     passage: { title: string; level: number };
   }[];
+  badges: { type: string; earnedAt: string }[];
+  certificates: { badgeType: string; verifyCode: string; issuedAt: string }[];
 }
+
+const BADGE_META: Record<string, { emoji: string; label: string; color: string }> = {
+  SPARK:           { emoji: "✨", label: "Spark",           color: "from-yellow-400 to-orange-400" },
+  WORD_WIZARD:     { emoji: "📚", label: "Word Wizard",     color: "from-blue-400 to-indigo-500"   },
+  VOICE_WIZARD:    { emoji: "🎤", label: "Voice Wizard",    color: "from-purple-400 to-pink-500"   },
+  LANGUAGE_WIZARD: { emoji: "🧙", label: "Language Wizard", color: "from-emerald-400 to-teal-500"  },
+  GRAND_WIZARD:    { emoji: "👑", label: "Grand Wizard",    color: "from-amber-400 to-yellow-500"  },
+};
 
 const LEVEL_INFO = [
   { label: "Beginner",  emoji: "🌱", color: "from-green-400 to-emerald-600"  },
@@ -174,7 +184,7 @@ export default function StudentDashboard() {
               <div className="relative z-10 flex items-center justify-between">
                 <div>
                   <p className="text-white/70 text-sm font-semibold uppercase tracking-widest mb-1">
-                    {BAND_LABELS[student.progress?.gradeBand ?? "BAND_3_5"]} · ReadSmart
+                    {BAND_LABELS[student.progress?.gradeBand ?? "BAND_3_5"]} · WizLingo
                   </p>
                   <div className="flex items-end gap-4">
                     <span className="text-9xl font-black leading-none">{level}</span>
@@ -215,6 +225,37 @@ export default function StudentDashboard() {
                 </div>
               ))}
             </div>
+
+            {/* Wizard Badges */}
+            {student.badges.length > 0 && (
+              <div className="animate-slide-up bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10" style={{ animationDelay: "0.15s" }}>
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-purple-300 text-xs font-bold uppercase tracking-widest">🧙 Wizard Badges</p>
+                  {student.certificates.length > 0 && (
+                    <a
+                      href={`/certificate/${student.certificates[0].verifyCode}`}
+                      target="_blank"
+                      className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold underline underline-offset-2"
+                    >
+                      View Certificate →
+                    </a>
+                  )}
+                </div>
+                <div className="flex gap-3 flex-wrap">
+                  {student.badges.map((badge) => {
+                    const meta = BADGE_META[badge.type];
+                    if (!meta) return null;
+                    return (
+                      <div key={badge.type}
+                        className={`flex items-center gap-2 bg-gradient-to-r ${meta.color} px-3 py-2 rounded-xl shadow-md`}>
+                        <span className="text-xl">{meta.emoji}</span>
+                        <span className="text-white font-bold text-sm">{meta.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Module CTAs */}
             <div className="animate-slide-up grid grid-cols-2 gap-4" style={{ animationDelay: "0.2s" }}>

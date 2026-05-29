@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { scoreSpeakingSession } from "@/lib/speaking-score";
 import { gradeToBand } from "@/lib/scoring";
 import { TurnRecord } from "@/lib/speaking-score";
+import { checkAndAwardBadges } from "@/lib/badges";
+import { getSpeakingFeedback } from "@/lib/ai-feedback";
 
 const PASSES_TO_LEVEL_UP = 3;
 
@@ -85,10 +87,42 @@ export async function PATCH(
     },
   });
 
+  const isFirstEverSession =
+    (student.speakingProgress?.totalSessions ?? 0) === 0 &&
+    !(await prisma.readingSession.findFirst({
+      where: { studentId: student.id, status: { not: "IN_PROGRESS" } },
+    }));
+
+  const { newBadges, certificateVerifyCode } = await checkAndAwardBadges(student.id, {
+    type: "speaking",
+    passed: score.passed,
+    leveledUp,
+    currentLevelBeforeUpdate: level,
+    isFirstEverSession: !!isFirstEverSession,
+  });
+
+  let aiFeedback = "";
+  try {
+    aiFeedback = await getSpeakingFeedback({
+      studentName: student.name,
+      grade: student.class.grade,
+      level,
+      wpm: Math.round(score.wpm),
+      fluencyScore: Math.round(score.fluencyScore),
+      passed: score.passed,
+      leveledUp,
+    });
+  } catch {
+    // AI feedback is non-critical
+  }
+
   return Response.json({
     ...score,
     leveledUp,
     newLevel: nextLevel,
     passedSessions: nextPassed,
+    newBadges,
+    certificateVerifyCode,
+    aiFeedback,
   });
 }

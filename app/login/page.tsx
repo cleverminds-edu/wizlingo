@@ -9,6 +9,13 @@ type Role = "student" | "teacher" | "admin";
 const INPUT_CLASS =
   "w-full border border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-900 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition";
 
+const DEMO_ROLES = [
+  { icon: "🎓", label: "Principal",          color: "#2563eb", body: { role: "admin",    empCode: "EMP001",      pin: "1111" }, redirect: "/admin/dashboard" },
+  { icon: "📚", label: "Academic Incharge",  color: "#0891b2", body: { role: "admin",    empCode: "EMP002",      pin: "2222" }, redirect: "/admin/dashboard" },
+  { icon: "🍎", label: "Teacher",            color: "#10b981", body: { role: "teacher",  empCode: "EMP101",      pin: "3333" }, redirect: "/teacher/dashboard" },
+  { icon: "👦", label: "Student",            color: "#f59e0b", body: { role: "student",  admissionNumber: "EDV2024001", pin: "1234" }, redirect: "/student/dashboard" },
+];
+
 const ROLE_LABELS: Record<Role, string> = {
   student: "Student",
   teacher: "Teacher",
@@ -23,6 +30,26 @@ export default function LoginPage() {
 
   const [studentForm, setStudentForm] = useState({ admissionNumber: "", pin: "" });
   const [staffForm, setStaffForm] = useState({ empCode: "", pin: "" });
+  const [demoLoading, setDemoLoading] = useState<string | null>(null);
+
+  async function handleDemoLogin(label: string, body: object, redirect: string) {
+    setDemoLoading(label);
+    setError("");
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error ?? "Demo login failed"); return; }
+      router.push(redirect);
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setDemoLoading(null);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -78,13 +105,13 @@ export default function LoginPage() {
 
         <div className="text-white space-y-4">
           <h2 className="text-4xl font-bold leading-tight">
-            ReadSmart<br />
-            <span className="text-blue-300">Reading Skills</span><br />
-            Platform
+            WizLingo<br />
+            <span className="text-blue-300">Read. Speak.</span><br />
+            Excel.
           </h2>
           <p className="text-blue-200 text-lg leading-relaxed">
-            Personalised reading assessment for<br />
-            Grade I to Grade X — powered by AI.
+            AI-powered reading & speaking practice for<br />
+            Grade I to Grade X — powered by Edvanta.
           </p>
           <div className="flex flex-wrap gap-3 pt-4">
             {["Grades I–X", "3 Levels", "AI Scoring", "Live Dashboard"].map((tag) => (
@@ -111,7 +138,7 @@ export default function LoginPage() {
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <div className="mb-6">
               <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
-              <p className="text-gray-500 text-sm mt-1">Sign in to ReadSmart</p>
+              <p className="text-gray-500 text-sm mt-1">Sign in to WizLingo</p>
             </div>
 
             {/* Role selector */}
@@ -220,6 +247,33 @@ export default function LoginPage() {
               ? "Your admission number and PIN are provided by your school"
               : "Your employee code and PIN are issued by your school administrator"}
           </p>
+          </div>
+
+          {/* Demo role picker */}
+          <div className="mt-6">
+            <p className="text-center text-xs text-gray-500 mb-3 font-medium uppercase tracking-wide">
+              Demo — click to auto-login
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              {DEMO_ROLES.map((r) => (
+                <button
+                  key={r.label}
+                  type="button"
+                  onClick={() => handleDemoLogin(r.label, r.body, r.redirect)}
+                  disabled={demoLoading !== null}
+                  className="flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition-all hover:shadow-md disabled:opacity-50"
+                  style={{ borderColor: r.color + "40", background: r.color + "08" }}
+                >
+                  <span className="text-2xl">{r.icon}</span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-gray-800 truncate">{r.label}</p>
+                    <p className="text-xs" style={{ color: r.color }}>
+                      {demoLoading === r.label ? "Signing in…" : "Try demo"}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

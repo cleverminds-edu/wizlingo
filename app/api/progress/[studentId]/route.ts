@@ -24,6 +24,8 @@ export async function GET(
         take: 20,
         include: { passage: { select: { title: true, level: true } } },
       },
+      badges: { orderBy: { earnedAt: "asc" } },
+      certificates: { select: { badgeType: true, verifyCode: true, issuedAt: true } },
     },
   });
 
