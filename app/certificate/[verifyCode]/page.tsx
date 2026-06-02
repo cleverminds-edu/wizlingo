@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { BADGE_META } from "@/lib/badges";
 import { notFound } from "next/navigation";
+import CertificateDownloadButton from "@/components/certificate-download-button";
 
 export default async function CertificatePage({
   params,
@@ -43,8 +44,13 @@ export default async function CertificatePage({
     <div className="min-h-screen flex flex-col items-center justify-center p-8"
       style={{ background: "linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 50%, #f3e8ff 100%)" }}>
 
-      {/* Print button */}
-      <div className="mb-6 flex gap-3 print:hidden">
+      {/* Action buttons */}
+      <div className="mb-6 flex gap-3 print:hidden flex-wrap justify-center">
+        <CertificateDownloadButton
+          studentId={student.id}
+          badgeType={cert.badgeType}
+          verifyCode={verifyCode}
+        />
         <button
           onClick={() => window.print()}
           className="px-6 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 transition-colors"
