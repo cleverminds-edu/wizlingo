@@ -1,5 +1,7 @@
 // Client-side badge configuration (no server imports)
-import { BadgeType } from '@/app/generated/prisma/client';
+
+// Badge types - duplicated here to avoid importing from prisma
+export type BadgeType = 'SPARK' | 'WORD_WIZARD' | 'VOICE_WIZARD' | 'LANGUAGE_WIZARD' | 'GRAND_WIZARD';
 
 interface BadgeDefinition {
   type: BadgeType;

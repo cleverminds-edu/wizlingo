@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { LeaderboardType } from '@/app/generated/prisma';
+import type { LeaderboardType } from '@/app/generated/prisma/client';
 import Leaderboard from '@/components/Leaderboard';
 import LeaderboardSelector from '@/components/LeaderboardSelector';
 

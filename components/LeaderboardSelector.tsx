@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { LeaderboardType } from '@/app/generated/prisma';
+import type { LeaderboardType } from '@/app/generated/prisma/client';
 
 interface LeaderboardSelectorProps {
   onTypeChange: (type: LeaderboardType) => void;

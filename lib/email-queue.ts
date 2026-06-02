@@ -109,7 +109,7 @@ class EmailQueueManager {
     if (this.processing) return;
     this.processing = true;
 
-    const pendingJobs = this.getPendingJobs();
+    const pendingJobs = await this.getPendingJobs();
 
     for (const job of pendingJobs) {
       try {

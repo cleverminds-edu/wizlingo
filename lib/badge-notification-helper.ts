@@ -122,7 +122,7 @@ export async function calculateWeeklyStats(studentId: string) {
 function getNextBadgeChallenge(earnedBadges: BadgeType[]): string {
   const { BADGE_CONFIG } = require("@/lib/badge-system");
 
-  const badgeOrder = ["SPARK", "WORD_WIZARD", "VOICE_WIZARD", "LANGUAGE_WIZARD", "GRAND_WIZARD"];
+  const badgeOrder: BadgeType[] = ["SPARK", "WORD_WIZARD", "VOICE_WIZARD", "LANGUAGE_WIZARD", "GRAND_WIZARD"];
 
   for (const badge of badgeOrder) {
     if (!earnedBadges.includes(badge)) {

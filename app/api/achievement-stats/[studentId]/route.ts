@@ -1,5 +1,5 @@
 import { getSession } from "@/lib/auth";
-import { calculateAchievementStats } from "@/hooks/useAchievementStats";
+import { calculateAchievementStats } from "@/lib/achievement-stats";
 
 export async function GET(
   request: Request,

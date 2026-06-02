@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { BadgeType } from "@/app/generated/prisma/client";
-import { BADGE_CONFIG } from "@/lib/badge-system";
+import { BADGE_CONFIG } from "@/lib/badge-config";
 
 interface TimelineEntry {
   type: BadgeType;
@@ -19,26 +19,10 @@ interface AchievementTimelineProps {
   loading?: boolean;
 }
 
-export function AchievementTimeline({ badges, loading = false }: AchievementTimelineProps) {
+export function AchievementTimeline({ badges }: AchievementTimelineProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  if (loading) {
-    return (
-      <div className="space-y-6 py-8">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="flex gap-6 opacity-50">
-            <div className="w-20 h-20 bg-gray-200 rounded-full animate-pulse"></div>
-            <div className="flex-1 space-y-3">
-              <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (badges.length === 0) {
+  if (!badges || badges.length === 0) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500 text-lg">No badges earned yet</p>

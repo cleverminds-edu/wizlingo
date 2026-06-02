@@ -1,0 +1,32 @@
+{
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "regions": ["sfo1"],
+  "public": false,
+  "env": {
+    "NODE_ENV": "@node_env",
+    "DATABASE_URL": "@database_url",
+    "JWT_SECRET": "@jwt_secret",
+    "WIZADMIN_SECRET": "@wizadmin_secret",
+    "AWS_REGION": "@aws_region",
+    "AWS_ACCESS_KEY_ID": "@aws_access_key_id",
+    "AWS_SECRET_ACCESS_KEY": "@aws_secret_access_key",
+    "EMAIL_PROVIDER": "@email_provider",
+    "AWS_SES_REGION": "@aws_ses_region",
+    "EMAIL_FROM_ADDRESS": "@email_from_address",
+    "CERTIFICATE_STORAGE": "@certificate_storage",
+    "AWS_S3_BUCKET": "@aws_s3_bucket",
+    "AWS_S3_REGION": "@aws_s3_region",
+    "LEADERBOARD_UPDATE_ENABLED": "@leaderboard_update_enabled",
+    "NOTIFICATION_QUEUE_ENABLED": "@notification_queue_enabled",
+    "NEXT_PUBLIC_APP_URL": "@next_public_app_url",
+    "CRON_SECRET": "@cron_secret"
+  },
+  "crons": [
+    {
+      "path": "/api/cron/leaderboards",
+      "schedule": "0 23 * * *"
+    }
+  ]
+}

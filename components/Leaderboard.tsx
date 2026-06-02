@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { LeaderboardType } from '@/app/generated/prisma';
+import type { LeaderboardType } from '@/app/generated/prisma/client';
 
 interface LeaderboardEntry {
   rank: number;

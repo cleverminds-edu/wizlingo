@@ -1,5 +1,5 @@
 import { prisma } from './prisma';
-import type { LeaderboardType } from '@/app/generated/prisma';
+import type { LeaderboardType } from '@/app/generated/prisma/client';
 
 export interface LeaderboardEntry {
   rank: number;

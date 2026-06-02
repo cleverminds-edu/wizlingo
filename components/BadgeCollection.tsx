@@ -2,33 +2,18 @@
 
 import { useState } from "react";
 import { BadgeType } from "@/app/generated/prisma/client";
-import { BADGE_CONFIG } from "@/lib/badge-system";
+import { BADGE_CONFIG } from "@/lib/badge-config";
 
 interface BadgeCollectionProps {
   earnedBadges: BadgeType[];
-  loading?: boolean;
   onBadgeClick?: (badge: BadgeType) => void;
 }
 
 export function BadgeCollection({
   earnedBadges,
-  loading = false,
   onBadgeClick,
 }: BadgeCollectionProps) {
   const [selectedBadge, setSelectedBadge] = useState<BadgeType | null>(null);
-
-  if (loading) {
-    return (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-8">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="flex flex-col items-center opacity-50">
-            <div className="w-24 h-24 bg-gray-200 rounded-full animate-pulse"></div>
-            <div className="mt-4 h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-          </div>
-        ))}
-      </div>
-    );
-  }
 
   const allBadges = Object.values(BADGE_CONFIG) as Array<typeof BADGE_CONFIG[BadgeType]>;
 

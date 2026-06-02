@@ -17,7 +17,10 @@
     "db:seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts",
     "db:studio": "prisma studio",
     "db:seed-speaking": "tsx prisma/seed-speaking.ts",
-    "leaderboards:update": "tsx scripts/update-leaderboards.ts"
+    "leaderboards:update": "tsx scripts/update-leaderboards.ts",
+    "validate:aws": "tsx scripts/validate-aws-credentials.ts",
+    "test:email": "tsx scripts/test-email-service.ts",
+    "test:s3": "tsx scripts/test-s3-service.ts"
   },
   "prisma": {
     "seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts"

@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// Only available in development
-if (process.env.NODE_ENV === 'production') {
-  throw new Error('This endpoint is only available in development');
-}
+export const dynamic = 'force-dynamic';
 
 export async function POST() {
+  // Only available in development
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'This endpoint is only available in development' },
+      { status: 403 }
+    );
+  }
+
   try {
     console.log('🚀 Creating demo account...\n');
 
