@@ -5,6 +5,9 @@ import { BadgeType } from '@/app/generated/prisma/client';
 import { getBadgeConfig } from '@/lib/badge-config';
 import { useBadgeMessages } from '@/hooks/useBadgeMessages';
 import { trackBadgeEvent } from '@/lib/badge-analytics';
+import { useCelebrationEffects } from '@/hooks/useCelebrationEffects';
+import { ParticleType } from '@/lib/particles';
+import { playBadgeEarnedSound } from '@/lib/sound-effects';
 
 interface BadgeCelebrationProps {
   badgeType: BadgeType;
@@ -31,6 +34,35 @@ export const BadgeCelebration = ({
   const config = getBadgeConfig(badgeType);
   const messages = useBadgeMessages(badgeType, studentName, stats);
 
+  // Map badge type to particle type
+  const getParticleType = (badge: BadgeType): ParticleType => {
+    switch (badge) {
+      case 'SPARK':
+        return 'star';
+      case 'WORD_WIZARD':
+        return 'book';
+      case 'VOICE_WIZARD':
+        return 'note';
+      case 'LANGUAGE_WIZARD':
+        return 'sparkle';
+      case 'GRAND_WIZARD':
+        return 'crown';
+      default:
+        return 'sparkle';
+    }
+  };
+
+  const particleType = getParticleType(badgeType);
+
+  // Use celebration effects hook
+  const { particles, isRunning } = useCelebrationEffects({
+    isActive: isVisible && showConfetti,
+    badgeColor: config.color,
+    particleType,
+    particleCount: badgeType === 'GRAND_WIZARD' ? 120 : 75,
+    duration: 1500,
+  });
+
   useEffect(() => {
     if (isVisible) {
       setShowConfetti(true);
@@ -42,8 +74,8 @@ export const BadgeCelebration = ({
         studentName,
       });
 
-      // Auto-close after 8 seconds
-      const timer = setTimeout(onClose, 8000);
+      // Auto-close after 15 seconds (longer celebration)
+      const timer = setTimeout(onClose, 15000);
       return () => clearTimeout(timer);
     }
   }, [isVisible, onClose, badgeType, studentName]);
@@ -115,8 +147,7 @@ export const BadgeCelebration = ({
       className="fixed inset-0 flex items-center justify-center z-[1000] pointer-events-none"
       style={{ background: 'rgba(0, 0, 0, 0.7)' }}
     >
-      {/* Confetti container */}
-      {showConfetti && <Confetti />}
+      {/* Particle effects are rendered via canvas in useCelebrationEffects hook */}
 
       {/* Celebration modal */}
       <div
@@ -148,12 +179,14 @@ export const BadgeCelebration = ({
         {/* Message */}
         <div className="text-white space-y-6">
           <h2
-            className="text-4xl font-black tracking-tight leading-tight"
+            className="text-4xl font-black tracking-tight leading-tight animate-pulse"
             style={{
-              background: `linear-gradient(135deg, ${config.color}, ${config.bgColor})`,
+              background: `linear-gradient(270deg, ${config.color}, #FFD700, ${config.color})`,
+              backgroundSize: '200% 200%',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
+              animation: 'rainbowGradient 3s ease infinite',
             }}
           >
             {config.name} Earned! 🎉
@@ -223,7 +256,7 @@ export const BadgeCelebration = ({
 
         {/* Closing hint */}
         <div className="mt-8 text-xs text-white/50 animate-pulse">
-          Closes automatically in 8 seconds
+          Closes automatically in 15 seconds
         </div>
       </div>
 
@@ -239,12 +272,36 @@ export const BadgeCelebration = ({
           }
         }
 
+        @keyframes badgeGlow {
+          0% {
+            filter: drop-shadow(0 0 20px currentColor);
+          }
+          50% {
+            filter: drop-shadow(0 0 40px currentColor);
+          }
+          100% {
+            filter: drop-shadow(0 0 20px currentColor);
+          }
+        }
+
         @keyframes badgeRotate {
           0% {
             transform: rotateY(0deg) rotateZ(0deg);
           }
           100% {
             transform: rotateY(360deg) rotateZ(5deg);
+          }
+        }
+
+        @keyframes rainbowGradient {
+          0% {
+            background-position: 0% center;
+          }
+          50% {
+            background-position: 100% center;
+          }
+          100% {
+            background-position: 0% center;
           }
         }
 
@@ -258,38 +315,16 @@ export const BadgeCelebration = ({
             opacity: 0;
           }
         }
+
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
       `}</style>
     </div>
   );
 };
 
-// Confetti animation component
-const Confetti = () => {
-  const confetti = Array.from({ length: 50 }, (_, i) => ({
-    id: i,
-    left: Math.random() * 100,
-    delay: Math.random() * 0.5,
-    duration: 2 + Math.random() * 1,
-    color: ['#F43F88', '#7C3AED', '#FFD700', '#F97316', '#10B981'][
-      Math.floor(Math.random() * 5)
-    ],
-  }));
-
-  return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden">
-      {confetti.map((piece) => (
-        <div
-          key={piece.id}
-          className="absolute w-2 h-2 rounded-full animate-bounce"
-          style={{
-            left: `${piece.left}%`,
-            top: '-10px',
-            backgroundColor: piece.color,
-            animation: `confettiFall ${piece.duration}s linear ${piece.delay}s forwards`,
-            boxShadow: `0 0 10px ${piece.color}`,
-          }}
-        />
-      ))}
-    </div>
-  );
-};

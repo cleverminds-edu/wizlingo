@@ -52,21 +52,24 @@ model Class {
 }
 
 model Student {
-  id               String            @id @default(cuid())
-  name             String
-  admissionNumber  String            @unique
-  pin              String
-  classId          String
-  accountType      AccountType       @default(SCHOOL)
-  gender           Gender?
-  createdAt        DateTime          @default(now())
-  badges           Badge[]
-  certificates     Certificate[]
-  sessions         ReadingSession[]
-  speakingProgress SpeakingProgress?
-  speakingSessions SpeakingSession[]
-  class            Class             @relation(fields: [classId], references: [id])
-  progress         StudentProgress?
+  id                   String                   @id @default(cuid())
+  name                 String
+  admissionNumber      String                   @unique
+  pin                  String
+  classId              String
+  accountType          AccountType              @default(SCHOOL)
+  gender               Gender?
+  parentEmail          String?
+  createdAt            DateTime                 @default(now())
+  badges               Badge[]
+  certificates         Certificate[]
+  sessions             ReadingSession[]
+  speakingProgress     SpeakingProgress?
+  speakingSessions     SpeakingSession[]
+  class                Class                    @relation(fields: [classId], references: [id])
+  progress             StudentProgress?
+  notificationPrefs    NotificationPreference?
+  sentEmails           SentEmail[]
 }
 
 model StudentProgress {
@@ -216,4 +219,76 @@ enum SessionStatus {
 enum TopicMode {
   AI
   SCRIPTED
+}
+
+enum LeaderboardType {
+  BADGE_COUNT
+  SPEED
+  CONSISTENCY
+  ACCURACY
+  FLUENCY
+}
+
+model Leaderboard {
+  id        String          @id @default(cuid())
+  type      LeaderboardType
+  scope     String          // class_id, school_id, all
+  studentId String
+  rank      Int
+  value     Float           // badges count, sessions, accuracy %, etc
+  updatedAt DateTime        @updatedAt
+
+  @@unique([type, scope, studentId])
+  @@index([type, scope, rank])
+  @@index([scope, type])
+}
+
+model LeaderboardSnapshot {
+  id        String          @id @default(cuid())
+  type      LeaderboardType
+  scope     String
+  studentId String
+  rank      Int
+  value     Float
+  trend     String          // "up", "down", "same"
+  takenAt   DateTime        @default(now())
+
+  @@unique([type, scope, studentId, takenAt])
+  @@index([takenAt])
+}
+
+enum EmailFrequency {
+  IMMEDIATE
+  DAILY
+  WEEKLY
+  NEVER
+}
+
+model NotificationPreference {
+  id                  String        @id @default(cuid())
+  studentId           String        @unique
+  badgeEarnedStudent  Boolean       @default(true)
+  badgeEarnedParent   Boolean       @default(true)
+  milestoneEmail      Boolean       @default(true)
+  weeklySummary       Boolean       @default(true)
+  leaderboardUpdate   Boolean       @default(true)
+  emailFrequency      EmailFrequency @default(WEEKLY)
+  updatedAt           DateTime      @updatedAt
+  student             Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model SentEmail {
+  id          String    @id @default(cuid())
+  studentId   String
+  type        String    // badge_earned, milestone, weekly_summary, leaderboard
+  recipientEmail String
+  subject     String
+  body        String
+  sentAt      DateTime  @default(now())
+  status      String    @default("sent") // sent, failed, bounced
+  error       String?
+  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([sentAt])
 }

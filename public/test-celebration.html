@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Badge Celebration Effects Test</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+      max-width: 800px;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .spark-btn {
+      background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
+    }
+
+    .spark-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
+    }
+
+    .word-wizard-btn {
+      background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    }
+
+    .word-wizard-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+    }
+
+    .voice-wizard-btn {
+      background: linear-gradient(135deg, #9333EA 0%, #C084FC 100%);
+    }
+
+    .voice-wizard-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(147, 51, 234, 0.4);
+    }
+
+    .language-wizard-btn {
+      background: linear-gradient(135deg, #059669 0%, #34D399 100%);
+    }
+
+    .language-wizard-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(5, 150, 105, 0.4);
+    }
+
+    .grand-wizard-btn {
+      background: linear-gradient(135deg, #D97706 0%, #FBBF24 100%);
+    }
+
+    .grand-wizard-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(217, 119, 6, 0.4);
+    }
+
+    .controls {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 400px;
+      color: white;
+    }
+
+    .control-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    .value-display {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+
+    .stats {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 400px;
+      color: white;
+      margin-top: 20px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    canvas {
+      display: block;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Badge Celebration Effects Test</h1>
+  <p style="color: white; text-align: center; max-width: 600px;">Click a badge to trigger celebration effects with particles and sounds!</p>
+
+  <div class="button-grid">
+    <button class="spark-btn" data-badge="SPARK" data-particle="star" data-color="#F97316">
+      ✨ SPARK
+    </button>
+    <button class="word-wizard-btn" data-badge="WORD_WIZARD" data-particle="book" data-color="#4F46E5">
+      📚 WORD WIZARD
+    </button>
+    <button class="voice-wizard-btn" data-badge="VOICE_WIZARD" data-particle="note" data-color="#9333EA">
+      🎤 VOICE WIZARD
+    </button>
+    <button class="language-wizard-btn" data-badge="LANGUAGE_WIZARD" data-particle="sparkle" data-color="#059669">
+      🧙 LANGUAGE WIZARD
+    </button>
+    <button class="grand-wizard-btn" data-badge="GRAND_WIZARD" data-particle="crown" data-color="#D97706">
+      👑 GRAND WIZARD
+    </button>
+  </div>
+
+  <div class="controls">
+    <div class="control-group">
+      <label for="particle-count">Particle Count: <span id="particle-count-value">75</span></label>
+      <input type="range" id="particle-count" min="10" max="200" value="75">
+    </div>
+    <div class="control-group">
+      <label for="volume">Sound Volume: <span id="volume-value">70%</span></label>
+      <input type="range" id="volume" min="0" max="100" value="70">
+    </div>
+    <div class="control-group">
+      <label>
+        <input type="checkbox" id="mute-toggle"> Mute Sounds
+      </label>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div>Status: <span id="status">Ready</span></div>
+    <div>Active Particles: <span id="active-particles">0</span></div>
+    <div>FPS: <span id="fps">60</span></div>
+  </div>
+
+  <script>
+    // Simple particle system implementation for testing
+    class TestParticleSystem {
+      constructor(centerX, centerY, particleType, badgeColor, config = {}) {
+        this.particles = [];
+        this.centerX = centerX;
+        this.centerY = centerY;
+        this.particleType = particleType;
+        this.badgeColor = badgeColor;
+
+        this.config = {
+          particleCount: 75,
+          duration: 1500,
+          gravity: 0.15,
+          ...config
+        };
+
+        this.generateParticles();
+        this.startTime = null;
+        this.animationFrameId = null;
+      }
+
+      generateParticles() {
+        for (let i = 0; i < this.config.particleCount; i++) {
+          const angle = (i / this.config.particleCount) * 360 * (Math.PI / 180);
+          const velocity = 8 * (0.7 + Math.random() * 0.6);
+
+          this.particles.push({
+            x: this.centerX,
+            y: this.centerY,
+            vx: Math.cos(angle) * velocity,
+            vy: Math.sin(angle) * velocity - 2,
+            life: 1,
+            maxLife: this.config.duration,
+            rotation: Math.random() * 360,
+            rotationVelocity: (Math.random() - 0.5) * 20,
+            color: this.getParticleColor(i),
+            size: this.getParticleSize(),
+            gravity: this.config.gravity
+          });
+        }
+      }
+
+      getParticleColor(index) {
+        const colors = {
+          star: ['#FFD700', '#FFA500', '#FF69B4', '#00FF00', '#00FFFF'],
+          book: ['#4F46E5', '#6366F1', '#818CF8'],
+          note: ['#9333EA', '#A855F7', '#C084FC'],
+          sparkle: ['#059669', '#10B981', '#34D399'],
+          crown: ['#D97706', '#F59E0B', '#FBBF24']
+        };
+        const colorList = colors[this.particleType] || colors.sparkle;
+        return colorList[index % colorList.length];
+      }
+
+      getParticleSize() {
+        const sizes = {
+          star: 8,
+          book: 6,
+          note: 6,
+          sparkle: 4,
+          crown: 7
+        };
+        return sizes[this.particleType] || 6;
+      }
+
+      update(deltaTime) {
+        this.particles = this.particles
+          .map(p => ({
+            ...p,
+            x: p.x + p.vx,
+            y: p.y + (p.vy + p.gravity),
+            vy: p.vy + p.gravity,
+            life: Math.max(0, p.life - deltaTime / p.maxLife),
+            rotation: p.rotation + p.rotationVelocity
+          }))
+          .filter(p => p.life > 0);
+      }
+
+      start() {
+        this.startTime = Date.now();
+        this.animate();
+      }
+
+      animate = () => {
+        const now = Date.now();
+        const elapsed = now - this.startTime;
+        const deltaTime = Math.min(elapsed, 16);
+
+        this.update(deltaTime);
+
+        if (this.particles.length > 0 && elapsed < this.config.duration) {
+          this.animationFrameId = requestAnimationFrame(this.animate);
+        }
+      };
+
+      getParticles() {
+        return [...this.particles];
+      }
+
+      isActive() {
+        return this.particles.length > 0;
+      }
+    }
+
+    // Sound effects test
+    let audioContext = null;
+    let isMuted = false;
+    let volumeLevel = 0.7;
+
+    function generateBadgeEarnedSound() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      const sampleRate = audioContext.sampleRate;
+      const duration = 0.6;
+      const channels = 1;
+      const frameCount = sampleRate * duration;
+
+      const audioData = audioContext.createBuffer(channels, frameCount, sampleRate);
+      const nowBuffering = audioData.getChannelData(0);
+
+      const notes = [220, 330, 440]; // A3, E4, A4
+      const noteDuration = frameCount / 3;
+
+      for (let noteIdx = 0; noteIdx < notes.length; noteIdx++) {
+        const frequency = notes[noteIdx];
+        const startFrame = noteDuration * noteIdx;
+        const endFrame = startFrame + noteDuration;
+
+        for (let i = startFrame; i < endFrame; i++) {
+          const t = (i - startFrame) / sampleRate;
+          const envelope = Math.exp(-t * 3);
+          nowBuffering[i] = Math.sin(2 * Math.PI * frequency * t) * envelope * 0.3;
+        }
+      }
+
+      return audioData;
+    }
+
+    function playBadgeEarnedSound() {
+      if (isMuted || !audioContext) return;
+
+      const audioData = generateBadgeEarnedSound();
+      const source = audioContext.createBufferSource();
+      const gainNode = audioContext.createGain();
+
+      source.buffer = audioData;
+      gainNode.gain.value = volumeLevel;
+
+      source.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      source.start(0);
+    }
+
+    // UI Setup
+    const buttons = document.querySelectorAll('button[data-badge]');
+    const particleCountInput = document.getElementById('particle-count');
+    const volumeInput = document.getElementById('volume');
+    const muteToggle = document.getElementById('mute-toggle');
+    const statusSpan = document.getElementById('status');
+    const activeParticlesSpan = document.getElementById('active-particles');
+    const fpsSpan = document.getElementById('fps');
+
+    let particleSystem = null;
+    let animationFrameId = null;
+    let lastFpsTime = Date.now();
+    let fpsCount = 0;
+
+    // Create canvas for particle rendering
+    const canvas = document.createElement('canvas');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.position = 'fixed';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.pointerEvents = 'none';
+    canvas.style.zIndex = '999';
+    document.body.appendChild(canvas);
+
+    const ctx = canvas.getContext('2d');
+
+    function drawParticles(particles) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach(p => {
+        ctx.save();
+        ctx.globalAlpha = p.life;
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+
+        ctx.fillStyle = p.color;
+        ctx.font = `${p.size}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const symbols = {
+          star: '⭐',
+          book: '📖',
+          note: '♪',
+          sparkle: '✨',
+          crown: '👑'
+        };
+
+        ctx.fillText(symbols[particleSystem.particleType] || '•', 0, 0);
+        ctx.restore();
+      });
+
+      activeParticlesSpan.textContent = particles.length;
+      fpsCount++;
+      const now = Date.now();
+      if (now - lastFpsTime > 1000) {
+        fpsSpan.textContent = fpsCount;
+        fpsCount = 0;
+        lastFpsTime = now;
+      }
+    }
+
+    function animate() {
+      if (particleSystem && particleSystem.isActive()) {
+        const particles = particleSystem.getParticles();
+        drawParticles(particles);
+        animationFrameId = requestAnimationFrame(animate);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        activeParticlesSpan.textContent = '0';
+        statusSpan.textContent = 'Ready';
+      }
+    }
+
+    buttons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const particleType = e.target.dataset.particle;
+        const color = e.target.dataset.color;
+        const badge = e.target.dataset.badge;
+
+        statusSpan.textContent = `Playing ${badge}...`;
+
+        // Create and start particle system
+        particleSystem = new TestParticleSystem(
+          window.innerWidth / 2,
+          window.innerHeight / 2,
+          particleType,
+          color,
+          { particleCount: parseInt(particleCountInput.value) }
+        );
+
+        particleSystem.start();
+        animate();
+
+        // Play sound
+        playBadgeEarnedSound();
+      });
+    });
+
+    particleCountInput.addEventListener('input', (e) => {
+      document.getElementById('particle-count-value').textContent = e.target.value;
+    });
+
+    volumeInput.addEventListener('input', (e) => {
+      volumeLevel = parseInt(e.target.value) / 100;
+      document.getElementById('volume-value').textContent = e.target.value + '%';
+    });
+
+    muteToggle.addEventListener('change', (e) => {
+      isMuted = e.target.checked;
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    // Initialize
+    statusSpan.textContent = 'Ready to test';
+  </script>
+</body>
+</html>

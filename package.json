@@ -16,7 +16,8 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts",
     "db:studio": "prisma studio",
-    "db:seed-speaking": "tsx prisma/seed-speaking.ts"
+    "db:seed-speaking": "tsx prisma/seed-speaking.ts",
+    "leaderboards:update": "tsx scripts/update-leaderboards.ts"
   },
   "prisma": {
     "seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts"
