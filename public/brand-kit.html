@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WizLingo — Brand Kit v1.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #fafafa;
+      color: #111827;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .fredoka { font-family: 'Fredoka', 'Arial Rounded MT Bold', Arial, sans-serif; }
+
+    /* ── Layout ── */
+    .page { max-width: 1100px; margin: 0 auto; padding: 64px 60px 80px; }
+    section { margin-bottom: 80px; }
+
+    .section-head {
+      display: flex; align-items: center; gap: 20px; margin-bottom: 36px;
+    }
+    .section-head h2 {
+      font-family: 'Fredoka', sans-serif; font-size: 26px;
+      color: #1e1b4b; white-space: nowrap; font-weight: 600;
+    }
+    .section-head .rule { flex: 1; height: 1px; background: #e5e7eb; }
+
+    /* ── Header ── */
+    header {
+      background: #0F0C29;
+      padding: 48px 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-right { text-align: right; }
+    .header-right .by { font-size: 11px; color: rgba(255,255,255,0.35); margin-bottom: 10px; }
+
+    /* ── Intro ── */
+    .intro { margin-bottom: 72px; }
+    .intro h1 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 52px; font-weight: 600;
+      color: #0F0C29; line-height: 1.1; margin-bottom: 14px;
+    }
+    .intro p { font-size: 17px; color: #6b7280; line-height: 1.7; max-width: 540px; margin-bottom: 28px; }
+    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: 999px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      border: none; transition: opacity .15s, transform .1s;
+      text-decoration: none;
+    }
+    .btn:hover { opacity: .9; }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: linear-gradient(135deg,#F97316,#9333EA); color: #fff; }
+    .btn-secondary { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+
+    /* ── Logo variants ── */
+    .logo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .logo-card {
+      border-radius: 24px; padding: 40px 40px 28px;
+      display: flex; flex-direction: column; gap: 24px;
+    }
+    .logo-card .logo-stage {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 24px 0;
+    }
+    .logo-card .logo-stage img { max-width: 290px; }
+    .logo-card .logo-meta { display: flex; align-items: center; justify-content: space-between; }
+    .logo-card .logo-meta .name { font-weight: 700; font-size: 14px; }
+    .logo-card .logo-meta .desc { font-size: 12px; margin-top: 3px; opacity: .55; }
+    .lc-light  { background: #fff; border: 1px solid #e5e7eb; }
+    .lc-dark {
+      background:
+        radial-gradient(ellipse at 85% 15%, rgba(124,58,237,0.45) 0%, transparent 55%),
+        radial-gradient(ellipse at 15% 85%, rgba(244,63,136,0.30) 0%, transparent 55%),
+        #0D0A24;
+      border: 1px solid rgba(124,58,237,0.35);
+    }
+    .lc-grad   { background: linear-gradient(135deg,#7C3AED,#F43F88); }
+    .lc-orange { background: #F97316; }
+    .lc-dark  .name, .lc-grad .name, .lc-orange .name { color: #fff; }
+    .white-logo { filter: brightness(0) invert(1); }
+
+    /* ── Download button ── */
+    .dl-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9);
+      border: 1px solid rgba(255,255,255,0.25); cursor: pointer;
+      transition: background .15s;
+    }
+    .dl-btn:hover { background: rgba(255,255,255,0.25); }
+    .lc-light .dl-btn {
+      background: #f3f4f6; color: #374151;
+      border-color: #e5e7eb;
+    }
+    .lc-light .dl-btn:hover { background: #e5e7eb; }
+
+    /* ── Colours ── */
+    .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .color-card { border-radius: 16px; overflow: hidden; border: 1px solid #e5e7eb; cursor: pointer; }
+    .color-swatch { height: 88px; display: flex; align-items: flex-end; padding: 10px 14px; }
+    .color-hex { font-family: monospace; font-size: 12px; font-weight: 700; opacity: .85; }
+    .color-info { padding: 12px 14px; background: #fff; }
+    .color-name { font-weight: 700; font-size: 13px; color: #111827; }
+    .color-role { font-size: 11px; color: #6b7280; margin-top: 2px; }
+    .color-rgb  { font-family: monospace; font-size: 11px; color: #9ca3af; margin-top: 4px; }
+
+    /* ── Typography ── */
+    .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .type-card {
+      border-radius: 24px; padding: 36px; background: #fff;
+      border: 1px solid #e5e7eb;
+    }
+    .type-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; margin-bottom: 20px;
+    }
+    .type-display {
+      font-size: 52px; line-height: 1.15; color: #0F0C29;
+    }
+    .type-alpha { font-size: 17px; color: #374151; margin-top: 14px; line-height: 1.6; }
+    .type-meta {
+      margin-top: 24px; padding-top: 20px; border-top: 1px solid #f3f4f6;
+      font-size: 12px;
+    }
+    .type-meta strong { color: #111827; }
+    .type-meta p { color: #9ca3af; margin-top: 3px; }
+
+    /* ── Badges ── */
+    .badge-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+    .badge-card {
+      border-radius: 18px; padding: 28px 16px; text-align: center;
+    }
+    .badge-emoji { font-size: 44px; margin-bottom: 12px; }
+    .badge-name {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 15px; font-weight: 600;
+    }
+
+    /* ── Co-brand ── */
+    .cobrand {
+      background: #0F0C29; border-radius: 24px; padding: 40px 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .cobrand-divider { width: 1px; height: 48px; background: rgba(255,255,255,0.15); }
+
+    /* ── Rules ── */
+    .rules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .rules-card { border-radius: 24px; padding: 32px; }
+    .rules-card.do   { background: #f0fdf4; border: 1px solid #bbf7d0; }
+    .rules-card.dont { background: #fff1f2; border: 1px solid #fecdd3; }
+    .rules-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
+    .rules-card.do h3   { color: #15803d; }
+    .rules-card.dont h3 { color: #be123c; }
+    .rules-card ul { list-style: none; }
+    .rules-card ul li {
+      font-size: 13px; line-height: 1.55;
+      display: flex; gap: 10px; margin-bottom: 10px;
+    }
+    .rules-card.do   ul li { color: #166534; }
+    .rules-card.dont ul li { color: #9f1239; }
+    .rules-card ul li .bullet { flex-shrink: 0; font-weight: 700; }
+    .rules-card.do   ul li .bullet { color: #22c55e; }
+    .rules-card.dont ul li .bullet { color: #f43f5e; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid #e5e7eb; padding: 28px 60px;
+      display: flex; justify-content: space-between; align-items: center;
+      background: #fff; font-size: 13px; color: #9ca3af;
+    }
+
+    /* ── Print ── */
+    @media print {
+      .btn, .dl-btn { display: none !important; }
+      .page { padding: 32px 40px; }
+      body { background: #fff; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────────── -->
+<header>
+  <img src="wiziingo-logo.svg" alt="WizLingo" height="58" />
+  <div class="header-right">
+    <p class="by">An initiative by</p>
+    <img src="edvanta-logo1.png" alt="Edvanta" height="28"
+         style="filter:brightness(0) invert(1); opacity:.55;" />
+  </div>
+</header>
+
+<!-- ── Page ───────────────────────────────────────────────────────────────── -->
+<div class="page">
+
+  <!-- Intro -->
+  <div class="intro">
+    <h1 class="fredoka">WizLingo<br/>Brand Kit</h1>
+    <p>
+      Everything you need to represent WizLingo across print, digital,
+      and social media. Download PNG assets below or print this page as PDF.
+    </p>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="downloadAll()">⬇ Download All PNGs</button>
+      <a class="btn btn-secondary" href="wiziingo-logo.svg" download="wiziingo-logo.svg">⬇ SVG (Vector)</a>
+      <button class="btn btn-secondary" onclick="window.print()">🖨 Print / Save PDF</button>
+    </div>
+  </div>
+
+  <!-- ── Logo Variants ──────────────────────────────────────────────────── -->
+  <section>
+    <div class="section-head">
+      <h2>Logo Variants</h2><div class="rule"></div>
+    </div>
+    <div class="logo-grid">
+
+      <div class="logo-card lc-light">
+        <div class="logo-stage">
+          <img src="wiziingo-logo.svg" alt="WizLingo" height="63" />
+        </div>
+        <div class="logo-meta">
+          <div>
+            <div class="name" style="color:#111827">Full Colour</div>
+            <div class="desc" style="color:#6b7280">Use on white / light backgrounds</div>
+          </div>
+          <button class="dl-btn" onclick="downloadPng('color')">⬇ PNG</button>
+        </div>
+      </div>
+
+      <div class="logo-card lc-dark">
+        <div class="logo-stage">
+          <img src="wiziingo-logo.svg" alt="WizLingo" height="63" />
+        </div>
+        <div class="logo-meta">
+          <div>
+            <div class="name">White / Reversed</div>
+            <div class="desc">Use on dark or coloured backgrounds</div>
+          </div>
+          <button class="dl-btn" onclick="downloadPng('white')">⬇ PNG</button>
+        </div>
+      </div>
+
+      <div class="logo-card lc-grad">
+        <div class="logo-stage">
+          <img src="wiziingo-logo.svg" alt="WizLingo" height="63" />
+        </div>
+        <div class="logo-meta">
+          <div>
+            <div class="name">On Brand Gradient</div>
+            <div class="desc">Social media &amp; marketing</div>
+          </div>
+          <button class="dl-btn" onclick="downloadPng('dark-bg')">⬇ PNG</button>
+        </div>
+      </div>
+
+      <div class="logo-card lc-orange">
+        <div class="logo-stage">
+          <img src="wiziingo-logo.svg" alt="WizLingo" height="63" />
+        </div>
+        <div class="logo-meta">
+          <div>
+            <div class="name">On Wiz Orange</div>
+            <div class="desc">High-energy marketing use</div>
+          </div>
+          <button class="dl-btn" onclick="downloadPng('orange-bg')">⬇ PNG</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Colour Palette ─────────────────────────────────────────────────── -->
+  <section>
+    <div class="section-head"><h2>Colour Palette</h2><div class="rule"></div></div>
+    <div class="color-grid" id="colorGrid"></div>
+    <p style="margin-top:16px;font-size:13px;color:#9ca3af;">Click any swatch to copy the hex code.</p>
+  </section>
+
+  <!-- ── Typography ────────────────────────────────────────────────────── -->
+  <section>
+    <div class="section-head"><h2>Typography</h2><div class="rule"></div></div>
+    <div class="type-grid">
+
+      <div class="type-card">
+        <p class="type-label" style="color:#9333EA">Display · Logo</p>
+        <p class="type-display fredoka">WizLingo</p>
+        <p class="type-alpha fredoka" style="color:#374151">
+          Aa Bb Cc Dd Ee Ff Gg<br/>
+          ABCDEFGHIJKLMNOPQRSTUVWXYZ<br/>
+          abcdefghijklmnopqrstuvwxyz<br/>
+          0 1 2 3 4 5 6 7 8 9
+        </p>
+        <div class="type-meta">
+          <strong>Fredoka</strong>
+          <p>Weight 400 &amp; 600 · Google Fonts</p>
+          <p style="margin-top:2px;">Use: logo, headlines, CTAs, badges, level names</p>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <p class="type-label" style="color:#F97316">Body · UI</p>
+        <p class="type-display" style="font-weight:800;line-height:1.1;">Read.<br/>Speak.</p>
+        <p class="type-alpha" style="color:#374151;font-size:18px;font-weight:600;">
+          AI-powered learning platform
+        </p>
+        <p style="margin-top:12px;font-size:14px;color:#6b7280;line-height:1.7;">
+          WizLingo helps students in Grade I–X build reading fluency
+          and speaking confidence through adaptive AI sessions.
+        </p>
+        <div class="type-meta">
+          <strong>Inter / Geist Sans</strong>
+          <p>Weight 400 · 600 · 800 · System / Google</p>
+          <p style="margin-top:2px;">Use: body copy, UI labels, data, captions</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Badge System ───────────────────────────────────────────────────── -->
+  <section>
+    <div class="section-head"><h2>Badge System</h2><div class="rule"></div></div>
+    <div class="badge-grid" id="badgeGrid"></div>
+    <p style="margin-top:18px;font-size:13px;color:#9ca3af;">
+      Each badge is shareable as a 1080×1080 PNG image — generated in-app and shareable to WhatsApp, Instagram, etc.
+    </p>
+  </section>
+
+  <!-- ── Co-branding ───────────────────────────────────────────────────── -->
+  <section>
+    <div class="section-head"><h2>Co-branding with Edvanta</h2><div class="rule"></div></div>
+    <div class="cobrand">
+      <img src="wiziingo-logo.svg" alt="WizLingo" height="52" />
+      <div class="cobrand-divider"></div>
+      <div style="text-align:right;">
+        <p style="font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:10px;">An initiative by</p>
+        <img src="edvanta-logo1.png" alt="Edvanta" height="30"
+             style="filter:brightness(0) invert(1);opacity:.6;" />
+      </div>
+    </div>
+    <p style="margin-top:18px;font-size:13px;color:#9ca3af;">
+      Always pair WizLingo with "An Edvanta Initiative" on certificates, printed materials, and official digital communications.
+    </p>
+  </section>
+
+  <!-- ── Do's &amp; Don'ts ──────────────────────────────────────────────── -->
+  <section>
+    <div class="section-head"><h2>Do's &amp; Don'ts</h2><div class="rule"></div></div>
+    <div class="rules-grid">
+      <div class="rules-card do">
+        <h3>✓ Do</h3>
+        <ul id="doList"></ul>
+      </div>
+      <div class="rules-card dont">
+        <h3>✗ Don't</h3>
+        <ul id="dontList"></ul>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /page -->
+
+<!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+<footer>
+  <span>© <span id="yr"></span> Edvanta. WizLingo Brand Kit v1.0</span>
+  <span>Brand queries: info@clevermindsglobalschool.com</span>
+</footer>
+
+<!-- ── Data + Logic ───────────────────────────────────────────────────────── -->
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+/* ── Brand data ── */
+const COLORS = [
+  { name:'Wiz Orange',   hex:'#F97316', rgb:'249 115 22',  role:'Primary · logo wordmark',   dark:false },
+  { name:'Lingo Purple', hex:'#9333EA', rgb:'147 51 234',  role:'Primary · logo wordmark',   dark:false },
+  { name:'Magic Pink',   hex:'#F43F88', rgb:'244 63 136',  role:'Accent · bubble gradient',  dark:false },
+  { name:'Deep Violet',  hex:'#7C3AED', rgb:'124 58 237',  role:'Brand dark · backgrounds',  dark:false },
+  { name:'Spark Gold',   hex:'#FFD700', rgb:'255 215 0',   role:'Accent · stars & badges',   dark:true  },
+  { name:'Midnight',     hex:'#0F0C29', rgb:'15 12 41',    role:'Dark background',            dark:false },
+  { name:'Pure White',   hex:'#FFFFFF', rgb:'255 255 255', role:'Light background',           dark:true  },
+  { name:'Soft Lilac',   hex:'#EDE9FE', rgb:'237 233 254', role:'UI tint / hover states',    dark:true  },
+];
+
+const BADGES = [
+  { emoji:'✨', label:'Spark',           color:'#F97316', bg:'#FFF7ED', border:'#FED7AA' },
+  { emoji:'📚', label:'Word Wizard',     color:'#4F46E5', bg:'#EEF2FF', border:'#C7D2FE' },
+  { emoji:'🎤', label:'Voice Wizard',    color:'#9333EA', bg:'#FAF5FF', border:'#DDD6FE' },
+  { emoji:'🧙', label:'Language Wizard', color:'#059669', bg:'#ECFDF5', border:'#A7F3D0' },
+  { emoji:'👑', label:'Grand Wizard',    color:'#D97706', bg:'#FFFBEB', border:'#FDE68A' },
+];
+
+const DOS = [
+  'Use the SVG for all digital and print applications — it scales to any size without quality loss.',
+  'Maintain clear space equal to the bubble icon width on all four sides of the logo.',
+  'Use the white reversed version on any dark, coloured, or gradient background.',
+  'Always include Edvanta attribution on printed materials and certificates.',
+  'Write "WizLingo" as one word — never "Wiz Lingo" or "wizlingo".',
+];
+
+const DONTS = [
+  'Stretch, squash, rotate, or skew the logo in any direction.',
+  'Recolour the logo, apply drop shadows, outlines, or any extra effects.',
+  'Place the full-colour logo on dark or strongly coloured backgrounds.',
+  'Use the logo smaller than 80 px wide in digital or 25 mm in print.',
+  'Recreate the wordmark in a different font or redraw the bubble icon.',
+];
+
+/* ── Render colours ── */
+const colorGrid = document.getElementById('colorGrid');
+COLORS.forEach(c => {
+  colorGrid.innerHTML += `
+    <div class="color-card" onclick="copyHex('${c.hex}',this)" title="Click to copy">
+      <div class="color-swatch" style="background:${c.hex}">
+        <span class="color-hex" style="color:${c.dark?'#1e1b4b':'#fff'}">${c.hex}</span>
+      </div>
+      <div class="color-info">
+        <p class="color-name">${c.name}</p>
+        <p class="color-role">${c.role}</p>
+        <p class="color-rgb">rgb(${c.rgb})</p>
+      </div>
+    </div>`;
+});
+
+/* ── Render badges ── */
+const badgeGrid = document.getElementById('badgeGrid');
+BADGES.forEach(b => {
+  badgeGrid.innerHTML += `
+    <div class="badge-card" style="background:${b.bg};border:1px solid ${b.border}">
+      <div class="badge-emoji">${b.emoji}</div>
+      <div class="badge-name fredoka" style="color:${b.color}">${b.label}</div>
+    </div>`;
+});
+
+/* ── Render rules ── */
+DOS.forEach(t => {
+  document.getElementById('doList').innerHTML +=
+    `<li><span class="bullet">✓</span><span>${t}</span></li>`;
+});
+DONTS.forEach(t => {
+  document.getElementById('dontList').innerHTML +=
+    `<li><span class="bullet">✗</span><span>${t}</span></li>`;
+});
+
+/* ── Copy hex ── */
+function copyHex(hex, el) {
+  navigator.clipboard.writeText(hex).catch(() => {});
+  const swatch = el.querySelector('.color-hex');
+  const orig = swatch.textContent;
+  swatch.textContent = 'Copied!';
+  setTimeout(() => { swatch.textContent = orig; }, 1400);
+}
+
+/* ── PNG download ── */
+async function downloadPng(variant, scale = 3) {
+  const res  = await fetch('wiziingo-logo.svg');
+  const text = await res.text();
+  const svg  = text.replace(/@import[^;]+;/g, '');
+
+  const vb = (svg.match(/viewBox="([^"]+)"/) || ['','0 0 218 62'])[1].split(/\s+/).map(Number);
+  const [,, svgW, svgH] = vb;
+
+  const pad = (variant === 'dark-bg' || variant === 'orange-bg') ? 44 : 16;
+  const canvas = document.createElement('canvas');
+  canvas.width  = (svgW + pad * 2) * scale;
+  canvas.height = (svgH + pad * 2) * scale;
+  const ctx = canvas.getContext('2d');
+
+  if (variant === 'dark-bg')   { ctx.fillStyle = '#0F0C29'; ctx.fillRect(0,0,canvas.width,canvas.height); }
+  if (variant === 'orange-bg') { ctx.fillStyle = '#F97316'; ctx.fillRect(0,0,canvas.width,canvas.height); }
+  if (variant === 'white')     ctx.filter = 'brightness(0) invert(1)';
+
+  const blob = new Blob([svg], { type: 'image/svg+xml' });
+  const url  = URL.createObjectURL(blob);
+  await new Promise((res, rej) => {
+    const img = document.createElement('img');
+    img.onload = () => { ctx.drawImage(img, pad*scale, pad*scale, svgW*scale, svgH*scale); res(); };
+    img.onerror = rej;
+    img.src = url;
+  });
+  URL.revokeObjectURL(url);
+
+  const a = document.createElement('a');
+  a.href     = canvas.toDataURL('image/png');
+  a.download = `wiziingo-logo-${variant}@${scale}x.png`;
+  a.click();
+}
+
+async function downloadAll() {
+  for (const v of ['color','white','dark-bg','orange-bg']) {
+    await downloadPng(v);
+    await new Promise(r => setTimeout(r, 350));
+  }
+}
+</script>
+</body>
+</html>

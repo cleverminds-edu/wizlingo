@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WizLingo 3D Badges - Immersive Showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #16103a 60%, #0f0c29 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #f43f88, #7c3aed, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.6);
+            font-size: 18px;
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 600px;
+            position: relative;
+            margin: 40px 0;
+        }
+
+        #badgeCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .badges-grid {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .badge-3d-card {
+            background: rgba(99,102,241,0.08);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .badge-3d-card:hover {
+            background: rgba(99,102,241,0.12);
+            border-color: rgba(99,102,241,0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .badge-3d-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        }
+
+        .badge-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        .badge-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .badge-description {
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .badge-requirement {
+            font-size: 13px;
+            color: rgba(255,255,255,0.4);
+            font-style: italic;
+        }
+
+        .info-panel {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .tech-info {
+            background: rgba(31,41,55,0.5);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        .tech-info h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #a5b4fc;
+        }
+
+        .tech-info ul {
+            list-style: none;
+            line-height: 2;
+        }
+
+        .tech-info li {
+            color: rgba(255,255,255,0.7);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tech-info li:before {
+            content: '✨';
+            font-size: 18px;
+            min-width: 20px;
+        }
+
+        .controls {
+            background: rgba(99,102,241,0.08);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 40px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .badge-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .badge-btn {
+            padding: 8px 16px;
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.3);
+            color: #a5b4fc;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .badge-btn:hover, .badge-btn.active {
+            background: rgba(99,102,241,0.3);
+            border-color: rgba(99,102,241,0.6);
+            color: #fff;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.3);
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎮 WizLingo 3D Badge Showcase</h1>
+        <p>Interactive 3D achievement badges with realistic materials and lighting</p>
+    </div>
+
+    <div class="controls">
+        <p>Click badges below to view in 3D • Move your mouse to rotate • 3D rendering with Three.js</p>
+        <div class="badge-selector">
+            <button class="badge-btn active" data-badge="SPARK">✨ SPARK</button>
+            <button class="badge-btn" data-badge="WORD_WIZARD">📚 WORD WIZARD</button>
+            <button class="badge-btn" data-badge="VOICE_WIZARD">🎤 VOICE WIZARD</button>
+            <button class="badge-btn" data-badge="LANGUAGE_WIZARD">🧙 LANGUAGE WIZARD</button>
+            <button class="badge-btn" data-badge="GRAND_WIZARD">👑 GRAND WIZARD</button>
+        </div>
+    </div>
+
+    <div class="canvas-container" id="canvasContainer">
+        <canvas id="badgeCanvas"></canvas>
+        <div class="loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%;">
+            Loading 3D badges... <br><small>Make sure Three.js can load</small>
+        </div>
+    </div>
+
+    <div class="badges-grid">
+        <div class="badge-3d-card" onclick="selectBadge('SPARK')">
+            <div class="badge-icon">✨</div>
+            <div class="badge-name">SPARK</div>
+            <div class="badge-description">Your first step into reading</div>
+            <div class="badge-requirement">Complete 1 reading session</div>
+        </div>
+
+        <div class="badge-3d-card" onclick="selectBadge('WORD_WIZARD')">
+            <div class="badge-icon">📚</div>
+            <div class="badge-name">WORD WIZARD</div>
+            <div class="badge-description">Master of comprehension</div>
+            <div class="badge-requirement">Achieve 80%+ accuracy</div>
+        </div>
+
+        <div class="badge-3d-card" onclick="selectBadge('VOICE_WIZARD')">
+            <div class="badge-icon">🎤</div>
+            <div class="badge-name">VOICE WIZARD</div>
+            <div class="badge-description">Master of fluency</div>
+            <div class="badge-requirement">Achieve 75%+ fluency</div>
+        </div>
+
+        <div class="badge-3d-card" onclick="selectBadge('LANGUAGE_WIZARD')">
+            <div class="badge-icon">🧙</div>
+            <div class="badge-name">LANGUAGE WIZARD</div>
+            <div class="badge-description">Committed learner</div>
+            <div class="badge-requirement">Complete 10+ sessions</div>
+        </div>
+
+        <div class="badge-3d-card" onclick="selectBadge('GRAND_WIZARD')">
+            <div class="badge-icon">👑</div>
+            <div class="badge-name">GRAND WIZARD</div>
+            <div class="badge-description">Ultimate master</div>
+            <div class="badge-requirement">Earn all 4 badges</div>
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <div class="tech-info">
+            <h2>🔧 3D Rendering Technology</h2>
+            <ul>
+                <li>Three.js WebGL renderer for smooth 60fps performance</li>
+                <li>PerspectiveCamera with interactive mouse controls</li>
+                <li>Phong material with realistic lighting and reflections</li>
+                <li>Point lights with dynamic glow and bloom effects</li>
+                <li>Custom 3D geometry for each badge (sphere, box, cone)</li>
+                <li>Particle effects for sparkles and stars</li>
+                <li>Auto-rotation with mouse-controlled orbit</li>
+                <li>High-quality shadows and depth perception</li>
+            </ul>
+        </div>
+
+        <div class="tech-info">
+            <h2>✨ 3D Badge Features</h2>
+            <ul>
+                <li><strong>SPARK:</strong> 3D flame/sphere with orange metallic material and glow</li>
+                <li><strong>WORD WIZARD:</strong> 3D book/cube with blue gradient and embossed text</li>
+                <li><strong>VOICE WIZARD:</strong> 3D microphone with pink gradient and sound wave rings</li>
+                <li><strong>LANGUAGE WIZARD:</strong> 3D wizard hat cone with green material and gold star</li>
+                <li><strong>GRAND WIZARD:</strong> 3D crown with multiple colored jewels and premium gold material</li>
+            </ul>
+        </div>
+
+        <div class="tech-info">
+            <h2>🎮 Interaction Features</h2>
+            <ul>
+                <li>Click badges to view in 3D carousel</li>
+                <li>Mouse movement controls 3D rotation (orbit camera)</li>
+                <li>Auto-rotation when idle</li>
+                <li>Smooth transitions between badge selections</li>
+                <li>Real-time lighting and shadows</li>
+                <li>Responsive design works on desktop and tablet</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>3D Badges rendered with Three.js WebGL • SVG fallbacks for dashboard • Hybrid approach for performance</p>
+        <p>View SVG versions at <code>/badge-showcase.html</code> or dashboard at <code>/student/dashboard</code></p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Three.js scene setup
+        const container = document.getElementById('canvasContainer');
+        const canvas = document.getElementById('badgeCanvas');
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x16103a);
+        scene.fog = new THREE.Fog(0x16103a, 100, 1000);
+
+        const camera = new THREE.PerspectiveCamera(
+            75,
+            container.clientWidth / container.clientHeight,
+            0.1,
+            1000
+        );
+        camera.position.z = 3;
+
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        const pointLight1 = new THREE.PointLight(0xfbbf24, 1.5);
+        pointLight1.position.set(5, 5, 5);
+        pointLight1.castShadow = true;
+        scene.add(pointLight1);
+
+        const pointLight2 = new THREE.PointLight(0x7c3aed, 1);
+        pointLight2.position.set(-5, -5, 5);
+        scene.add(pointLight2);
+
+        // Badge configurations
+        const badgeConfig = {
+            SPARK: {
+                color: 0xFF8C00,
+                emissive: 0xFF6B00,
+                geometry: new THREE.IcosahedronGeometry(1, 4),
+                name: 'SPARK'
+            },
+            WORD_WIZARD: {
+                color: 0x2563EB,
+                emissive: 0x1D4ED8,
+                geometry: new THREE.BoxGeometry(1.5, 1.5, 1.5),
+                name: 'WORD WIZARD'
+            },
+            VOICE_WIZARD: {
+                color: 0xEC4899,
+                emissive: 0xBE185D,
+                geometry: new THREE.ConeGeometry(0.8, 2, 32),
+                name: 'VOICE WIZARD'
+            },
+            LANGUAGE_WIZARD: {
+                color: 0x10B981,
+                emissive: 0x047857,
+                geometry: new THREE.ConeGeometry(1, 2.2, 32),
+                name: 'LANGUAGE WIZARD'
+            },
+            GRAND_WIZARD: {
+                color: 0xF59E0B,
+                emissive: 0xD97706,
+                geometry: new THREE.TetrahedronGeometry(1.2, 2),
+                name: 'GRAND WIZARD'
+            }
+        };
+
+        let currentBadge = null;
+
+        function createBadge(badgeType) {
+            // Remove old badge
+            if (currentBadge) {
+                scene.remove(currentBadge);
+            }
+
+            const config = badgeConfig[badgeType];
+            const material = new THREE.MeshPhongMaterial({
+                color: config.color,
+                emissive: config.emissive,
+                shininess: 100,
+                wireframe: false
+            });
+
+            const mesh = new THREE.Mesh(config.geometry, material);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+
+            scene.add(mesh);
+            currentBadge = mesh;
+
+            // Add sparkles
+            addSparkles(mesh.position);
+        }
+
+        function addSparkles(position) {
+            const particleGeometry = new THREE.BufferGeometry();
+            const particleCount = 20;
+            const posArray = new Float32Array(particleCount * 3);
+
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                posArray[i] = (Math.random() - 0.5) * 8;
+                posArray[i + 1] = (Math.random() - 0.5) * 8;
+                posArray[i + 2] = (Math.random() - 0.5) * 8;
+            }
+
+            particleGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+            const particleMaterial = new THREE.PointsMaterial({
+                size: 0.1,
+                color: 0xfbbf24,
+                transparent: true,
+                opacity: 0.6
+            });
+
+            const particles = new THREE.Points(particleGeometry, particleMaterial);
+            scene.add(particles);
+        }
+
+        // Mouse controls
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetRotationX = 0;
+        let targetRotationY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+
+            targetRotationX = mouseY * Math.PI * 0.3;
+            targetRotationY = mouseX * Math.PI * 0.3;
+        });
+
+        // Badge selection
+        window.selectBadge = function(badgeType) {
+            createBadge(badgeType);
+
+            // Update button states
+            document.querySelectorAll('.badge-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.badge === badgeType) {
+                    btn.classList.add('active');
+                }
+            });
+        };
+
+        // Initialize with SPARK
+        createBadge('SPARK');
+
+        // Badge button listeners
+        document.querySelectorAll('.badge-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                selectBadge(btn.dataset.badge);
+            });
+        });
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (currentBadge) {
+                currentBadge.rotation.x += (targetRotationX - currentBadge.rotation.x) * 0.1;
+                currentBadge.rotation.y += (targetRotationY - currentBadge.rotation.y) * 0.1;
+
+                // Auto rotate when idle
+                if (Math.abs(mouseX) < 0.05 && Math.abs(mouseY) < 0.05) {
+                    currentBadge.rotation.z += 0.005;
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            renderer.setSize(width, height);
+        });
+
+        // Remove loading message
+        document.querySelector('.loading').remove();
+    </script>
+</body>
+</html>

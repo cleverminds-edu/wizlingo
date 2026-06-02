@@ -43,41 +43,64 @@ export async function checkAndAwardBadges(
     await award(BadgeType.SPARK);
   }
 
-  // WORD_WIZARD — first reading level-up
-  if (event.type === "reading" && event.leveledUp) {
-    await award(BadgeType.WORD_WIZARD);
+  // WORD_WIZARD — 80%+ accuracy in reading
+  if (event.type === "reading" && event.passed) {
+    // Check if student achieved 80%+ accuracy on this reading session
+    const recentReadingSession = await prisma.readingSession.findFirst({
+      where: { studentId, completedAt: { not: null } },
+      orderBy: { completedAt: "desc" },
+    });
+    if (recentReadingSession && (recentReadingSession.accuracy || 0) >= 80) {
+      await award(BadgeType.WORD_WIZARD);
+    }
   }
 
-  // GRAND_WIZARD — passed a session at reading level 3 (grade band mastered)
-  if (event.type === "reading" && event.passed && event.currentLevelBeforeUpdate === 3) {
-    await award(BadgeType.GRAND_WIZARD);
+  // VOICE_WIZARD — 75%+ fluency in speaking
+  if (event.type === "speaking" && event.passed) {
+    // Check if student achieved 75%+ fluency on this speaking session
+    const recentSpeakingSession = await prisma.speakingSession.findFirst({
+      where: { studentId, completedAt: { not: null } },
+      orderBy: { completedAt: "desc" },
+    });
+    if (recentSpeakingSession && (recentSpeakingSession.fluencyScore || 0) >= 75) {
+      await award(BadgeType.VOICE_WIZARD);
+    }
   }
 
-  // VOICE_WIZARD — first speaking level-up
-  if (event.type === "speaking" && event.leveledUp) {
-    await award(BadgeType.VOICE_WIZARD);
-  }
-
-  // LANGUAGE_WIZARD — student now has both WORD_WIZARD + VOICE_WIZARD
-  if (
-    !earned.has(BadgeType.LANGUAGE_WIZARD) &&
-    earned.has(BadgeType.WORD_WIZARD) &&
-    earned.has(BadgeType.VOICE_WIZARD)
-  ) {
+  // LANGUAGE_WIZARD — 10+ sessions (reading OR speaking combined)
+  const readingCount = await prisma.readingSession.count({
+    where: { studentId, completedAt: { not: null } },
+  });
+  const speakingCount = await prisma.speakingSession.count({
+    where: { studentId, completedAt: { not: null } },
+  });
+  if (readingCount + speakingCount >= 10) {
     await award(BadgeType.LANGUAGE_WIZARD);
+  }
+
+  // GRAND_WIZARD — All 4 other badges earned
+  if (
+    earned.has(BadgeType.SPARK) &&
+    earned.has(BadgeType.WORD_WIZARD) &&
+    earned.has(BadgeType.VOICE_WIZARD) &&
+    earned.has(BadgeType.LANGUAGE_WIZARD)
+  ) {
+    await award(BadgeType.GRAND_WIZARD);
 
     // Issue certificate
-    try {
-      const cert = await prisma.certificate.create({
-        data: { studentId, badgeType: BadgeType.LANGUAGE_WIZARD },
-      });
-      certificateVerifyCode = cert.verifyCode;
-    } catch {
-      // already exists
-      const cert = await prisma.certificate.findUnique({
-        where: { studentId_badgeType: { studentId, badgeType: BadgeType.LANGUAGE_WIZARD } },
-      });
-      certificateVerifyCode = cert?.verifyCode ?? null;
+    if (!earned.has(BadgeType.GRAND_WIZARD) || newBadges.includes(BadgeType.GRAND_WIZARD)) {
+      try {
+        const cert = await prisma.certificate.create({
+          data: { studentId, badgeType: BadgeType.GRAND_WIZARD },
+        });
+        certificateVerifyCode = cert.verifyCode;
+      } catch {
+        // already exists
+        const cert = await prisma.certificate.findUnique({
+          where: { studentId_badgeType: { studentId, badgeType: BadgeType.GRAND_WIZARD } },
+        });
+        certificateVerifyCode = cert?.verifyCode ?? null;
+      }
     }
   }
 

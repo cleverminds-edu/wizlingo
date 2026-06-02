@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReadSpark — AI Speaking Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+#stage {
+  width: min(100vw, 177.78vh);
+  height: min(56.25vw, 100vh);
+  background: linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── KEYFRAMES ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+@keyframes pop-in {
+  0%   { transform: scale(0.5); }
+  70%  { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.8; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.3); }
+  50%       { transform: scaleY(1); }
+}
+@keyframes confetti-fall {
+  0%   { transform: translateY(-20px) rotate(0deg);   opacity: 1; }
+  100% { transform: translateY(500px) rotate(720deg); opacity: 0; }
+}
+@keyframes star-in {
+  0%   { transform: scale(0)   rotate(0deg); }
+  70%  { transform: scale(1.4) rotate(20deg); }
+  100% { transform: scale(1)   rotate(0deg); }
+}
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes orb-float-1 {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-30px); }
+}
+@keyframes orb-float-2 {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(20px); }
+}
+@keyframes glow-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes check-in {
+  0%   { transform: scale(0); }
+  70%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+@keyframes count-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.05); }
+}
+@keyframes dot-wave {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+@keyframes mic-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(1.15); }
+}
+
+/* ── SCENES ── */
+.scene {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+  display: flex;
+  flex-direction: column;
+}
+.scene.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ═══════════════════════════════════════════
+   START OVERLAY — MOVIE POSTER
+═══════════════════════════════════════════ */
+#startOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  background: linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 1.5vh, 1rem);
+  padding: 3vh 6%;
+}
+.so-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.so-orb-1 {
+  width: clamp(120px, 28vw, 320px);
+  height: clamp(120px, 28vw, 320px);
+  background: radial-gradient(circle, rgba(192,132,252,0.38) 0%, transparent 70%);
+  top: -8%; left: -6%;
+  animation: orb-float-1 8s ease-in-out infinite;
+}
+.so-orb-2 {
+  width: clamp(100px, 22vw, 260px);
+  height: clamp(100px, 22vw, 260px);
+  background: radial-gradient(circle, rgba(244,114,182,0.32) 0%, transparent 70%);
+  bottom: -5%; right: -4%;
+  animation: orb-float-2 11s ease-in-out infinite;
+}
+.so-orb-3 {
+  width: clamp(80px, 18vw, 200px);
+  height: clamp(80px, 18vw, 200px);
+  background: radial-gradient(circle, rgba(129,140,248,0.28) 0%, transparent 70%);
+  top: 35%; right: 8%;
+  animation: orb-float-1 9s ease-in-out infinite 2s;
+}
+.so-orb-4 {
+  width: clamp(60px, 14vw, 160px);
+  height: clamp(60px, 14vw, 160px);
+  background: radial-gradient(circle, rgba(251,146,60,0.22) 0%, transparent 70%);
+  bottom: 20%; left: 5%;
+  animation: orb-float-2 13s ease-in-out infinite 1s;
+}
+.so-wordmark-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+.so-glow-halo {
+  position: absolute;
+  width: clamp(200px, 42vw, 460px);
+  height: clamp(70px, 14vh, 110px);
+  background: radial-gradient(ellipse, rgba(251,146,60,0.48) 0%, transparent 68%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation: glow-pulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+.so-wordmark {
+  font-size: clamp(2.5rem, 6vh, 4rem);
+  font-weight: 900;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+  letter-spacing: -0.01em;
+}
+.so-wordmark .read  { color: #ffffff; }
+.so-wordmark .spark { color: #fb923c; }
+.so-by {
+  color: rgba(255,255,255,0.42);
+  font-size: clamp(0.55rem, 1.1vh, 0.78rem);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  margin-top: 0.4vh;
+  animation: fade-in 0.7s ease 0.4s both;
+  z-index: 2;
+}
+.so-pill {
+  background: rgba(99,102,241,0.22);
+  border: 1px solid rgba(99,102,241,0.48);
+  color: #a5b4fc;
+  font-size: clamp(0.52rem, 0.95vh, 0.7rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.45vh 2.2%;
+  border-radius: 9999px;
+  animation: fade-in 0.6s ease 0.6s both;
+  z-index: 2;
+}
+.so-profile-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 1.2rem;
+  padding: clamp(0.65rem, 1.7vh, 1.15rem) clamp(1rem, 3.5%, 2.2rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65vh;
+  animation: slide-up 0.6s ease 0.5s both;
+  backdrop-filter: blur(8px);
+  z-index: 2;
+  width: min(340px, 52%);
+}
+.so-profile-top {
+  display: flex;
+  align-items: center;
+  gap: 3%;
+}
+.so-avatar { font-size: clamp(1.6rem, 3.8vh, 2.6rem); line-height: 1; }
+.so-name   { color: #fff; font-size: clamp(0.78rem, 1.55vh, 1.05rem); font-weight: 800; }
+.so-grade  { color: #a5b4fc; font-size: clamp(0.58rem, 1.05vh, 0.72rem); font-weight: 500; margin-top: 1px; }
+.so-badges { display: flex; gap: 2%; flex-wrap: wrap; }
+.so-badge {
+  background: rgba(139,92,246,0.22);
+  border: 1px solid rgba(139,92,246,0.38);
+  color: #c4b5fd;
+  font-size: clamp(0.48rem, 0.88vh, 0.62rem);
+  font-weight: 600;
+  padding: 0.3vh 1.4%;
+  border-radius: 9999px;
+}
+.so-benefits {
+  display: flex; flex-direction: column; gap: 0.55vh; z-index: 2;
+  animation: fade-in 0.6s ease 0.7s both;
+}
+.so-benefit {
+  display: flex; align-items: center; gap: 1.8%;
+  color: #fff; font-size: clamp(0.58rem, 1.08vh, 0.76rem); font-weight: 500;
+}
+.so-check { color: #4ade80; font-weight: 700; font-size: clamp(0.65rem, 1.2vh, 0.85rem); flex-shrink: 0; }
+.so-btn {
+  background: linear-gradient(135deg, #f97316 0%, #7c3aed 100%);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(0.72rem, 1.45vh, 0.98rem);
+  font-weight: 800;
+  border: none;
+  border-radius: 9999px;
+  padding: 1.5vh 8%;
+  cursor: pointer;
+  box-shadow: 0 0 28px rgba(249,115,22,0.52), 0 0 58px rgba(124,58,237,0.3);
+  animation: fade-in 0.6s ease 0.9s both;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: transform 0.15s, box-shadow 0.15s;
+  z-index: 2;
+}
+.so-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 42px rgba(249,115,22,0.72), 0 0 80px rgba(124,58,237,0.44);
+}
+.so-volume {
+  color: rgba(255,255,255,0.2);
+  font-size: clamp(0.48rem, 0.88vh, 0.62rem);
+  font-weight: 400; z-index: 2;
+  animation: fade-in 0.6s ease 1.1s both;
+}
+
+/* ═══════════════════════════════════════════
+   SCENE 1 — SPLASH
+═══════════════════════════════════════════ */
+#sceneSplash {
+  align-items: center;
+  justify-content: center;
+  gap: 1.4vh;
+}
+.splash-orb-1 {
+  position: absolute;
+  width: clamp(150px, 38vw, 420px);
+  height: clamp(150px, 38vw, 420px);
+  background: radial-gradient(circle, rgba(192,132,252,0.42) 0%, transparent 65%);
+  top: -12%; right: -10%;
+  animation: orb-float-1 8s ease-in-out infinite;
+  pointer-events: none;
+}
+.splash-orb-2 {
+  position: absolute;
+  width: clamp(100px, 26vw, 300px);
+  height: clamp(100px, 26vw, 300px);
+  background: radial-gradient(circle, rgba(244,114,182,0.36) 0%, transparent 65%);
+  bottom: -8%; left: -5%;
+  animation: orb-float-2 11s ease-in-out infinite;
+  pointer-events: none;
+}
+.splash-wm-wrap {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  z-index: 2;
+}
+.splash-glow {
+  position: absolute;
+  width: clamp(200px, 42vw, 450px);
+  height: clamp(70px, 15vh, 120px);
+  background: radial-gradient(ellipse, rgba(251,146,60,0.42) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation: glow-pulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+.splash-wm {
+  font-size: clamp(2.8rem, 7.5vh, 5.5rem);
+  font-weight: 900; line-height: 1; letter-spacing: -0.01em;
+  position: relative; z-index: 1;
+}
+.splash-wm .read  { color: #fff; }
+.splash-wm .spark { color: #fb923c; }
+.splash-by {
+  color: rgba(255,255,255,0.45);
+  font-size: clamp(0.58rem, 1.1vh, 0.8rem);
+  font-weight: 500; margin-top: 0.5vh;
+  animation: fade-in 0.8s ease 0.3s both;
+}
+.splash-badge {
+  background: rgba(99,102,241,0.2);
+  border: 1px solid rgba(99,102,241,0.45);
+  color: #a5b4fc;
+  font-size: clamp(0.58rem, 1.05vh, 0.75rem);
+  font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 0.5vh 2.5%; border-radius: 9999px;
+  animation: fade-in 0.6s ease 0.6s both; z-index: 2;
+}
+.loading-dots { display: flex; gap: 0.55rem; margin-top: 1vh; z-index: 2; }
+.loading-dot {
+  width: clamp(7px, 1.1vh, 10px);
+  height: clamp(7px, 1.1vh, 10px);
+  border-radius: 50%; background: #818cf8;
+}
+.loading-dot:nth-child(1) { animation: dot-wave 1s ease-in-out infinite 0s; }
+.loading-dot:nth-child(2) { animation: dot-wave 1s ease-in-out infinite 0.2s; }
+.loading-dot:nth-child(3) { animation: dot-wave 1s ease-in-out infinite 0.4s; }
+
+/* ═══════════════════════════════════════════
+   SCENE 2 — STUDENT INTRO
+═══════════════════════════════════════════ */
+#sceneIntro {
+  align-items: center;
+  justify-content: center;
+  gap: 1.8vh;
+}
+.intro-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 1.5rem;
+  padding: clamp(1rem, 2.6vh, 1.9rem) clamp(1.2rem, 5%, 3.5rem);
+  display: flex; flex-direction: column; align-items: center; gap: 0.9vh;
+  backdrop-filter: blur(12px);
+  animation: slide-up 0.6s ease both;
+  max-width: 58%; width: 100%;
+}
+.intro-avatar { font-size: clamp(2rem, 4.2vh, 3.5rem); animation: pop-in 0.5s ease both; }
+.intro-name   { color: #fff; font-size: clamp(0.88rem, 1.85vh, 1.28rem); font-weight: 800; text-align: center; }
+.intro-level  { color: #a5b4fc; font-size: clamp(0.62rem, 1.15vh, 0.82rem); font-weight: 500; text-align: center; }
+.intro-badges { display: flex; gap: 2%; flex-wrap: wrap; justify-content: center; width: 100%; }
+.intro-badge {
+  background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.35);
+  color: #c4b5fd; font-size: clamp(0.52rem, 0.95vh, 0.68rem); font-weight: 600;
+  padding: 0.38vh 1.8%; border-radius: 9999px;
+}
+.loading-msg {
+  display: flex; align-items: center; gap: 1.5%;
+  color: rgba(165,180,252,0.8);
+  font-size: clamp(0.62rem, 1.15vh, 0.82rem); font-weight: 500;
+  animation: fade-in 0.5s ease 0.4s both;
+}
+.spinner {
+  width: clamp(13px, 1.9vh, 17px); height: clamp(13px, 1.9vh, 17px);
+  border: 2px solid rgba(165,180,252,0.28); border-top-color: #818cf8;
+  border-radius: 50%; animation: spin 1s linear infinite; flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   APP HEADER (shared)
+═══════════════════════════════════════════ */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2vh 3%;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  flex-shrink: 0;
+}
+.back-btn {
+  color: #818cf8;
+  font-size: clamp(0.58rem, 1.05vh, 0.75rem);
+  font-weight: 600; cursor: default;
+}
+.header-pill {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.8);
+  font-size: clamp(0.5rem, 0.9vh, 0.66rem);
+  font-weight: 600; padding: 0.4vh 1.5%; border-radius: 9999px;
+}
+
+/* ═══════════════════════════════════════════
+   SCENE 3 — SPEAKING SESSION
+═══════════════════════════════════════════ */
+#sceneSpeak { flex-direction: column; }
+
+.speak-body {
+  flex: 1;
+  display: flex; flex-direction: column;
+  padding: 1.2vh 3% 1.4vh;
+  gap: 1.1vh;
+  overflow: hidden;
+}
+
+/* Progress bar */
+.turn-progress-track {
+  width: 100%; height: clamp(4px, 0.65vh, 6px);
+  background: rgba(255,255,255,0.1);
+  border-radius: 9999px; overflow: hidden; flex-shrink: 0;
+}
+.turn-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c084fc, #f472b6);
+  border-radius: 9999px;
+  width: 0%;
+  transition: width 0.8s ease;
+}
+.turn-label {
+  color: #a5b4fc;
+  font-size: clamp(0.48rem, 0.88vh, 0.62rem);
+  font-weight: 600; text-align: center; flex-shrink: 0;
+}
+
+/* Character card */
+.char-card {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 1.5rem;
+  backdrop-filter: blur(4px);
+  padding: clamp(0.7rem, 1.6vh, 1.1rem);
+  display: flex; flex-direction: column; gap: 0.6vh;
+  flex-shrink: 0;
+}
+.char-top {
+  display: flex; align-items: flex-start; gap: 2.5%;
+}
+.char-emoji { font-size: clamp(2rem, 5.5vh, 3.5rem); line-height: 1; flex-shrink: 0; }
+.char-info  { flex: 1; }
+.char-name-row {
+  display: flex; align-items: center; gap: 2%;
+  margin-bottom: 0.4vh;
+}
+.char-name   { color: #fff; font-size: clamp(0.7rem, 1.3vh, 0.9rem); font-weight: 800; }
+.char-from   { color: #a5b4fc; font-size: clamp(0.52rem, 0.95vh, 0.68rem); font-weight: 500; }
+.char-wave-dots {
+  display: flex; gap: 3px; align-items: center;
+  margin-left: 1%;
+}
+.char-wave-dot {
+  width: 5px; height: 5px; border-radius: 50%; background: #a5b4fc;
+}
+.char-wave-dot:nth-child(1) { animation: dot-wave 0.8s ease-in-out infinite 0s; }
+.char-wave-dot:nth-child(2) { animation: dot-wave 0.8s ease-in-out infinite 0.15s; }
+.char-wave-dot:nth-child(3) { animation: dot-wave 0.8s ease-in-out infinite 0.3s; }
+.char-text {
+  color: #fff;
+  font-size: clamp(0.68rem, 1.38vh, 0.95rem);
+  font-weight: 400; line-height: 1.6;
+}
+
+/* AI speaking hint */
+.ai-speaking-hint {
+  color: #a5b4fc;
+  font-size: clamp(0.5rem, 0.9vh, 0.65rem);
+  font-weight: 500; text-align: center; flex-shrink: 0;
+}
+
+/* Between-turns indicator */
+.between-turns {
+  display: flex; align-items: center; justify-content: center; gap: 1.5%;
+  flex-shrink: 0;
+}
+.between-dot {
+  width: clamp(6px, 0.9vh, 8px); height: clamp(6px, 0.9vh, 8px);
+  border-radius: 50%; background: #818cf8;
+}
+.between-dot:nth-child(1) { animation: dot-wave 0.8s ease-in-out infinite 0s; }
+.between-dot:nth-child(2) { animation: dot-wave 0.8s ease-in-out infinite 0.15s; }
+.between-dot:nth-child(3) { animation: dot-wave 0.8s ease-in-out infinite 0.3s; }
+.between-label {
+  color: rgba(165,180,252,0.7);
+  font-size: clamp(0.5rem, 0.9vh, 0.65rem); font-weight: 500;
+}
+
+/* Hint bubble */
+.hint-bubble {
+  background: rgba(30,27,75,0.5);
+  border: 1px solid rgba(99,102,241,0.4);
+  border-radius: 1rem;
+  padding: 0.7vh 3%;
+  flex-shrink: 0;
+}
+.hint-bubble-text {
+  color: rgba(199,210,254,0.9);
+  font-size: clamp(0.52rem, 0.95vh, 0.68rem);
+  font-weight: 500; line-height: 1.5;
+}
+
+/* Transcript box */
+.transcript-box {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 1rem;
+  padding: 0.8vh 3%;
+  flex: 1; overflow: hidden;
+}
+.mic-status {
+  display: flex; align-items: center; gap: 1.5%;
+  margin-bottom: 0.5vh;
+}
+.mic-dot {
+  width: clamp(5px, 0.8vh, 7px); height: clamp(5px, 0.8vh, 7px);
+  border-radius: 50%; background: #4ade80;
+  animation: mic-pulse 1s ease-in-out infinite;
+  flex-shrink: 0;
+}
+.mic-status-text {
+  color: #4ade80;
+  font-size: clamp(0.42rem, 0.75vh, 0.56rem); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.transcript-scroll {
+  color: rgba(255,255,255,0.82);
+  font-size: clamp(0.58rem, 1.05vh, 0.75rem);
+  font-weight: 400; line-height: 1.65;
+}
+
+/* Controls row */
+.controls-row {
+  display: flex; align-items: center; gap: 2%; flex-shrink: 0;
+}
+.countdown-badge {
+  background: rgba(239,68,68,0.2);
+  border: 1px solid rgba(239,68,68,0.4);
+  border-radius: 1rem;
+  padding: 0.6vh 2%;
+  display: flex; align-items: center; gap: 1.5%;
+  flex-shrink: 0;
+}
+.countdown-dot {
+  width: clamp(5px, 0.8vh, 7px); height: clamp(5px, 0.8vh, 7px);
+  border-radius: 50%; background: #ef4444;
+  animation: mic-pulse 1s ease-in-out infinite;
+  flex-shrink: 0;
+}
+.countdown-text {
+  color: #fca5a5;
+  font-size: clamp(0.52rem, 0.95vh, 0.68rem); font-weight: 700;
+  white-space: nowrap;
+}
+.done-check-btn {
+  flex: 1;
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #fff; font-family: 'Inter', sans-serif;
+  font-size: clamp(0.62rem, 1.15vh, 0.82rem); font-weight: 800;
+  border: none; border-radius: 1rem;
+  padding: 0.9vh 0; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 1%;
+}
+
+/* Turn history chips */
+.history-row {
+  display: flex; gap: 1.5%; flex-wrap: wrap; flex-shrink: 0; align-items: center;
+}
+.history-label {
+  color: rgba(255,255,255,0.38);
+  font-size: clamp(0.42rem, 0.72vh, 0.54rem); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+.history-chip {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 9999px;
+  padding: 0.25vh 1.5%;
+  display: flex; align-items: center; gap: 1%;
+  animation: fade-in 0.4s ease both;
+}
+.history-chip-text {
+  color: #a5b4fc;
+  font-size: clamp(0.42rem, 0.75vh, 0.56rem); font-weight: 600;
+}
+.history-chip-check { color: #4ade80; font-size: clamp(0.5rem, 0.85vh, 0.62rem); }
+
+/* ═══════════════════════════════════════════
+   SCENE 4 — RESULT (SPEAKING)
+═══════════════════════════════════════════ */
+#sceneResultSpeak {
+  flex-direction: row !important;
+  overflow: hidden;
+}
+.confetti-wrap {
+  position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none;
+}
+.confetti-piece {
+  position: absolute; top: -20px;
+  animation: confetti-fall linear forwards; border-radius: 2px;
+}
+.result-left {
+  background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1.2vh; padding: 3vh 4%; flex: 2;
+  position: relative; z-index: 2;
+}
+.result-speak-emoji { font-size: clamp(2.5rem, 6vh, 4.5rem); animation: float 3s ease-in-out infinite; line-height: 1; }
+.result-title { color: #fff; font-size: clamp(1rem, 2.8vh, 2rem); font-weight: 900; text-align: center; line-height: 1.15; }
+.result-sub   { color: rgba(255,255,255,0.82); font-size: clamp(0.52rem, 1.05vh, 0.75rem); font-weight: 500; text-align: center; }
+.stars-row { display: flex; gap: 1.5%; }
+.star { font-size: clamp(1.2rem, 3.5vh, 2.2rem); animation: star-in 0.5s ease both; }
+.star:nth-child(1) { animation-delay: 0s; }
+.star:nth-child(2) { animation-delay: 0.2s; }
+.star:nth-child(3) { animation-delay: 0.4s; }
+.result-green-pill {
+  background: rgba(255,255,255,0.2); color: #fff;
+  font-size: clamp(0.48rem, 0.92vh, 0.68rem); font-weight: 700;
+  padding: 0.5vh 2.5%; border-radius: 9999px; text-align: center;
+}
+.result-amber-pill {
+  background: rgba(251,191,36,0.2); border: 1px solid rgba(251,191,36,0.5); color: #fbbf24;
+  font-size: clamp(0.48rem, 0.92vh, 0.68rem); font-weight: 700;
+  padding: 0.5vh 2.5%; border-radius: 9999px; text-align: center;
+}
+.result-right {
+  flex: 3;
+  background: rgba(0,0,0,0.25);
+  display: flex; flex-direction: column;
+  gap: 1.4vh; padding: 2.5vh 4%;
+  justify-content: center;
+  position: relative; z-index: 2; overflow: hidden;
+}
+.saved-badge {
+  background: rgba(16,185,129,0.14); border: 1px solid rgba(16,185,129,0.32); color: #6ee7b7;
+  font-size: clamp(0.46rem, 0.82vh, 0.6rem); font-weight: 600;
+  padding: 0.5vh 2%; border-radius: 0.5rem; text-align: center; width: 100%;
+}
+.stat-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2%; }
+.stat-card { border-radius: 1rem; padding: 1vh 4%; display: flex; flex-direction: column; gap: 0.3vh; }
+.stat-card.purple-card { background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.3); }
+.stat-card.green-card  { background: rgba(74,222,128,0.12);  border: 1px solid rgba(74,222,128,0.3); }
+.stat-card.amber-card  { background: rgba(251,191,36,0.12);  border: 1px solid rgba(251,191,36,0.3); }
+.stat-label { color: rgba(255,255,255,0.58); font-size: clamp(0.38rem, 0.68vh, 0.52rem); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+.stat-value { font-size: clamp(1.4rem, 3.8vh, 2.8rem); font-weight: 900; line-height: 1; }
+.stat-value.purple { color: #a78bfa; }
+.stat-value.green  { color: #4ade80; }
+.stat-value.amber  { color: #fbbf24; }
+.stat-sub-green { color: rgba(74,222,128,0.8); font-size: clamp(0.38rem, 0.68vh, 0.52rem); font-weight: 600; }
+.progress-section {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 1rem; padding: 0.9vh 3%; display: flex; flex-direction: column; gap: 0.6vh;
+}
+.progress-section-title { color: #a5b4fc; font-size: clamp(0.43rem, 0.75vh, 0.56rem); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+.prog-row { display: flex; flex-direction: column; gap: 0.25vh; }
+.prog-row-labels { display: flex; justify-content: space-between; color: rgba(255,255,255,0.62); font-size: clamp(0.42rem, 0.72vh, 0.54rem); font-weight: 500; }
+.prog-track { height: clamp(4px, 0.65vh, 6px); background: rgba(255,255,255,0.1); border-radius: 9999px; overflow: hidden; }
+.prog-fill { height: 100%; background: #4ade80; border-radius: 9999px; width: 0%; transition: width 1.5s ease 0.5s; }
+.focus-section {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 1rem; padding: 0.9vh 3%;
+}
+.focus-label { color: rgba(255,255,255,0.58); font-size: clamp(0.43rem, 0.75vh, 0.56rem); font-weight: 600; margin-bottom: 0.5vh; }
+.focus-chips { display: flex; gap: 1.5%; flex-wrap: wrap; }
+.focus-chip {
+  background: rgba(251,191,36,0.14); border: 1px solid rgba(251,191,36,0.32); color: #fde68a;
+  font-size: clamp(0.43rem, 0.75vh, 0.56rem); font-weight: 600;
+  padding: 0.3vh 1.5%; border-radius: 0.5rem;
+}
+
+/* ── SUBTITLE BAR ── */
+.subtitle-bar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,0.72);
+  padding: 1vh 3%; z-index: 10; display: none;
+}
+.subtitle-bar.visible { display: block; }
+.subtitle-text {
+  color: #fff; font-weight: 600;
+  font-size: clamp(0.75rem, 1.3vh, 1rem);
+  line-height: 1.5; white-space: nowrap; overflow: hidden;
+}
+
+/* ── READABILITY BOOST — ensures text is legible at all embed sizes ── */
+html { font-size: clamp(15px, 1.3vw, 20px); }
+.so-wordmark   { font-size: clamp(2.8rem, 6.5vh, 4.5rem) !important; }
+.so-name, .intro-name { font-size: clamp(1rem, 1.9vh, 1.35rem) !important; }
+.so-grade, .intro-level { font-size: clamp(0.78rem, 1.3vh, 0.95rem) !important; }
+.so-badge, .intro-badge { font-size: clamp(0.7rem, 1.15vh, 0.85rem) !important; }
+.so-benefit    { font-size: clamp(0.82rem, 1.4vh, 1rem) !important; }
+.so-btn        { font-size: clamp(0.88rem, 1.6vh, 1.1rem) !important; }
+.so-pill, .so-by, .so-volume { font-size: clamp(0.72rem, 1.2vh, 0.88rem) !important; }
+.char-name     { font-size: clamp(0.88rem, 1.55vh, 1.1rem) !important; }
+.char-from     { font-size: clamp(0.72rem, 1.2vh, 0.88rem) !important; }
+.char-text     { font-size: clamp(0.85rem, 1.55vh, 1.1rem) !important; }
+.hint-bubble-text { font-size: clamp(0.75rem, 1.25vh, 0.92rem) !important; }
+.transcript-scroll { font-size: clamp(0.78rem, 1.3vh, 0.95rem) !important; }
+.countdown-text { font-size: clamp(0.72rem, 1.2vh, 0.88rem) !important; }
+.done-check-btn { font-size: clamp(0.8rem, 1.4vh, 1rem) !important; }
+.turn-label     { font-size: clamp(0.7rem, 1.15vh, 0.85rem) !important; }
+.back-btn, .header-pill { font-size: clamp(0.72rem, 1.2vh, 0.88rem) !important; }
+.history-chip-text { font-size: clamp(0.65rem, 1.05vh, 0.8rem) !important; }
+.mic-status-text { font-size: clamp(0.68rem, 1.1vh, 0.82rem) !important; }
+.stat-label    { font-size: clamp(0.72rem, 1.15vh, 0.88rem) !important; }
+.stat-value    { font-size: clamp(1.8rem, 4.5vh, 3.2rem) !important; }
+.stat-sub-green { font-size: clamp(0.68rem, 1.1vh, 0.82rem) !important; }
+.saved-badge   { font-size: clamp(0.72rem, 1.2vh, 0.88rem) !important; }
+.result-title  { font-size: clamp(1.2rem, 3vh, 2.2rem) !important; }
+.result-sub    { font-size: clamp(0.78rem, 1.35vh, 1rem) !important; }
+.result-green-pill, .result-amber-pill { font-size: clamp(0.7rem, 1.15vh, 0.85rem) !important; }
+.progress-section-title { font-size: clamp(0.68rem, 1.1vh, 0.82rem) !important; }
+.prog-row-labels { font-size: clamp(0.68rem, 1.1vh, 0.82rem) !important; }
+.focus-label, .focus-chip { font-size: clamp(0.7rem, 1.1vh, 0.85rem) !important; }
+.char-emoji    { font-size: clamp(2.5rem, 6vh, 4rem) !important; }
+.splash-wm     { font-size: clamp(3rem, 8vh, 6rem) !important; }
+.result-speak-emoji, .result-trophy { font-size: clamp(3rem, 6.5vh, 5rem) !important; }
+.star          { font-size: clamp(1.5rem, 4vh, 2.8rem) !important; }
+.proc-emoji    { font-size: clamp(3.5rem, 8vh, 6rem) !important; }
+.proc-title    { font-size: clamp(1rem, 2.2vh, 1.6rem) !important; }
+.check-label   { font-size: clamp(0.8rem, 1.4vh, 1rem) !important; }
+.splash-badge, .splash-by { font-size: clamp(0.78rem, 1.3vh, 0.95rem) !important; }
+.ai-speaking-hint, .between-label { font-size: clamp(0.72rem, 1.2vh, 0.88rem) !important; }
+.so-avatar  { font-size: clamp(2rem, 4.5vh, 3.2rem) !important; }
+.intro-avatar { font-size: clamp(2.5rem, 5.5vh, 4rem) !important; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- ══════════ START OVERLAY ══════════ -->
+  <div id="startOverlay">
+    <div class="so-orb so-orb-1"></div>
+    <div class="so-orb so-orb-2"></div>
+    <div class="so-orb so-orb-3"></div>
+    <div class="so-orb so-orb-4"></div>
+
+    <div class="so-wordmark-wrap">
+      <div class="so-glow-halo"></div>
+      <div class="so-wordmark"><span class="read">Read</span><span class="spark">Spark</span></div>
+    </div>
+    <div class="so-by">by Edvanta</div>
+    <div class="so-pill">AI Speaking Practice</div>
+
+    <div class="so-profile-card">
+      <div class="so-profile-top">
+        <div class="so-avatar">👧</div>
+        <div>
+          <div class="so-name">Priya Sharma</div>
+          <div class="so-grade">Grade 6 · Speaking Module</div>
+        </div>
+      </div>
+      <div class="so-badges">
+        <span class="so-badge">🗣️ Session 8</span>
+        <span class="so-badge">🔥 5-day streak</span>
+        <span class="so-badge">🎯 Speak 25s/turn</span>
+      </div>
+    </div>
+
+    <div class="so-benefits">
+      <div class="so-benefit"><span class="so-check">✓</span><span>AI scores every word in real-time</span></div>
+      <div class="so-benefit"><span class="so-check">✓</span><span>Improvement tracked session-to-session</span></div>
+      <div class="so-benefit"><span class="so-check">✓</span><span>Progress report sent to teacher instantly</span></div>
+    </div>
+
+    <button class="so-btn" onclick="startDemo()">▶ Watch Live Demo</button>
+    <div class="so-volume">🔊 Turn on volume — hear the AI coach speak</div>
+  </div>
+
+  <!-- ══════════ SCENE 1: SPLASH ══════════ -->
+  <div class="scene" id="sceneSplash">
+    <div class="splash-orb-1"></div>
+    <div class="splash-orb-2"></div>
+    <div class="splash-wm-wrap">
+      <div class="splash-glow"></div>
+      <div class="splash-wm"><span class="read">Read</span><span class="spark">Spark</span></div>
+    </div>
+    <div class="splash-by">by Edvanta</div>
+    <div class="splash-badge">AI Speaking Practice</div>
+    <div class="loading-dots">
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+    </div>
+  </div>
+
+  <!-- ══════════ SCENE 2: INTRO ══════════ -->
+  <div class="scene" id="sceneIntro">
+    <div class="intro-card">
+      <div class="intro-avatar">👧</div>
+      <div class="intro-name">Priya Sharma</div>
+      <div class="intro-level">Grade 6 · Speaking Module</div>
+      <div class="intro-badges">
+        <span class="intro-badge">🗣️ Session 8</span>
+        <span class="intro-badge">🔥 5-day streak</span>
+        <span class="intro-badge">🎯 Goal: Speak confidently for 25 seconds</span>
+      </div>
+    </div>
+    <div class="loading-msg">
+      <div class="spinner"></div>
+      Meeting Spark, your AI buddy…
+    </div>
+  </div>
+
+  <!-- ══════════ SCENE 3: SPEAKING SESSION ══════════ -->
+  <div class="scene" id="sceneSpeak">
+    <div class="app-header">
+      <div class="back-btn">← Dashboard</div>
+      <img src="edvanta-logo1.png"
+           style="height:clamp(20px,3.8vh,30px);filter:brightness(0) invert(1);opacity:0.8;"
+           alt="Edvanta"
+           onerror="this.replaceWith(Object.assign(document.createElement('span'),{style:'color:#a5b4fc;font-weight:800;font-size:clamp(0.7rem,1.3vh,0.9rem)',textContent:'edvanta'}))">
+      <div class="header-pill">🗣️ Grade 6 · Speaking</div>
+    </div>
+
+    <div class="speak-body">
+      <!-- Progress bar -->
+      <div class="turn-progress-track">
+        <div class="turn-progress-fill" id="turnProgressFill"></div>
+      </div>
+      <!-- Turn label -->
+      <div class="turn-label" id="turnLabel">Turn 1 of 3</div>
+
+      <!-- Character card -->
+      <div class="char-card">
+        <div class="char-top">
+          <div class="char-emoji">🤖</div>
+          <div class="char-info">
+            <div class="char-name-row">
+              <span class="char-name">Spark</span>
+              <span class="char-from">from Hyderabad</span>
+              <div class="char-wave-dots" id="charWaveDots">
+                <div class="char-wave-dot"></div>
+                <div class="char-wave-dot"></div>
+                <div class="char-wave-dot"></div>
+              </div>
+            </div>
+            <div class="char-text" id="charText"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI speaking hint -->
+      <div class="ai-speaking-hint" id="aiSpeakingHint">Spark is speaking… listen carefully!</div>
+
+      <!-- Between-turns -->
+      <div class="between-turns" id="betweenTurns">
+        <div class="between-dot"></div>
+        <div class="between-dot"></div>
+        <div class="between-dot"></div>
+        <span class="between-label">Spark is thinking…</span>
+      </div>
+
+      <!-- Hint bubble -->
+      <div class="hint-bubble" id="hintBubble">
+        <div class="hint-bubble-text" id="hintBubbleText"></div>
+      </div>
+
+      <!-- Transcript box -->
+      <div class="transcript-box" id="transcriptBox">
+        <div class="mic-status">
+          <div class="mic-dot"></div>
+          <span class="mic-status-text">Mic active</span>
+        </div>
+        <div class="transcript-scroll" id="transcriptScroll"></div>
+      </div>
+
+      <!-- Controls row -->
+      <div class="controls-row" id="controlsRow">
+        <div class="countdown-badge">
+          <div class="countdown-dot"></div>
+          <span class="countdown-text" id="countdownText">22s</span>
+        </div>
+        <button class="done-check-btn">✓ Done Speaking</button>
+      </div>
+
+      <!-- Turn history -->
+      <div class="history-row" id="historyRow">
+        <span class="history-label">Completed:</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ SCENE 4: RESULT (SPEAKING) ══════════ -->
+  <div class="scene" id="sceneResultSpeak">
+    <div class="confetti-wrap" id="confettiWrap"></div>
+
+    <div class="app-header" style="position:relative;z-index:2;">
+      <div class="back-btn">← Dashboard</div>
+      <img src="edvanta-logo1.png"
+           style="height:clamp(20px,3.8vh,30px);filter:brightness(0) invert(1);opacity:0.8;"
+           alt="Edvanta"
+           onerror="this.replaceWith(Object.assign(document.createElement('span'),{style:'color:#a5b4fc;font-weight:800;font-size:clamp(0.7rem,1.3vh,0.9rem)',textContent:'edvanta'}))">
+      <div class="header-pill">🗣️ Grade 6 · Speaking</div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:row;overflow:hidden;">
+      <div class="result-left">
+        <div class="result-speak-emoji">🗣️</div>
+        <div class="result-title">Great Speaking,<br>Priya! 🎉</div>
+        <div class="result-sub">You spoke 89 words across 3 turns</div>
+        <div class="stars-row">
+          <span class="star">⭐</span>
+          <span class="star">⭐</span>
+          <span class="star">⭐</span>
+        </div>
+        <div class="result-green-pill">↑ +8 WPM from last session</div>
+        <div class="result-amber-pill">🔓 Speaking Badge Earned!</div>
+      </div>
+
+      <div class="result-right">
+        <div class="saved-badge">✅ Progress saved · Teacher report sent automatically</div>
+
+        <div class="stat-grid-3">
+          <div class="stat-card purple-card">
+            <div class="stat-label">Words Spoken</div>
+            <div class="stat-value purple" id="resWords">0</div>
+            <div class="stat-sub-green">89 total ✓</div>
+          </div>
+          <div class="stat-card green-card">
+            <div class="stat-label">Avg WPM</div>
+            <div class="stat-value green" id="resWpm">0</div>
+            <div class="stat-sub-green">target: 80 ✓</div>
+          </div>
+          <div class="stat-card amber-card">
+            <div class="stat-label">Fluency Score</div>
+            <div class="stat-value amber" id="resFluency">0<span style="font-size:60%">%</span></div>
+            <div class="stat-sub-green">above average</div>
+          </div>
+        </div>
+
+        <div class="progress-section">
+          <div class="progress-section-title">Your progress vs target</div>
+          <div class="prog-row">
+            <div class="prog-row-labels">
+              <span>Words spoken</span>
+              <span style="color:#4ade80;">89 / 60 target ✓</span>
+            </div>
+            <div class="prog-track"><div class="prog-fill" id="progWords"></div></div>
+          </div>
+          <div class="prog-row">
+            <div class="prog-row-labels">
+              <span>Speaking speed</span>
+              <span style="color:#4ade80;">91 WPM / 80 WPM ✓</span>
+            </div>
+            <div class="prog-track"><div class="prog-fill" id="progWpm"></div></div>
+          </div>
+        </div>
+
+        <div class="focus-section">
+          <div class="focus-label">💡 Focus for next session:</div>
+          <div class="focus-chips">
+            <span class="focus-chip">Use connectors (because, so, but)</span>
+            <span class="focus-chip">Add more details</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subtitle bar -->
+    <div class="subtitle-bar visible" id="subtitleBar">
+      <div class="subtitle-text" id="subtitleText"></div>
+    </div>
+  </div>
+
+</div><!-- /stage -->
+
+<script>
+/* ════════════════════════════════════════
+   AUDIO — WAV blob (bypasses AudioContext autoplay policy)
+════════════════════════════════════════ */
+function playBeep(freq, dur, vol) {
+  try {
+    const sr = 44100, n = Math.floor(sr * dur);
+    const buf = new ArrayBuffer(44 + n * 2);
+    const dv  = new DataView(buf);
+    const ws  = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
+    ws(0,'RIFF'); dv.setUint32(4, 36 + n*2, true); ws(8,'WAVE');
+    ws(12,'fmt '); dv.setUint32(16,16,true); dv.setUint16(20,1,true); dv.setUint16(22,1,true);
+    dv.setUint32(24,sr,true); dv.setUint32(28,sr*2,true); dv.setUint16(32,2,true); dv.setUint16(34,16,true);
+    ws(36,'data'); dv.setUint32(40, n*2, true);
+    for (let i = 0; i < n; i++) {
+      const attack = i < sr*0.01 ? i/(sr*0.01) : 1;
+      const decay  = Math.min(1, (n - i) / (sr * 0.07));
+      dv.setInt16(44 + i*2, Math.round(Math.sin(2*Math.PI*freq*i/sr) * vol * attack * decay * 32767), true);
+    }
+    const a = new Audio(URL.createObjectURL(new Blob([buf], {type:'audio/wav'})));
+    a.play().catch(() => {});
+    a.onended = () => URL.revokeObjectURL(a.src);
+  } catch(e) {}
+}
+
+function chimeGood() {
+  playBeep(523.25, 0.22, 0.55);
+  setTimeout(() => playBeep(659.25, 0.22, 0.55), 160);
+  setTimeout(() => playBeep(783.99, 0.38, 0.60), 320);
+}
+function chimeIntro() {
+  playBeep(440, 0.28, 0.45);
+  setTimeout(() => playBeep(523.25, 0.32, 0.50), 220);
+}
+function beepStart() {
+  playBeep(880, 0.18, 0.45);
+  setTimeout(() => playBeep(880, 0.18, 0.45), 200);
+}
+function beepEnd() {
+  playBeep(659.25, 0.22, 0.50);
+  setTimeout(() => playBeep(523.25, 0.28, 0.45), 180);
+}
+function chimeAI() {
+  playBeep(698.46, 0.22, 0.42);
+  setTimeout(() => playBeep(880, 0.28, 0.45), 170);
+}
+
+/* ════════════════════════════════════════
+   SPEECH SYNTHESIS — two distinct voices
+════════════════════════════════════════ */
+let aiVoice      = null;
+let studentVoice = null;
+
+function loadVoices() {
+  const all = speechSynthesis.getVoices();
+  const en  = all.filter(v => v.lang.startsWith('en'));
+  if (!en.length) return;
+
+  // Helper predicates
+  const isFemale = v => /female|samantha|victoria|karen|zira|hazel|moira|tessa|fiona|allison|susan|alice|jessica|emily|aria|jenny|eva|natasha|google uk english female/i.test(v.name);
+  const isMale   = v => /\bmale\b|daniel|alex\b|fred|ralph|thomas|david|james|jorge|luca|reed/i.test(v.name);
+
+  // AI (Spark): prefer UK/neutral male voice for a robotic feel
+  aiVoice = en.find(v => /daniel|google uk english male/i.test(v.name))
+          || en.find(v => isMale(v))
+          || en.find(v => /google/i.test(v.name))
+          || en[0];
+
+  // Student (Priya — Indian girl): MUST be female
+  studentVoice = en.find(v => v.lang === 'en-IN' && isFemale(v))
+              || en.find(v => /google uk english female/i.test(v.name))
+              || en.find(v => isFemale(v) && v !== aiVoice)
+              || en.find(v => !isMale(v) && v !== aiVoice)
+              || en.find(v => v !== aiVoice)
+              || aiVoice;
+}
+
+if (window.speechSynthesis) {
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+function speak(text, onEnd) {
+  if (!window.speechSynthesis) { if (onEnd) setTimeout(onEnd, 2500); return; }
+  try {
+    speechSynthesis.cancel();
+    const utt  = new SpeechSynthesisUtterance(text);
+    if (aiVoice) utt.voice = aiVoice;
+    utt.rate   = 1.0;
+    utt.pitch  = 0.95;  // slightly lower — AI / robot feel
+    utt.volume = 1.0;
+    if (onEnd) utt.onend = () => onEnd();
+    speechSynthesis.speak(utt);
+  } catch(e) { if (onEnd) setTimeout(onEnd, 2500); }
+}
+
+function speakStudent(text, onEnd) {
+  if (!window.speechSynthesis) { if (onEnd) setTimeout(onEnd, 1500); return; }
+  try {
+    const utt  = new SpeechSynthesisUtterance(text);
+    if (studentVoice) utt.voice = studentVoice;
+    utt.rate   = 1.1;   // energetic, natural child pace
+    utt.pitch  = 1.45;  // clearly female/child — works even on single-voice systems
+    utt.volume = 1.0;
+    if (onEnd) utt.onend = () => onEnd();
+    speechSynthesis.speak(utt);
+  } catch(e) { if (onEnd) setTimeout(onEnd, 1500); }
+}
+
+function stopSpeech() {
+  try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch(e) {}
+}
+
+/* ════════════════════════════════════════
+   CONFETTI
+════════════════════════════════════════ */
+const CONFETTI_COLORS = [
+  '#f97316','#818cf8','#4ade80','#fbbf24',
+  '#f472b6','#34d399','#60a5fa','#a78bfa'
+];
+function makeConfetti() {
+  const wrap = document.getElementById('confettiWrap');
+  wrap.innerHTML = '';
+  for (let i = 0; i < 40; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left              = (Math.random() * 100) + '%';
+    el.style.background        = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+    el.style.animationDuration = (2 + Math.random() * 2) + 's';
+    el.style.animationDelay    = (Math.random() * 1.5) + 's';
+    const sz = 6 + Math.random() * 8;
+    el.style.width  = sz + 'px';
+    el.style.height = sz + 'px';
+    el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    wrap.appendChild(el);
+  }
+}
+
+/* ════════════════════════════════════════
+   COUNT-UP
+════════════════════════════════════════ */
+function countUp(id, target, isPercent, totalMs) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const steps    = 40;
+  const interval = totalMs / steps;
+  const inc      = target / steps;
+  let current    = 0;
+  const timer = setInterval(() => {
+    current = Math.min(current + inc, target);
+    if (isPercent) {
+      el.innerHTML = Math.round(current) + '<span style="font-size:60%">%</span>';
+    } else {
+      el.textContent = Math.round(current);
+    }
+    if (current >= target) clearInterval(timer);
+  }, interval);
+}
+
+/* ════════════════════════════════════════
+   TYPEWRITER SUBTITLE
+════════════════════════════════════════ */
+function typewriterSubtitle(text, delayMs) {
+  const el = document.getElementById('subtitleText');
+  if (!el) return;
+  el.textContent = '';
+  let i = 0;
+  setTimeout(() => {
+    const iv = setInterval(() => {
+      if (i < text.length) { el.textContent += text[i++]; }
+      else clearInterval(iv);
+    }, 35);
+  }, delayMs);
+}
+
+/* Demo always runs in auto-play mode — mimics a real student session */
+
+/* ════════════════════════════════════════
+   SHOW SCENE
+════════════════════════════════════════ */
+function showScene(id) {
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('visible'));
+  const target = document.getElementById(id);
+  if (target) target.classList.add('visible');
+}
+
+/* ════════════════════════════════════════
+   TURNS DATA
+════════════════════════════════════════ */
+const TURNS = [
+  {
+    aiText:      "Hey! What's your favourite hobby? Tell me about something you love doing!",
+    hint:        "Talk about a sport, drawing, reading, or anything you enjoy!",
+    timeSec:     22,
+    studentReply:"I really love painting. It makes me feel calm and I like making colourful pictures. I paint every weekend with my mom.",
+    wordCount:   22,
+    wpm:         88
+  },
+  {
+    aiText:      "That's so cool! Can you tell me more — like, why do you like it so much?",
+    hint:        "Use words like 'because', 'I love it when', or 'my favourite part is'",
+    timeSec:     22,
+    studentReply:"I like it because I can make anything I imagine. My favourite part is mixing colours. I made a painting of a sunset last week and it looked really nice.",
+    wordCount:   31,
+    wpm:         93
+  },
+  {
+    aiText:      "Wow, amazing! Last one — would you teach your friend this hobby? How would you do it?",
+    hint:        "Use words like 'first', 'then', 'after that' to describe the steps",
+    timeSec:     22,
+    studentReply:"Yes! First I would show them how to hold the brush. Then I would let them pick their colours. After that, we would paint something simple together like a flower.",
+    wordCount:   33,
+    wpm:         91
+  }
+];
+
+/* ════════════════════════════════════════
+   PHASE SYSTEM
+════════════════════════════════════════ */
+// phase: 'ai-speaking' | 'student-speaking' | 'between-turns'
+function setPhase(phase) {
+  const aiHint      = document.getElementById('aiSpeakingHint');
+  const betweenDiv  = document.getElementById('betweenTurns');
+  const hintBubble  = document.getElementById('hintBubble');
+  const txBox       = document.getElementById('transcriptBox');
+  const ctrlRow     = document.getElementById('controlsRow');
+  const waveDots    = document.getElementById('charWaveDots');
+
+  if (phase === 'ai-speaking') {
+    aiHint.style.display     = 'block';
+    betweenDiv.style.display = 'none';
+    hintBubble.style.display = 'none';
+    txBox.style.display      = 'none';
+    ctrlRow.style.display    = 'none';
+    waveDots.style.display   = 'flex';
+  } else if (phase === 'student-speaking') {
+    aiHint.style.display     = 'none';
+    betweenDiv.style.display = 'none';
+    hintBubble.style.display = 'block';
+    txBox.style.display      = 'block';
+    ctrlRow.style.display    = 'flex';
+    waveDots.style.display   = 'none';
+  } else if (phase === 'between-turns') {
+    aiHint.style.display     = 'none';
+    betweenDiv.style.display = 'flex';
+    hintBubble.style.display = 'none';
+    txBox.style.display      = 'none';
+    ctrlRow.style.display    = 'none';
+    waveDots.style.display   = 'none';
+  }
+}
+
+/* ════════════════════════════════════════
+   TURN TYPEWRITER HELPERS
+════════════════════════════════════════ */
+let typewriterTimer = null;
+
+function typewriterEl(el, text, msPerChar, cb) {
+  if (typewriterTimer) clearInterval(typewriterTimer);
+  el.textContent = '';
+  let i = 0;
+  typewriterTimer = setInterval(() => {
+    if (i < text.length) { el.textContent += text[i++]; }
+    else { clearInterval(typewriterTimer); if (cb) cb(); }
+  }, msPerChar);
+}
+
+/* ════════════════════════════════════════
+   COUNTDOWN TIMER
+════════════════════════════════════════ */
+let countdownInterval = null;
+
+function startCountdown(secs, id) {
+  let remaining = secs;
+  const el = document.getElementById(id);
+  if (el) el.textContent = remaining + 's';
+  clearInterval(countdownInterval);
+  countdownInterval = setInterval(() => {
+    remaining--;
+    if (el) el.textContent = (remaining > 0 ? remaining : 0) + 's';
+    if (remaining <= 0) clearInterval(countdownInterval);
+  }, 1000);
+}
+
+function stopCountdown() { clearInterval(countdownInterval); }
+
+/* ════════════════════════════════════════
+   HISTORY CHIPS
+════════════════════════════════════════ */
+function addHistoryChip(turnIdx) {
+  const row = document.getElementById('historyRow');
+  const chip = document.createElement('div');
+  chip.className = 'history-chip';
+  chip.innerHTML = '<span class="history-chip-check">✓</span><span class="history-chip-text">Turn ' + (turnIdx + 1) + '</span>';
+  row.appendChild(chip);
+}
+
+/* ════════════════════════════════════════
+   RUN TURN
+════════════════════════════════════════ */
+let loopTimer = null;
+
+function clearLoop() {
+  if (loopTimer) { clearTimeout(loopTimer); loopTimer = null; }
+}
+
+function updateTurnProgress(turnIdx) {
+  const fill = document.getElementById('turnProgressFill');
+  const label = document.getElementById('turnLabel');
+  if (fill)  fill.style.width = (((turnIdx) / TURNS.length) * 100) + '%';
+  if (label) label.textContent = 'Turn ' + (turnIdx + 1) + ' of ' + TURNS.length;
+}
+
+function runTurn(idx) {
+  if (idx >= TURNS.length) { runResult(); return; }
+  const turn = TURNS[idx];
+  showScene('sceneSpeak');
+  updateTurnProgress(idx);
+
+  // Set hint text
+  const hintEl = document.getElementById('hintBubbleText');
+  if (hintEl) hintEl.textContent = '💡 Tip: ' + turn.hint;
+
+  // AI speaking phase
+  setPhase('ai-speaking');
+  chimeAI();
+
+  const charTextEl = document.getElementById('charText');
+  // Typewriter and speech run simultaneously; student phase starts when speech ends
+  typewriterEl(charTextEl, turn.aiText, 38, null);
+  setTimeout(() => {
+    speak(turn.aiText, () => {
+      loopTimer = setTimeout(() => runStudentTurn(idx, turn), 500);
+    });
+  }, 300);
+}
+
+function runStudentTurn(idx, turn) {
+  setPhase('student-speaking');
+  beepStart();
+
+  const txEl = document.getElementById('transcriptScroll');
+  if (txEl) txEl.textContent = '';
+
+  startCountdown(turn.timeSec, 'countdownText');
+
+  // Student voice speaks while typewriter appears as live transcription
+  const msPerChar = (turn.studentReply.length > 0)
+    ? Math.max(30, (turn.timeSec * 900) / turn.studentReply.length)
+    : 60;
+  typewriterEl(txEl, turn.studentReply, msPerChar, null);
+
+  // Speak student reply — end turn when speech finishes (or after max timeSec)
+  let turnEnded = false;
+  function doEndTurn() {
+    if (turnEnded) return;
+    turnEnded = true;
+    clearTimeout(loopTimer);
+    endTurn(idx, turn);
+  }
+  setTimeout(() => speakStudent(turn.studentReply, () => {
+    setTimeout(doEndTurn, 700); // brief pause after student finishes speaking
+  }), 400);
+
+  // Fallback: end turn after timeSec regardless
+  loopTimer = setTimeout(doEndTurn, turn.timeSec * 1000);
+}
+
+function endTurn(idx, turn) {
+  stopCountdown();
+  beepEnd();
+  addHistoryChip(idx);
+
+  // Update progress bar to reflect completed turn
+  const fill = document.getElementById('turnProgressFill');
+  if (fill) fill.style.width = (((idx + 1) / TURNS.length) * 100) + '%';
+
+  if (idx + 1 >= TURNS.length) {
+    // Last turn done — show between then result
+    setPhase('between-turns');
+    loopTimer = setTimeout(runResult, 1500);
+  } else {
+    setPhase('between-turns');
+    loopTimer = setTimeout(() => runTurn(idx + 1), 1500);
+  }
+}
+
+/* ════════════════════════════════════════
+   SCENE ORCHESTRATION
+════════════════════════════════════════ */
+function runSplash() {
+  stopSpeech();
+  showScene('sceneSplash');
+  chimeIntro();
+  loopTimer = setTimeout(runIntro, 3200);
+}
+
+function runIntro() {
+  showScene('sceneIntro');
+  chimeIntro();
+  loopTimer = setTimeout(runSpeakSession, 3000);
+}
+
+function runSpeakSession() {
+  // Reset history chips
+  const row = document.getElementById('historyRow');
+  row.innerHTML = '<span class="history-label">Completed:</span>';
+
+  // Reset progress
+  const fill = document.getElementById('turnProgressFill');
+  if (fill) { fill.style.transition = 'none'; fill.style.width = '0%'; }
+  setTimeout(() => {
+    if (fill) fill.style.transition = 'width 0.8s ease';
+  }, 50);
+
+  runTurn(0);
+}
+
+function runResult() {
+  showScene('sceneResultSpeak');
+  chimeGood();
+  makeConfetti();
+
+  // Reset stat values
+  document.getElementById('resWords').textContent = '0';
+  document.getElementById('resWpm').textContent   = '0';
+  document.getElementById('resFluency').innerHTML = '0<span style="font-size:60%">%</span>';
+
+  // Reset progress bars
+  ['progWords','progWpm'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.transition = 'none'; el.style.width = '0%'; }
+  });
+
+  setTimeout(() => { countUp('resWords', 89, false, 1800); }, 300);
+  setTimeout(() => { countUp('resWpm',   91, false, 1800); }, 500);
+  setTimeout(() => { countUp('resFluency', 76, true, 1800); }, 700);
+
+  setTimeout(() => {
+    ['progWords','progWpm'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.style.transition = 'width 1.5s ease 0.5s'; el.style.width = '100%'; }
+    });
+  }, 200);
+
+  typewriterSubtitle(
+    "Priya spoke 89 words at 91 words per minute — that's above the Grade 6 fluency target!",
+    1500
+  );
+  setTimeout(() => speak(
+    "Great job, Priya! You spoke 89 words at 91 words per minute. That's above the Grade 6 fluency target!"
+  ), 1500);
+
+  loopTimer = setTimeout(runSplash, 11000);
+}
+
+function startDemo() {
+  document.getElementById('startOverlay').style.display = 'none';
+  clearLoop();
+  runSplash();
+}
+
+// Auto-start when embedded (iframe with ?auto=1)
+if (new URLSearchParams(location.search).has('auto')) {
+  window.addEventListener('load', () => setTimeout(startDemo, 800));
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WizLingo Bold Badge Showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #16103a 60%, #0f0c29 100%);
+            color: white;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #f43f88, #7c3aed, #f43f88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 60px;
+            font-size: 18px;
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .badge-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .badge-container {
+            width: 280px;
+            height: 280px;
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        .badge-container:hover {
+            transform: scale(1.05) translateY(-10px);
+            filter: drop-shadow(0 30px 60px rgba(0,0,0,0.7));
+        }
+
+        .badge-container img,
+        .badge-container svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .badge-name {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .badge-description {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+            text-align: center;
+            line-height: 1.5;
+            max-width: 280px;
+        }
+
+        .requirements {
+            font-size: 12px;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            font-style: italic;
+        }
+
+        .info-section {
+            margin-top: 60px;
+            padding: 40px;
+            background: rgba(99,102,241,0.08);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 16px;
+        }
+
+        .info-section h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #a5b4fc;
+        }
+
+        .info-section ul {
+            list-style: none;
+            line-height: 2;
+        }
+
+        .info-section li {
+            color: rgba(255,255,255,0.7);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-section li:before {
+            content: "✨";
+            font-size: 16px;
+        }
+
+        .tech-specs {
+            margin-top: 60px;
+            padding: 40px;
+            background: rgba(31,41,55,0.5);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+        }
+
+        .tech-specs h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .tech-specs p {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 10px;
+        }
+
+        code {
+            background: rgba(0,0,0,0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 WizLingo Bold Badge Collection</h1>
+        <p class="subtitle">Vibrant, eye-catching achievement badges designed for young learners</p>
+
+        <div class="badges-grid">
+            <!-- SPARK Badge -->
+            <div class="badge-card">
+                <div class="badge-container">
+                    <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <radialGradient id="sparkBg" cx="50%" cy="40%">
+                                <stop offset="0%" style="stop-color:#FFB84D;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#FF8C00;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#E65100;stop-opacity:1" />
+                            </radialGradient>
+                            <radialGradient id="sparkInner" cx="45%" cy="35%">
+                                <stop offset="0%" style="stop-color:#FFFACD;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#FFD700;stop-opacity:0" />
+                            </radialGradient>
+                            <filter id="shadow">
+                                <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.4"/>
+                            </filter>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <circle cx="140" cy="145" r="132" fill="#000000" opacity="0.2"/>
+                        <circle cx="140" cy="140" r="130" fill="url(#sparkBg)" filter="url(#shadow)"/>
+                        <circle cx="140" cy="140" r="125" fill="url(#sparkInner)"/>
+                        <circle cx="140" cy="140" r="128" fill="none" stroke="#FFFFFF" stroke-width="4" opacity="0.8"/>
+                        <circle cx="140" cy="140" r="125" fill="none" stroke="#FFD700" stroke-width="1.5" opacity="0.6"/>
+                        <g transform="translate(140, 110)" filter="url(#glow)">
+                            <path d="M 0,-50 C -30,-25 -35,10 -30,40 C -18,60 0,70 0,70 C 0,70 18,60 30,40 C 35,10 30,-25 0,-50 Z" fill="#FFB84D" opacity="0.3"/>
+                            <path d="M 0,-48 C -28,-22 -32,8 -28,35 C -16,55 0,65 0,65 C 0,65 16,55 28,35 C 32,8 28,-22 0,-48 Z" fill="#FF8C00"/>
+                            <path d="M 0,-35 C -18,-15 -20,12 -16,30 C -8,45 0,52 0,52 C 0,52 8,45 16,30 C 20,12 18,-15 0,-35 Z" fill="#FFD700" opacity="0.95"/>
+                            <ellipse cx="0" cy="8" rx="12" ry="18" fill="#FFFACD"/>
+                            <circle cx="0" cy="0" r="6" fill="#FFFFFF" opacity="0.9"/>
+                        </g>
+                        <g fill="#FFD700" filter="url(#glow)">
+                            <path d="M 220,70 L 225,80 L 235,82 L 227,88 L 229,98 L 220,93 L 211,98 L 213,88 L 205,82 L 215,80 Z" opacity="0.9"/>
+                            <path d="M 60,85 L 63,92 L 71,94 L 65,99 L 67,107 L 60,102 L 53,107 L 55,99 L 49,94 L 57,92 Z" opacity="0.7"/>
+                        </g>
+                        <ellipse cx="140" cy="240" rx="90" ry="12" fill="#FFFFFF" opacity="0.2"/>
+                        <text x="140" y="235" font-family="Fredoka, Arial" font-size="32" font-weight="900" text-anchor="middle" fill="#FFFFFF" letter-spacing="2" stroke="#FF8C00" stroke-width="0.5">SPARK</text>
+                    </svg>
+                </div>
+                <h3 class="badge-name">✨ Spark</h3>
+                <p class="badge-description">Your first step into reading</p>
+                <p class="requirements">Complete 1 reading session</p>
+            </div>
+
+            <!-- WORD WIZARD Badge -->
+            <div class="badge-card">
+                <div class="badge-container">
+                    <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <radialGradient id="wordBg" cx="50%" cy="40%">
+                                <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#2563EB;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#1D4ED8;stop-opacity:1" />
+                            </radialGradient>
+                            <radialGradient id="wordInner" cx="45%" cy="35%">
+                                <stop offset="0%" style="stop-color:#E0F2FE;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#60A5FA;stop-opacity:0" />
+                            </radialGradient>
+                            <filter id="shadow2">
+                                <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.4"/>
+                            </filter>
+                            <filter id="glow2">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <circle cx="140" cy="145" r="132" fill="#000000" opacity="0.2"/>
+                        <circle cx="140" cy="140" r="130" fill="url(#wordBg)" filter="url(#shadow2)"/>
+                        <circle cx="140" cy="140" r="125" fill="url(#wordInner)"/>
+                        <circle cx="140" cy="140" r="128" fill="none" stroke="#FFFFFF" stroke-width="4" opacity="0.8"/>
+                        <circle cx="140" cy="140" r="125" fill="none" stroke="#60A5FA" stroke-width="1.5" opacity="0.6"/>
+                        <g transform="translate(140, 115)" filter="url(#glow2)">
+                            <path d="M -35,-22 L -8,-20 L -8,28 L -35,32 Z" fill="#1D4ED8" opacity="0.4"/>
+                            <path d="M -33,-20 L -6,-18 L -6,26 L -33,30 Z" fill="#60A5FA" stroke="#FFFFFF" stroke-width="2.5"/>
+                            <path d="M 8,-20 L 35,-22 L 35,32 L 8,28 Z" fill="#1D4ED8" opacity="0.4"/>
+                            <path d="M 6,-18 L 33,-20 L 33,30 L 8,26 Z" fill="#93C5FD" stroke="#FFFFFF" stroke-width="2.5"/>
+                            <rect x="-3" y="-20" width="6" height="52" fill="#2563EB" opacity="0.7"/>
+                            <line x1="-26" y1="-6" x2="-10" y2="-6" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+                            <line x1="-26" y1="6" x2="-14" y2="6" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+                            <line x1="-26" y1="16" x2="-10" y2="16" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+                            <line x1="10" y1="-6" x2="28" y2="-6" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+                            <line x1="10" y1="6" x2="26" y2="6" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+                            <line x1="10" y1="16" x2="28" y2="16" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+                        </g>
+                        <g fill="#60A5FA" filter="url(#glow2)">
+                            <path d="M 225,75 L 230,85 L 240,87 L 232,93 L 234,103 L 225,98 L 216,103 L 218,93 L 210,87 L 220,85 Z" opacity="0.8"/>
+                            <path d="M 60,90 L 63,98 L 72,100 L 65,105 L 67,114 L 60,109 L 53,114 L 55,105 L 48,100 L 57,98 Z" opacity="0.6"/>
+                        </g>
+                        <ellipse cx="140" cy="240" rx="90" ry="12" fill="#FFFFFF" opacity="0.2"/>
+                        <text x="140" y="235" font-family="Fredoka, Arial" font-size="26" font-weight="900" text-anchor="middle" fill="#FFFFFF" letter-spacing="1" stroke="#2563EB" stroke-width="0.5">WORD WIZARD</text>
+                    </svg>
+                </div>
+                <h3 class="badge-name">📚 Word Wizard</h3>
+                <p class="badge-description">Master of reading comprehension</p>
+                <p class="requirements">Achieve 80%+ accuracy</p>
+            </div>
+
+            <!-- VOICE WIZARD Badge -->
+            <div class="badge-card">
+                <div class="badge-container">
+                    <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <radialGradient id="voiceBg" cx="50%" cy="40%">
+                                <stop offset="0%" style="stop-color:#F472B6;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#EC4899;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#BE185D;stop-opacity:1" />
+                            </radialGradient>
+                            <radialGradient id="voiceInner" cx="45%" cy="35%">
+                                <stop offset="0%" style="stop-color:#FCE7F3;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#F472B6;stop-opacity:0" />
+                            </radialGradient>
+                            <filter id="shadow3">
+                                <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.4"/>
+                            </filter>
+                            <filter id="glow3">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <circle cx="140" cy="145" r="132" fill="#000000" opacity="0.2"/>
+                        <circle cx="140" cy="140" r="130" fill="url(#voiceBg)" filter="url(#shadow3)"/>
+                        <circle cx="140" cy="140" r="125" fill="url(#voiceInner)"/>
+                        <circle cx="140" cy="140" r="128" fill="none" stroke="#FFFFFF" stroke-width="4" opacity="0.8"/>
+                        <circle cx="140" cy="140" r="125" fill="none" stroke="#F472B6" stroke-width="1.5" opacity="0.6"/>
+                        <g transform="translate(140, 115)" filter="url(#glow3)">
+                            <ellipse cx="0" cy="-12" rx="18" ry="25" fill="none" stroke="#F472B6" stroke-width="4"/>
+                            <ellipse cx="0" cy="-12" rx="16" ry="23" fill="#F472B6" opacity="0.25"/>
+                            <rect x="-13" y="14" width="26" height="22" fill="none" stroke="#F472B6" stroke-width="4" rx="4"/>
+                            <rect x="-10" y="17" width="20" height="16" fill="#F472B6" opacity="0.25" rx="3"/>
+                            <line x1="0" y1="36" x2="0" y2="48" stroke="#F472B6" stroke-width="4" stroke-linecap="round"/>
+                            <circle cx="0" cy="-12" r="30" fill="none" stroke="#FBCFE8" stroke-width="2.5" opacity="0.7"/>
+                            <circle cx="0" cy="-12" r="40" fill="none" stroke="#FBCFE8" stroke-width="2" opacity="0.4"/>
+                            <circle cx="0" cy="-12" r="6" fill="#FFFFFF" opacity="0.6"/>
+                        </g>
+                        <g fill="#F472B6" filter="url(#glow3)">
+                            <path d="M 230,70 L 235,82 L 246,85 L 236,92 L 239,103 L 230,97 L 221,103 L 224,92 L 214,85 L 225,82 Z" opacity="0.8"/>
+                            <path d="M 55,80 L 59,90 L 69,93 L 60,99 L 63,109 L 55,104 L 47,109 L 50,99 L 41,93 L 51,90 Z" opacity="0.6"/>
+                        </g>
+                        <ellipse cx="140" cy="240" rx="90" ry="12" fill="#FFFFFF" opacity="0.2"/>
+                        <text x="140" y="235" font-family="Fredoka, Arial" font-size="26" font-weight="900" text-anchor="middle" fill="#FFFFFF" letter-spacing="1" stroke="#EC4899" stroke-width="0.5">VOICE WIZARD</text>
+                    </svg>
+                </div>
+                <h3 class="badge-name">🎤 Voice Wizard</h3>
+                <p class="badge-description">Master of spoken fluency</p>
+                <p class="requirements">Achieve 75%+ fluency</p>
+            </div>
+
+            <!-- LANGUAGE WIZARD Badge -->
+            <div class="badge-card">
+                <div class="badge-container">
+                    <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <radialGradient id="langBg" cx="50%" cy="40%">
+                                <stop offset="0%" style="stop-color:#34D399;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#10B981;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#047857;stop-opacity:1" />
+                            </radialGradient>
+                            <radialGradient id="langInner" cx="45%" cy="35%">
+                                <stop offset="0%" style="stop-color:#D1FAE5;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#34D399;stop-opacity:0" />
+                            </radialGradient>
+                            <filter id="shadow4">
+                                <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.4"/>
+                            </filter>
+                            <filter id="glow4">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <circle cx="140" cy="145" r="132" fill="#000000" opacity="0.2"/>
+                        <circle cx="140" cy="140" r="130" fill="url(#langBg)" filter="url(#shadow4)"/>
+                        <circle cx="140" cy="140" r="125" fill="url(#langInner)"/>
+                        <circle cx="140" cy="140" r="128" fill="none" stroke="#FFFFFF" stroke-width="4" opacity="0.8"/>
+                        <circle cx="140" cy="140" r="125" fill="none" stroke="#34D399" stroke-width="1.5" opacity="0.6"/>
+                        <g transform="translate(140, 105)" filter="url(#glow4)">
+                            <path d="M -32,-42 L 0,-70 L 32,-42 Z" fill="#10B981" stroke="#34D399" stroke-width="3.5"/>
+                            <path d="M -18,-35 L 0,-60 L 18,-35 Z" fill="#34D399" opacity="0.4"/>
+                            <ellipse cx="0" cy="-40" rx="38" ry="14" fill="#34D399" stroke="#34D399" stroke-width="3"/>
+                            <ellipse cx="0" cy="-40" rx="36" ry="12" fill="#6EE7B7" opacity="0.3"/>
+                            <path d="M 0,-70 L 5,-55 L 21,-53 L 10,-42 L 15,-27 L 0,-34 L -15,-27 L -10,-42 L -21,-53 L -5,-55 Z" fill="#FFD700" stroke="#FFC700" stroke-width="1.5" opacity="0.95"/>
+                            <circle cx="0" cy="-60" r="4" fill="#FFFFFF" opacity="0.7"/>
+                        </g>
+                        <g fill="#34D399" filter="url(#glow4)">
+                            <path d="M 240,85 L 245,98 L 258,101 L 248,109 L 251,122 L 240,116 L 229,122 L 232,109 L 222,101 L 235,98 Z" opacity="0.8"/>
+                            <path d="M 50,100 L 54,111 L 65,114 L 56,120 L 59,131 L 50,125 L 41,131 L 44,120 L 35,114 L 46,111 Z" opacity="0.6"/>
+                        </g>
+                        <ellipse cx="140" cy="240" rx="90" ry="12" fill="#FFFFFF" opacity="0.2"/>
+                        <text x="140" y="235" font-family="Fredoka, Arial" font-size="22" font-weight="900" text-anchor="middle" fill="#FFFFFF" letter-spacing="0.5" stroke="#10B981" stroke-width="0.5">LANGUAGE WIZARD</text>
+                    </svg>
+                </div>
+                <h3 class="badge-name">🧙 Language Wizard</h3>
+                <p class="badge-description">Committed learner</p>
+                <p class="requirements">Complete 10+ sessions</p>
+            </div>
+
+            <!-- GRAND WIZARD Badge -->
+            <div class="badge-card">
+                <div class="badge-container">
+                    <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <radialGradient id="grandBg" cx="50%" cy="40%">
+                                <stop offset="0%" style="stop-color:#FCD34D;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#F59E0B;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#D97706;stop-opacity:1" />
+                            </radialGradient>
+                            <radialGradient id="grandInner" cx="45%" cy="35%">
+                                <stop offset="0%" style="stop-color:#FEF3C7;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#FCD34D;stop-opacity:0" />
+                            </radialGradient>
+                            <filter id="shadow5">
+                                <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#000000" flood-opacity="0.45"/>
+                            </filter>
+                            <filter id="glow5">
+                                <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <circle cx="140" cy="145" r="135" fill="#000000" opacity="0.25"/>
+                        <circle cx="140" cy="140" r="132" fill="#FFD700" opacity="0.08"/>
+                        <circle cx="140" cy="140" r="130" fill="url(#grandBg)" filter="url(#shadow5)"/>
+                        <circle cx="140" cy="140" r="125" fill="url(#grandInner)"/>
+                        <circle cx="140" cy="140" r="128" fill="none" stroke="#FFFFFF" stroke-width="5" opacity="0.9"/>
+                        <circle cx="140" cy="140" r="125" fill="none" stroke="#FCD34D" stroke-width="2" opacity="0.7"/>
+                        <g transform="translate(140, 100)" filter="url(#glow5)">
+                            <ellipse cx="0" cy="28" rx="40" ry="15" fill="#F59E0B" stroke="#FFFFFF" stroke-width="3.5"/>
+                            <ellipse cx="0" cy="26" rx="38" ry="13" fill="#FCD34D" opacity="0.4"/>
+                            <path d="M -40,28 L -26,-38 L -12,-8 L 0,-48 L 12,-8 L 26,-38 L 40,28 Z" fill="#F59E0B" stroke="#FFFFFF" stroke-width="3.5" stroke-linejoin="miter"/>
+                            <path d="M -26,-38 L -14,-18 L -8,-30 Z" fill="#FFFFFF" opacity="0.5"/>
+                            <path d="M 0,-48 L 8,-28 L 0,-38 Z" fill="#FFFFFF" opacity="0.6"/>
+                            <path d="M 26,-38 L 14,-18 L 8,-30 Z" fill="#FFFFFF" opacity="0.5"/>
+                            <circle cx="0" cy="-48" r="9" fill="#EF4444" stroke="#FFFFFF" stroke-width="2"/>
+                            <circle cx="1" cy="-50" r="4" fill="#FFFFFF" opacity="0.8"/>
+                            <circle cx="-26" cy="-38" r="8" fill="#3B82F6" stroke="#FFFFFF" stroke-width="2"/>
+                            <circle cx="-24" cy="-40" r="3" fill="#FFFFFF" opacity="0.7"/>
+                            <circle cx="26" cy="-38" r="8" fill="#3B82F6" stroke="#FFFFFF" stroke-width="2"/>
+                            <circle cx="28" cy="-40" r="3" fill="#FFFFFF" opacity="0.7"/>
+                            <circle cx="-40" cy="28" r="7" fill="#10B981" stroke="#FFFFFF" stroke-width="1.5"/>
+                            <circle cx="40" cy="28" r="7" fill="#10B981" stroke="#FFFFFF" stroke-width="1.5"/>
+                            <circle cx="0" cy="-8" r="45" fill="none" stroke="#FCD34D" stroke-width="2" opacity="0.3"/>
+                        </g>
+                        <g fill="#FCD34D" filter="url(#glow5)">
+                            <path d="M 235,65 L 242,82 L 259,86 L 246,97 L 251,114 L 235,105 L 219,114 L 224,97 L 211,86 L 228,82 Z" opacity="0.9"/>
+                            <path d="M 45,70 L 52,88 L 70,93 L 58,103 L 63,120 L 45,110 L 27,120 L 32,103 L 20,93 L 38,88 Z" opacity="0.7"/>
+                            <path d="M 245,215 L 250,228 L 265,231 L 253,240 L 257,253 L 245,246 L 233,253 L 237,240 L 225,231 L 240,228 Z" opacity="0.6"/>
+                        </g>
+                        <defs>
+                            <linearGradient id="shineGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.3" />
+                                <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0.05" />
+                            </linearGradient>
+                        </defs>
+                        <ellipse cx="140" cy="238" rx="92" ry="14" fill="url(#shineGrad)"/>
+                        <text x="140" y="237" font-family="Fredoka, Arial" font-size="28" font-weight="900" text-anchor="middle" fill="#FFFFFF" letter-spacing="1.5" stroke="#D97706" stroke-width="0.6">GRAND WIZARD</text>
+                    </svg>
+                </div>
+                <h3 class="badge-name">👑 Grand Wizard</h3>
+                <p class="badge-description">Ultimate master</p>
+                <p class="requirements">Earn all 4 badges</p>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2>✨ Design Features</h2>
+            <ul>
+                <li>Bold radial gradients with vibrant WizLingo colors</li>
+                <li>Drop shadows for dimensional depth (12px offset, 40% opacity)</li>
+                <li>Inner glow effects that fade from bright center to transparent</li>
+                <li>Sparkle stars positioned around each badge with glow filters</li>
+                <li>Shine bars at the bottom for reflective effect</li>
+                <li>Prominent, bold icons: flame, book, microphone, wizard hat, crown</li>
+                <li>White outlines and accent color rings for visual pop</li>
+                <li>Child-friendly yet professional appearance</li>
+                <li>Smooth hover animations with scale and shadow effects</li>
+                <li>SVG format: crisp at any size, lightweight, accessible</li>
+            </ul>
+        </div>
+
+        <div class="tech-specs">
+            <h2>🔧 Technical Details</h2>
+            <p><strong>File Format:</strong> SVG (Scalable Vector Graphics)</p>
+            <p><strong>Viewbox:</strong> 280×280 pixels</p>
+            <p><strong>Colors:</strong> WizLingo brand palette (Pink #F43F88 → Purple #7C3AED, Gold #FFD700, Orange #F97316)</p>
+            <p><strong>Effects:</strong> Gaussian blur filters, drop shadows, radial gradients, glow animations</p>
+            <p><strong>Integration:</strong> Referenced in <code>/lib/badge-config.ts</code>, rendered via <code>ModernBadgeDisplay.tsx</code></p>
+            <p><strong>Demo Account:</strong> DEMO001/1234 has all 5 badges earned at http://localhost:3000/login</p>
+        </div>
+    </div>
+</body>
+</html>

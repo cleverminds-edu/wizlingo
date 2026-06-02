@@ -1,0 +1,101 @@
+<svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="voiceBg3D" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" style="stop-color:#F472B6;stop-opacity:1" />
+      <stop offset="40%" style="stop-color:#EC4899;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#DB2777;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#BE185D;stop-opacity:1" />
+    </radialGradient>
+
+    <radialGradient id="voiceInner3D" cx="40%" cy="40%" r="50%">
+      <stop offset="0%" style="stop-color:#FCE7F3;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#F472B6;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#EC4899;stop-opacity:0" />
+    </radialGradient>
+
+    <radialGradient id="voiceShine" cx="40%" cy="30%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0" />
+    </radialGradient>
+
+    <radialGradient id="voiceRing" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.3" />
+    </radialGradient>
+
+    <filter id="shadowDeep3D3">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#000000" flood-opacity="0.6"/>
+      <feDropShadow dx="2" dy="8" stdDeviation="8" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+
+    <filter id="innerShadow3D3">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <linearGradient id="voiceShineBar" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0.05" />
+    </linearGradient>
+  </defs>
+
+  <circle cx="140" cy="152" r="135" fill="#000000" opacity="0.3"/>
+  <circle cx="140" cy="148" r="133" fill="#000000" opacity="0.15"/>
+
+  <circle cx="140" cy="140" r="130" fill="url(#voiceBg3D)" filter="url(#shadowDeep3D3)"/>
+  <circle cx="140" cy="140" r="128" fill="url(#voiceRing)"/>
+  <circle cx="140" cy="140" r="125" fill="url(#voiceInner3D)"/>
+  <circle cx="140" cy="130" r="100" fill="url(#voiceShine)" opacity="0.5"/>
+
+  <circle cx="140" cy="140" r="130" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.4"/>
+  <circle cx="140" cy="140" r="131" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.15"/>
+  <circle cx="140" cy="140" r="128" fill="none" stroke="#DB2777" stroke-width="2" opacity="0.5"/>
+
+  <!-- 3D MICROPHONE ICON -->
+  <g transform="translate(140, 112)" filter="url(#innerShadow3D3)">
+    <!-- Mic shadow -->
+    <ellipse cx="2" cy="-12" rx="19" ry="26" fill="#000000" opacity="0.2"/>
+
+    <!-- Mic head - 3D capsule -->
+    <ellipse cx="0" cy="-12" rx="19" ry="26" fill="none" stroke="#F472B6" stroke-width="4.5" opacity="0.95"/>
+    <ellipse cx="0" cy="-12" rx="17" ry="24" fill="#F472B6" opacity="0.3"/>
+    <ellipse cx="-7" cy="-20" rx="8" ry="6" fill="#FFFFFF" opacity="0.25"/>
+
+    <!-- Mic body - bold -->
+    <rect x="-14" y="14" width="28" height="24" fill="none" stroke="#F472B6" stroke-width="4.5" rx="5" opacity="0.95"/>
+    <rect x="-11" y="17" width="22" height="18" fill="#F472B6" opacity="0.25" rx="4"/>
+    <rect x="-10" y="18" width="20" height="6" fill="#FFFFFF" opacity="0.15"/>
+
+    <!-- Stand -->
+    <line x1="0" y1="38" x2="0" y2="52" stroke="#F472B6" stroke-width="4.5" stroke-linecap="round" opacity="0.95"/>
+
+    <!-- Sound waves - 3D effect -->
+    <circle cx="0" cy="-12" r="32" fill="none" stroke="#FBCFE8" stroke-width="3" opacity="0.75"/>
+    <circle cx="0" cy="-12" r="44" fill="none" stroke="#FBCFE8" stroke-width="2" opacity="0.45"/>
+
+    <!-- Glow on mic -->
+    <circle cx="0" cy="-12" r="7" fill="#FFFFFF" opacity="0.7"/>
+    <circle cx="0" cy="-12" r="4" fill="#FFFACD" opacity="0.5"/>
+  </g>
+
+  <!-- Sparkles -->
+  <g filter="url(#innerShadow3D3)" opacity="0.95">
+    <g transform="translate(235, 75)">
+      <path d="M 0,-10 L 3,-2 L 12,-1 L 5,4 L 7,13 L 0,8 L -7,13 L -5,4 L -12,-1 L -3,-2 Z" fill="#F472B6" opacity="0.9"/>
+      <circle cx="0" cy="-6" r="1.5" fill="#FFFFFF" opacity="0.8"/>
+    </g>
+    <g transform="translate(50, 100)">
+      <path d="M 0,-8 L 2,-1 L 10,0 L 4,5 L 5,11 L 0,7 L -5,11 L -4,5 L -10,0 L -2,-1 Z" fill="#F472B6" opacity="0.7"/>
+    </g>
+  </g>
+
+  <ellipse cx="140" cy="238" rx="92" ry="14" fill="url(#voiceShineBar)"/>
+
+  <text x="140" y="237" font-family="Fredoka, Arial" font-size="27" font-weight="900" text-anchor="middle"
+        fill="url(#voiceBg3D)" letter-spacing="1" stroke="#DB2777" stroke-width="1.5" opacity="0.95">VOICE WIZARD</text>
+  <text x="140" y="237" font-family="Fredoka, Arial" font-size="27" font-weight="900" text-anchor="middle"
+        fill="#FFFFFF" letter-spacing="1" opacity="0.6" stroke="none">VOICE WIZARD</text>
+</svg>

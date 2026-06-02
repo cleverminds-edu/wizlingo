@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>WizLingo — Teaser Recorder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Inter:wght@300;400;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#000;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;min-height:100vh;font-family:'Inter',sans-serif}
+    #c{width:100%;max-width:1280px;aspect-ratio:16/9;display:block;background:#000}
+    #ui{
+      display:flex;align-items:center;gap:16px;padding:18px;flex-wrap:wrap;justify-content:center;
+      background:#0a0a12;width:100%;max-width:1280px;border-top:1px solid #1a1a30;
+    }
+    button{
+      padding:12px 28px;border-radius:999px;border:none;font-size:14px;font-weight:700;
+      cursor:pointer;transition:opacity .15s,transform .1s;
+    }
+    button:hover{opacity:.85}
+    button:active{transform:scale(.97)}
+    button:disabled{opacity:.4;cursor:not-allowed}
+    #btnPreview{background:linear-gradient(135deg,#3B82F6,#6366f1);color:#fff}
+    #btnRecord{background:linear-gradient(135deg,#F97316,#F43F88);color:#fff}
+    #btnStop{background:#374151;color:#fff;display:none}
+    #status{font-size:13px;color:rgba(255,255,255,.5);min-width:220px;text-align:center}
+    .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#ef4444;margin-right:7px;animation:blink .8s step-end infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    #progress{width:100%;max-width:1280px;height:3px;background:#111;position:relative}
+    #pbar{height:3px;width:0;background:linear-gradient(90deg,#3B82F6,#9333EA,#F43F88);transition:none}
+    p.note{color:rgba(255,255,255,.3);font-size:12px;max-width:1280px;padding:10px 16px;text-align:center;line-height:1.6}
+  </style>
+</head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div id="progress"><div id="pbar"></div></div>
+<div id="ui">
+  <button id="btnPreview" onclick="startPreview()">▶ Preview</button>
+  <button id="btnRecord"  onclick="startRecord()">⬤ Record &amp; Download .webm</button>
+  <button id="btnStop"    onclick="stopRecord()">■ Stop &amp; Save</button>
+  <div id="status">Ready — click Preview or Record</div>
+</div>
+<p class="note">
+  Record produces a 1920×1080 WebM (VP9, 10 Mbps). Opens in Chrome/Firefox/Edge instantly.
+  Convert to MP4 with <strong>Handbrake</strong> (free) or <strong>ffmpeg -i in.webm out.mp4</strong>.
+</p>
+
+<script>
+const CW=1920,CH=1080;
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+const TOTAL=45;
+
+/* ═══════════════════════════════════════
+   ASSET LOADING
+═══════════════════════════════════════ */
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
+
+let LOGO=null,EDVANTA=null;
+Promise.all([loadImg('wiziingo-logo.svg'),loadImg('edvanta-logo1.png')])
+  .then(([l,e])=>{LOGO=l;EDVANTA=e;setStatus('Assets loaded — ready.');})
+  .catch(()=>setStatus('⚠ Assets not found — run via localhost.'));
+
+/* ═══════════════════════════════════════
+   STAR FIELD (fixed seed for consistent recording)
+═══════════════════════════════════════ */
+function mulberry32(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const rng=mulberry32(0xDEADBEEF);
+const STARS=Array.from({length:340},()=>({x:rng(),y:rng(),r:.15+rng()*1.2,base:.25+rng()*.7,spd:.3+rng()*1.1,ph:rng()*Math.PI*2,big:rng()>.88}));
+
+/* ═══════════════════════════════════════
+   PARTICLES
+═══════════════════════════════════════ */
+const PC_NORM=['rgba(96,165,250,','rgba(147,51,234,','rgba(200,230,255,'];
+const PC_BURST=['rgba(249,115,22,','rgba(147,51,234,','rgba(244,63,136,','rgba(255,215,0,','rgba(96,165,250,'];
+let pMul=1,burstMode=false;
+class P{
+  reset(init){this.x=rng()*CW;this.y=init?rng()*CH:CH+10;this.r=.6+rng()*2.2;this.vx=(rng()-.5)*1.1;this.vy=-(0.5+rng()*1.8);this.life=0;this.max=230+rng()*300;const c=burstMode?PC_BURST:PC_NORM;this.col=c[Math.floor(rng()*c.length)];this.star=rng()>.7;}
+  constructor(i){this.reset(i);}
+  draw(t){const p=this.life/this.max,a=p<.15?p/.15:p>.75?(1-p)/.25:1;ctx.globalAlpha=a*(this.star?.7:.35);ctx.fillStyle=this.col+(this.star?'1)':'.6)');if(this.star)drawStar4(this.x,this.y,this.r*2.2);else{ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fill();}}
+  update(){this.x+=this.vx*pMul;this.y+=this.vy*pMul;this.life++;if(this.life>this.max||this.y<-20)this.reset();}
+}
+function drawStar4(px,py,r){const ir=r*.35;ctx.beginPath();for(let i=0;i<8;i++){const a=i*Math.PI/4,rr=i%2?ir:r;i?ctx.lineTo(px+rr*Math.cos(a),py+rr*Math.sin(a)):ctx.moveTo(px+rr*Math.cos(a),py+rr*Math.sin(a));}ctx.closePath();ctx.fill();}
+const PP=Array.from({length:110},(_,i)=>new P(true));
+
+/* ═══════════════════════════════════════
+   EASING
+═══════════════════════════════════════ */
+const easeOut3=t=>1-Math.pow(1-t,3);
+const easeOutBack=t=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2);};
+function progress(elapsed,from,dur){return Math.max(0,Math.min(1,easeOut3((elapsed-from)/dur)));}
+
+/* ═══════════════════════════════════════
+   TEXT HELPERS
+═══════════════════════════════════════ */
+function txt(text,x,y,font,color,alpha=1,align='center'){
+  if(alpha<=0)return;
+  ctx.save();ctx.globalAlpha=Math.min(1,alpha);ctx.font=font;ctx.fillStyle=color;ctx.textAlign=align;ctx.textBaseline='alphabetic';ctx.fillText(text,x,y);ctx.restore();
+}
+function gradTxt(text,x,y,font,stops,alpha=1){
+  if(alpha<=0)return;
+  ctx.save();ctx.font=font;ctx.textAlign='center';ctx.textBaseline='alphabetic';
+  const w=ctx.measureText(text).width;
+  const g=ctx.createLinearGradient(x-w/2,0,x+w/2,0);
+  stops.forEach(([s,c])=>g.addColorStop(s,c));
+  ctx.globalAlpha=Math.min(1,alpha);ctx.fillStyle=g;ctx.fillText(text,x,y);ctx.restore();
+}
+function chapter(text,t){
+  ctx.save();ctx.globalAlpha=Math.min(1,t)*0.38;ctx.font=`700 ${CW*.0085}px Inter`;ctx.fillStyle='rgba(150,200,255,1)';ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText(text,CW/2,CH*.28);ctx.restore();
+}
+function sub(text,y,alpha){txt(text,CW/2,y,`300 ${CW*.013}px Inter`,'rgba(180,210,255,1)',alpha*.7);}
+function divLine(progress,y){
+  if(progress<=0)return;
+  const w=CW*.08*progress;
+  ctx.save();ctx.globalAlpha=.2;ctx.fillStyle='rgba(100,160,255,1)';ctx.fillRect(CW/2-w,y,w*2,1.5);ctx.restore();
+}
+function statBlock(num,label,cx,t){
+  const a=Math.min(1,t);
+  txt(num,cx,CH*.6,`600 ${CW*.033}px Fredoka`,num.includes('AI')?'#60A5FA':'#F97316',a);
+  txt(label,cx,CH*.64,`600 ${CW*.008}px Inter`,'rgba(150,200,255,.7)',a*.7);
+}
+
+/* ═══════════════════════════════════════
+   SCRAMBLE STATE
+═══════════════════════════════════════ */
+const CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&*!?';
+function scrambledText(final,progress){
+  return [...final].map((c,i)=>{
+    if(c===' ')return ' ';
+    const cp=Math.max(0,(progress-(i/final.length)*.6)*2.5);
+    return cp>=1?c:CHARS[Math.floor(Math.random()*CHARS.length)];
+  }).join('');
+}
+
+/* ═══════════════════════════════════════
+   TYPEWRITER STATE
+═══════════════════════════════════════ */
+function typewriterText(final,elapsed,startAt,speed){
+  const chars=Math.floor(Math.max(0,elapsed-startAt)/speed);
+  return final.slice(0,Math.min(chars,final.length));
+}
+
+/* ═══════════════════════════════════════
+   MAIN DRAW FUNCTION
+═══════════════════════════════════════ */
+function draw(elapsed){
+  const t=elapsed;
+
+  /* ── Background sky ── */
+  const sky=ctx.createRadialGradient(CW*.5,CH*.4,0,CW*.5,CH*.5,CW*.7);
+  if(t<8){sky.addColorStop(0,'#071E3D');sky.addColorStop(1,'#020C1E');}
+  else if(t<15){sky.addColorStop(0,'#061830');sky.addColorStop(1,'#010A18');}
+  else if(t<20){sky.addColorStop(0,'#120640');sky.addColorStop(1,'#040114');}
+  else if(t<32){sky.addColorStop(0,'#0A1E40');sky.addColorStop(1,'#020B1C');}
+  else if(t<37){sky.addColorStop(0,'#0C0840');sky.addColorStop(1,'#040118');}
+  else{sky.addColorStop(0,'#071E3D');sky.addColorStop(1,'#020C1E');}
+  ctx.fillStyle=sky;ctx.fillRect(0,0,CW,CH);
+
+  /* ── Nebula ── */
+  const neb1=ctx.createRadialGradient(CW*.18,CH*.28,0,CW*.18,CH*.28,CW*.35);
+  neb1.addColorStop(0,'rgba(30,80,160,.14)');neb1.addColorStop(1,'transparent');
+  ctx.fillStyle=neb1;ctx.fillRect(0,0,CW,CH);
+  const neb2=ctx.createRadialGradient(CW*.82,CH*.72,0,CW*.82,CH*.72,CW*.28);
+  neb2.addColorStop(0,'rgba(90,20,160,.1)');neb2.addColorStop(1,'transparent');
+  ctx.fillStyle=neb2;ctx.fillRect(0,0,CW,CH);
+
+  /* ── Stars ── */
+  STARS.forEach(s=>{
+    const a=s.base+Math.sin(t*.8*s.spd+s.ph)*(s.big?.32:.12);
+    ctx.globalAlpha=Math.max(0,Math.min(.95,a));
+    if(s.big){ctx.shadowColor='rgba(150,200,255,.7)';ctx.shadowBlur=8;}
+    ctx.fillStyle=s.big?'#fff':'rgba(200,230,255,.85)';
+    ctx.beginPath();ctx.arc(s.x*CW,s.y*CH,s.r,0,Math.PI*2);ctx.fill();
+    ctx.shadowBlur=0;
+  });
+  ctx.globalAlpha=1;
+
+  /* ── Particles ── */
+  PP.forEach(p=>{p.update();p.draw(t);});
+  ctx.globalAlpha=1;
+
+  /* ── Vignette ── */
+  const vig=ctx.createRadialGradient(CW/2,CH/2,0,CW/2,CH/2,CW*.62);
+  vig.addColorStop(.38,'transparent');vig.addColorStop(1,'rgba(0,5,20,.78)');
+  ctx.fillStyle=vig;ctx.fillRect(0,0,CW,CH);
+
+  /* ════════════════ SCENES ════════════════ */
+
+  /* S1: Hook (1-8s) */
+  if(t>=1&&t<8){
+    const p1=progress(t,1,.9),p2=progress(t,2,1),p3=progress(t,3.2,1),p4=progress(t,4.2,1.2);
+    chapter('A QUESTION FOR EVERY PARENT & TEACHER',p1);
+    txt('Why do some children',CW/2,CH*.44,`800 ${CW*.046}px Inter`,'#fff',p2);
+    gradTxt('shine…',CW/2,CH*.55,`800 ${CW*.048}px Inter`,[[0,'#F97316'],[.5,'#F43F88'],[1,'#9333EA']],p3);
+    sub('…while millions stay silent in the classroom?',CH*.65,p4);
+  }
+
+  /* S2: Stat (8-15s) */
+  if(t>=8&&t<15){
+    const p1=progress(t,8,.8),p2=progress(t,9,1.2),p3=progress(t,10.5,1),p4=progress(t,12,1.2);
+    chapter('THE REALITY — ASER REPORT 2023, INDIA',p1);
+    txt('1 in 2',CW/2,CH*.47,`600 ${CW*.075}px Fredoka`,'#F97316',p2);
+    txt('school children cannot read or speak with confidence',CW/2,CH*.57,`700 ${CW*.022}px Inter`,'rgba(255,255,255,.85)',p3);
+    divLine(progress(t,11,.8),CH*.62);
+    sub('Even after years of school — even the bright ones hold back.',CH*.68,p4);
+  }
+
+  /* S3: Pivot / Scramble (15-20s) */
+  if(t>=15&&t<20){
+    const p1=progress(t,15,.6),p2=progress(t,16.5,.8);
+    const sc1=Math.min(1,(t-15.3)/1.2);
+    const sc2=Math.min(1,(t-16.8)/1.4);
+    const line1=sc1>0?scrambledText('WHAT IF',sc1):'';
+    const line2=sc2>0?scrambledText('AI COULD?',sc2):'';
+    if(p1>0) gradTxt(line1,CW/2,CH*.46,`900 ${CW*.082}px Inter`,[[0,'#F97316'],[.5,'#F43F88'],[1,'#9333EA']],p1);
+    if(p2>0) txt(line2,CW/2,CH*.58,`900 ${CW*.076}px Inter`,'rgba(255,255,255,.92)',p2);
+  }
+
+  /* S4: Reading (20-26s) */
+  if(t>=20&&t<26){
+    const p1=progress(t,20,.7),p2=progress(t,21,1),p3=progress(t,22.5,1.2),p4=progress(t,23.8,1);
+    chapter('ADAPTIVE READING',p1);
+    txt('A coach that knows',CW/2,CH*.42,`800 ${CW*.046}px Inter`,'#fff',p2);
+    txt('where every child struggles.',CW/2,CH*.53,`800 ${CW*.046}px Inter`,'#F97316',p3);
+    sub('Level-adaptive passages · Real-time accuracy · Instant feedback',CH*.65,p4);
+  }
+
+  /* S5: Speaking (26-32s) */
+  if(t>=26&&t<32){
+    const p1=progress(t,26,.7),p2=progress(t,27,1),p3=progress(t,28.2,1.2),p4=progress(t,29.5,1);
+    chapter('AI SPEAKING COACH',p1);
+    txt('An AI that',CW/2,CH*.42,`800 ${CW*.046}px Inter`,'#fff',p2);
+    txt('listens, scores & coaches.',CW/2,CH*.53,`800 ${CW*.046}px Inter`,'#9333EA',p3);
+    sub('Every word. Every pause. Every improvement — captured live.',CH*.65,p4);
+  }
+
+  /* S6: Everywhere — typewriter (32-37s) */
+  if(t>=32&&t<37){
+    const p1=progress(t,32,.5);
+    const line1=typewriterText('For every school.',t,32.4,.075);
+    const line2=typewriterText('For every home.',t,34.2,.08);
+    chapter('FOR SCHOOLS & FAMILIES · INDIA & BEYOND',p1);
+    txt(line1+(t<34.15?'|':''),CW/2,CH*.42,`800 ${CW*.048}px Inter`,'#fff',p1);
+    txt(line2+(t<35.4&&t>=34.2?'|':''),CW/2,CH*.54,`800 ${CW*.048}px Inter`,'#F97316',Math.min(1,Math.max(0,t-34.2)*2));
+    const ps1=progress(t,35,.8),ps2=progress(t,35.4,.8),ps3=progress(t,35.8,.8);
+    statBlock('I–X','All Grades',CW*.3,ps1);
+    statBlock('AI','Adaptive',CW*.5,ps2);
+    statBlock('5','Wizard Badges',CW*.7,ps3);
+  }
+
+  /* SR: Logo reveal (37-42s) */
+  if(t>=37&&t<42){
+    const p1=progress(t,37,.5),p2=progress(t,37.3,1.2),p3=progress(t,38.5,1),p4=progress(t,39.5,1);
+    const pc1=progress(t,40,.6),pc2=progress(t,40.3,.6),pc3=progress(t,40.6,.6),pc4=progress(t,40.9,.6);
+
+    // "INTRODUCING" label
+    txt('INTRODUCING',CW/2,CH*.3,`700 ${CW*.009}px Inter`,'rgba(150,200,255,.35)',p1);
+
+    // Logo
+    if(LOGO&&p2>0){
+      const lw=CW*.32,lh=lw*(LOGO.naturalHeight/LOGO.naturalWidth);
+      const scale=.5+easeOutBack(Math.min(1,p2))*.5;
+      ctx.save();
+      ctx.globalAlpha=Math.min(1,p2);
+      ctx.shadowColor='rgba(147,51,234,.9)';ctx.shadowBlur=80;
+      ctx.translate(CW/2,CH*.465);ctx.scale(scale,scale);
+      ctx.drawImage(LOGO,-lw/2,-lh/2,lw,lh);
+      ctx.restore();
+    }
+
+    // Tagline
+    gradTxt('Read Smart. Speak Bold.',CW/2,CH*.62,`600 ${CW*.038}px Fredoka`,[[0,'#fff'],[.45,'#bfdbfe'],[1,'#fbbf24']],p3);
+
+    // Feature chips
+    const chips=['📖 Adaptive Reading','🎤 AI Speaking Coach','🏆 Badges & Certs','📊 Teacher Dashboard'];
+    const chipW=CW*.17,chipH=CW*.032,chipY=CH*.68;
+    const totalW=chips.length*chipW+(chips.length-1)*14;
+    chips.forEach((c,i)=>{
+      const px=[pc1,pc2,pc3,pc4][i];if(px<=0)return;
+      const cx2=CW/2-totalW/2+i*(chipW+14)+chipW/2;
+      ctx.save();ctx.globalAlpha=px*.8;
+      ctx.fillStyle='rgba(255,255,255,.07)';
+      ctx.strokeStyle='rgba(150,200,255,.18)';ctx.lineWidth=1.5;
+      roundRect(cx2-chipW/2,chipY,chipW,chipH,chipH/2);
+      ctx.fill();ctx.stroke();
+      ctx.globalAlpha=px*.75;ctx.font=`500 ${CW*.0095}px Inter`;ctx.fillStyle='rgba(200,230,255,.85)';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(c,cx2,chipY+chipH/2);
+      ctx.restore();
+    });
+  }
+
+  /* SO: Outro (42-45s) */
+  if(t>=42){
+    const p1=progress(t,42,.6),p2=progress(t,42.3,1),p3=progress(t,43.2,.8),p4=progress(t,43.8,1);
+
+    // Pill
+    if(p1>0){
+      const pill='★  Schools & Families · India & Beyond';
+      ctx.font=`600 ${CW*.012}px Inter`;const pw=ctx.measureText(pill).width+CW*.04;const ph=CW*.025;
+      const px2=CW/2-pw/2,py2=CH*.28-ph/2;
+      ctx.save();ctx.globalAlpha=p1*.7;ctx.fillStyle='rgba(249,115,22,.15)';ctx.strokeStyle='rgba(96,165,250,.3)';ctx.lineWidth=1.5;
+      roundRect(px2,py2,pw,ph,ph/2);ctx.fill();ctx.stroke();
+      ctx.globalAlpha=p1*.8;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='rgba(200,230,255,.85)';ctx.fillText(pill,CW/2,py2+ph/2);
+      ctx.restore();
+    }
+
+    // Date
+    gradTxt('July 2026',CW/2,CH*.52,`600 ${CW*.07}px Fredoka`,[[0,'#F97316'],[.5,'#F43F88'],[1,'#9333EA']],p2);
+    txt('wizlingo  ·  Grades I–X  ·  English',CW/2,CH*.6,`400 ${CW*.013}px Inter`,'rgba(150,200,255,.4)',p3);
+
+    // Brand lockup
+    if(p4>0&&LOGO&&EDVANTA){
+      const lw=CW*.16,lh=lw*(LOGO.naturalHeight/LOGO.naturalWidth);
+      const ew=CW*.09,eh=ew*(EDVANTA.naturalHeight/EDVANTA.naturalWidth);
+      const gap=CW*.025,sepH=CW*.025;
+      const totalW2=lw+gap+1+gap+ew,sx=CW/2-totalW2/2;
+      const rowY=CH*.72;
+
+      ctx.globalAlpha=p4;ctx.drawImage(LOGO,sx,rowY-lh/2,lw,lh);
+
+      ctx.globalAlpha=p4*.4;ctx.fillStyle='rgba(150,200,255,.5)';
+      ctx.fillRect(sx+lw+gap,rowY-sepH/2,1,sepH);
+
+      // Edvanta on white pill
+      const ePillX=sx+lw+gap*2,ePillY=rowY-CH*.025,ePillW=ew+CW*.025,ePillH=CH*.05;
+      ctx.globalAlpha=p4;ctx.fillStyle='#fff';
+      roundRect(ePillX,ePillY,ePillW,ePillH,8);ctx.fill();
+      ctx.drawImage(EDVANTA,ePillX+CW*.012,rowY-eh/2,ew,eh);
+
+      // "An initiative by" text
+      ctx.globalAlpha=p4*.35;ctx.font=`600 ${CW*.007}px Inter`;ctx.fillStyle='rgba(150,200,255,1)';ctx.textAlign='left';ctx.textBaseline='bottom';
+      ctx.fillText('AN INITIATIVE BY',ePillX,ePillY-4);
+      ctx.globalAlpha=1;
+    }
+  }
+
+  /* ── Letterbox bars ── */
+  ctx.globalAlpha=1;ctx.fillStyle='#000';
+  ctx.fillRect(0,0,CW,CH*.096);
+  ctx.fillRect(0,CH*.904,CW,CH*.096);
+
+  /* ── Flash ── */
+  if(t>=37&&t<37.5){
+    const fa=Math.max(0,.85-(t-37)*4);
+    ctx.globalAlpha=fa;ctx.fillStyle='#fff';ctx.fillRect(0,0,CW,CH);ctx.globalAlpha=1;
+  }
+
+  /* ── Progress bar ── */
+  document.getElementById('pbar').style.width=Math.min(t/TOTAL*100,100)+'%';
+}
+
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
+
+/* ═══════════════════════════════════════
+   ANIMATION LOOP
+═══════════════════════════════════════ */
+let t0=null,raf=null,mode='idle',recorder=null,chunks=[];
+
+function animLoop(ts){
+  if(!t0)t0=ts;
+  const elapsed=Math.min((ts-t0)/1000,TOTAL+.1);
+  draw(elapsed);
+  if(elapsed<=TOTAL){ raf=requestAnimationFrame(animLoop); }
+  else{
+    ctx.fillStyle='#000';ctx.fillRect(0,0,CW,CH);
+    if(mode==='record'&&recorder&&recorder.state==='recording'){recorder.stop();}
+    else{ mode='idle';setStatus('Done — click Preview or Record'); enableBtns(); }
+  }
+}
+
+function resetPP(){ PP.forEach(p=>p.reset(true)); pMul=1; burstMode=false; }
+
+function startPreview(){
+  if(raf)cancelAnimationFrame(raf);
+  t0=null;mode='preview';resetPP();
+  setStatus('Previewing…');
+  disableBtns();
+  raf=requestAnimationFrame(animLoop);
+}
+
+function startRecord(){
+  if(!LOGO){setStatus('⚠ Wait for assets to load first.');return;}
+  if(raf)cancelAnimationFrame(raf);
+  t0=null;mode='record';chunks=[];resetPP();
+
+  const stream=canvas.captureStream(60);
+  const mimeType=MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+    ?'video/webm;codecs=vp9':'video/webm';
+  recorder=new MediaRecorder(stream,{mimeType,videoBitsPerSecond:10_000_000});
+  recorder.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
+  recorder.onstop=()=>{
+    const blob=new Blob(chunks,{type:'video/webm'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='wiziingo-teaser-1080p.webm';a.click();
+    URL.revokeObjectURL(url);
+    mode='idle';setStatus('✓ Downloaded! Convert to MP4 with Handbrake if needed.');
+    enableBtns();
+    document.getElementById('btnStop').style.display='none';
+  };
+  recorder.start(100); // collect data every 100ms
+
+  setStatus('<span class="dot"></span>Recording 1080p at 10 Mbps…');
+  document.getElementById('btnPreview').disabled=true;
+  document.getElementById('btnRecord').disabled=true;
+  document.getElementById('btnStop').style.display='inline-block';
+  raf=requestAnimationFrame(animLoop);
+}
+
+function stopRecord(){
+  if(recorder&&recorder.state==='recording'){recorder.stop();}
+  if(raf)cancelAnimationFrame(raf);
+}
+
+function setStatus(h){document.getElementById('status').innerHTML=h;}
+function disableBtns(){document.getElementById('btnPreview').disabled=true;document.getElementById('btnRecord').disabled=true;}
+function enableBtns(){document.getElementById('btnPreview').disabled=false;document.getElementById('btnRecord').disabled=false;document.getElementById('btnStop').style.display='none';}
+
+// Draw first frame immediately
+draw(0);
+</script>
+</body>
+</html>

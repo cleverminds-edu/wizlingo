@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WizLingo — Something Magical is Coming</title>
+  <meta name="description" content="AI-powered reading & speaking skills for school children. Launching soon by Edvanta." />
+  <meta property="og:title"       content="WizLingo — Something Magical is Coming" />
+  <meta property="og:description" content="AI-powered reading & speaking skills for Grades I–X. Launching soon." />
+  <meta property="og:image"       content="public/wiziingo-logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange:  #F97316;
+      --purple:  #9333EA;
+      --pink:    #F43F88;
+      --violet:  #7C3AED;
+      --gold:    #FFD700;
+      --dark:    #0F0C29;
+      --darker:  #08061a;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--darker);
+      color: #fff;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Canvas background ── */
+    #bg {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── Radial centre glow ── */
+    .center-glow {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background: radial-gradient(ellipse 60% 50% at 50% 48%,
+        rgba(147,51,234,0.22) 0%, transparent 70%);
+    }
+
+    /* ── Layout ── */
+    main {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 60px 24px 40px;
+      text-align: center;
+    }
+
+    /* ── Coming-soon pill ── */
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 20px; border-radius: 999px; margin-bottom: 40px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      font-size: 13px; font-weight: 600; letter-spacing: .05em;
+      color: rgba(255,255,255,0.7);
+      animation: fadeSlideDown .8s ease both;
+    }
+    .pill .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 8px var(--gold);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    /* ── Logo ── */
+    .logo-wrap {
+      margin-bottom: 36px;
+      animation: logoPop 1s cubic-bezier(.34,1.56,.64,1) .2s both;
+      filter: drop-shadow(0 0 32px rgba(147,51,234,0.55))
+              drop-shadow(0 0 64px rgba(244,63,136,0.30));
+    }
+    .logo-wrap img { width: clamp(260px, 42vw, 520px); height: auto; }
+
+    /* ── Tagline ── */
+    .tagline {
+      font-family: 'Fredoka', sans-serif;
+      font-size: clamp(36px, 6vw, 80px);
+      font-weight: 600;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 0%, #e9d5ff 40%, #fbbf24 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeSlideUp .9s ease .4s both;
+    }
+
+    .sub {
+      font-size: clamp(16px, 2.2vw, 22px);
+      color: rgba(255,255,255,0.55);
+      max-width: 560px;
+      line-height: 1.65;
+      margin-bottom: 44px;
+      animation: fadeSlideUp .9s ease .55s both;
+    }
+
+    /* ── Feature chips ── */
+    .chips {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      justify-content: center; margin-bottom: 56px;
+      animation: fadeSlideUp .9s ease .65s both;
+    }
+    .chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 18px; border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.8);
+    }
+
+    /* ── Countdown ── */
+    .countdown {
+      display: flex; gap: 16px; margin-bottom: 56px;
+      animation: fadeSlideUp .9s ease .75s both;
+    }
+    .cd-block {
+      display: flex; flex-direction: column; align-items: center;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 20px 28px;
+      min-width: 88px;
+    }
+    .cd-num {
+      font-family: 'Fredoka', sans-serif;
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 600; line-height: 1;
+      background: linear-gradient(135deg, var(--orange), var(--pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .cd-label {
+      font-size: 11px; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: rgba(255,255,255,0.35);
+      margin-top: 6px;
+    }
+
+    /* ── CTA row ── */
+    .cta-row {
+      display: flex; gap: 14px; flex-wrap: wrap;
+      justify-content: center; margin-bottom: 24px;
+      animation: fadeSlideUp .9s ease .88s both;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 16px 32px; border-radius: 999px;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      border: none; text-decoration: none;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .btn:hover  { transform: translateY(-2px); }
+    .btn:active { transform: scale(.97); }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--orange) 0%, var(--pink) 55%, var(--violet) 100%);
+      color: #fff;
+      box-shadow: 0 8px 32px rgba(249,115,22,0.35);
+    }
+    .btn-primary:hover { box-shadow: 0 12px 40px rgba(249,115,22,0.5); }
+    .btn-whatsapp {
+      background: #25D366; color: #fff;
+      box-shadow: 0 8px 24px rgba(37,211,102,0.3);
+    }
+    .btn-whatsapp:hover { box-shadow: 0 12px 32px rgba(37,211,102,0.45); }
+
+    /* ── Email form ── */
+    .email-form {
+      display: flex; gap: 0; max-width: 420px; width: 100%;
+      margin: 0 auto 56px;
+      animation: fadeSlideUp .9s ease .95s both;
+    }
+    .email-form input {
+      flex: 1; padding: 14px 20px;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-right: none;
+      border-radius: 999px 0 0 999px;
+      background: rgba(255,255,255,0.07);
+      color: #fff; font-size: 14px;
+      outline: none;
+    }
+    .email-form input::placeholder { color: rgba(255,255,255,0.35); }
+    .email-form input:focus { border-color: rgba(147,51,234,0.6); background: rgba(147,51,234,0.1); }
+    .email-form button {
+      padding: 14px 24px;
+      border-radius: 0 999px 999px 0;
+      background: linear-gradient(135deg, var(--violet), var(--pink));
+      border: none; color: #fff; font-size: 14px; font-weight: 700;
+      cursor: pointer; white-space: nowrap;
+      transition: opacity .15s;
+    }
+    .email-form button:hover { opacity: .9; }
+    #thanks {
+      display: none; font-size: 14px; color: #34d399; margin-bottom: 56px;
+      animation: fadeSlideUp .5s ease both;
+    }
+
+    /* ── Footer ── */
+    footer {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 16px; padding: 32px 24px 40px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .edvanta-row {
+      display: flex; align-items: center; gap: 14px;
+    }
+    .edvanta-row span {
+      font-size: 12px; color: rgba(255,255,255,0.3);
+    }
+    .social-row {
+      display: flex; gap: 20px;
+    }
+    .social-row a {
+      font-size: 12px; color: rgba(255,255,255,0.3);
+      text-decoration: none; transition: color .15s;
+    }
+    .social-row a:hover { color: rgba(255,255,255,0.7); }
+
+    /* ── Keyframes ── */
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes logoPop {
+      from { opacity: 0; transform: scale(.7); filter: blur(8px); }
+      to   { opacity: 1; transform: scale(1); filter: blur(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%       { transform: scale(1.4); opacity: .6; }
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 600px) {
+      .countdown { gap: 10px; }
+      .cd-block   { padding: 14px 18px; min-width: 68px; }
+      .cta-row    { flex-direction: column; align-items: center; }
+      .btn        { width: 100%; max-width: 320px; justify-content: center; }
+      .email-form { flex-direction: column; }
+      .email-form input  { border-right: 1px solid rgba(255,255,255,0.15); border-radius: 999px; }
+      .email-form button { border-radius: 999px; margin-top: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div class="center-glow"></div>
+
+<main>
+
+  <!-- Coming-soon badge -->
+  <div class="pill">
+    <span class="dot"></span>
+    Launching Soon · Academic Year 2026–27
+  </div>
+
+  <!-- Logo -->
+  <div class="logo-wrap">
+    <img src="wiziingo-logo.svg" alt="WizLingo" />
+  </div>
+
+  <!-- Tagline -->
+  <h1 class="tagline">Read Smart.<br/>Speak Bold.</h1>
+
+  <!-- Sub -->
+  <p class="sub">
+    AI-powered reading fluency & speaking confidence for school children.
+    Built for Indian classrooms, Grades I–X.
+  </p>
+
+  <!-- Feature chips -->
+  <div class="chips">
+    <span class="chip">📖 Adaptive Reading</span>
+    <span class="chip">🎤 AI Speaking Coach</span>
+    <span class="chip">🏆 Badge Rewards</span>
+    <span class="chip">📊 Teacher Dashboard</span>
+    <span class="chip">🇮🇳 Made for India</span>
+  </div>
+
+  <!-- Countdown -->
+  <div class="countdown">
+    <div class="cd-block"><span class="cd-num" id="cd-d">--</span><span class="cd-label">Days</span></div>
+    <div class="cd-block"><span class="cd-num" id="cd-h">--</span><span class="cd-label">Hours</span></div>
+    <div class="cd-block"><span class="cd-num" id="cd-m">--</span><span class="cd-label">Mins</span></div>
+    <div class="cd-block"><span class="cd-num" id="cd-s">--</span><span class="cd-label">Secs</span></div>
+  </div>
+
+  <!-- Email signup -->
+  <form class="email-form" id="signupForm" onsubmit="handleSignup(event)">
+    <input type="email" id="emailInput" placeholder="Your school email address…" required />
+    <button type="submit">Notify Me ✨</button>
+  </form>
+  <p id="thanks">🎉 You're on the list! We'll reach out before launch.</p>
+
+  <!-- CTA row -->
+  <div class="cta-row">
+    <a class="btn btn-whatsapp" id="waBtn" href="#" target="_blank" rel="noopener">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      Share on WhatsApp
+    </a>
+  </div>
+
+</main>
+
+<footer>
+  <div class="edvanta-row">
+    <span>An initiative by</span>
+    <img src="edvanta-logo1.png" alt="Edvanta" height="22"
+         style="filter:brightness(0) invert(1); opacity:.45;" />
+  </div>
+  <div class="social-row">
+    <a href="#">wizlingo</a>
+    <a href="#">info@clevermindsglobalschool.com</a>
+  </div>
+</footer>
+
+<script>
+  /* ─── Launch date ─── */
+  const LAUNCH = new Date('2026-07-01T00:00:00+05:30');
+
+  /* ─── Countdown ─── */
+  function tick() {
+    const diff = LAUNCH - Date.now();
+    if (diff <= 0) {
+      ['cd-d','cd-h','cd-m','cd-s'].forEach(id => document.getElementById(id).textContent = '00');
+      return;
+    }
+    const d = Math.floor(diff / 864e5);
+    const h = Math.floor((diff % 864e5) / 36e5);
+    const m = Math.floor((diff % 36e5) / 6e4);
+    const s = Math.floor((diff % 6e4) / 1e3);
+    document.getElementById('cd-d').textContent = String(d).padStart(2,'0');
+    document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
+    document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
+    document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
+  }
+  tick(); setInterval(tick, 1000);
+
+  /* ─── WhatsApp share ─── */
+  const WA_TEXT = encodeURIComponent(
+    '🌟 *WizLingo is coming!*\n\n' +
+    'An AI-powered reading & speaking platform for school children (Grades I–X).\n\n' +
+    '📖 Adaptive reading sessions\n' +
+    '🎤 AI speaking coach\n' +
+    '🏆 Badges & certificates\n\n' +
+    'Launching July 2026 by Edvanta 🚀\n\n' +
+    'Stay tuned → wizlingo'
+  );
+  document.getElementById('waBtn').href = `https://wa.me/?text=${WA_TEXT}`;
+
+  /* ─── Email signup ─── */
+  function handleSignup(e) {
+    e.preventDefault();
+    const email = document.getElementById('emailInput').value;
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('thanks').style.display = 'block';
+    console.log('Signup:', email); // hook up to your backend/Mailchimp here
+  }
+
+  /* ─── Particle canvas ─── */
+  const canvas = document.getElementById('bg');
+  const ctx    = canvas.getContext('2d');
+
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const COLORS = [
+    'rgba(249,115,22,',   // orange
+    'rgba(147,51,234,',   // purple
+    'rgba(244,63,136,',   // pink
+    'rgba(255,215,0,',    // gold
+    'rgba(255,255,255,',  // white
+  ];
+
+  class Particle {
+    constructor() { this.reset(true); }
+    reset(init = false) {
+      this.x    = Math.random() * W;
+      this.y    = init ? Math.random() * H : H + 10;
+      this.r    = 1 + Math.random() * 2.5;
+      this.vy   = -(0.3 + Math.random() * 0.8);
+      this.vx   = (Math.random() - 0.5) * 0.4;
+      this.life = 0;
+      this.max  = 120 + Math.random() * 200;
+      this.col  = COLORS[Math.floor(Math.random() * COLORS.length)];
+      this.star = Math.random() > 0.65;
+    }
+    draw() {
+      const progress = this.life / this.max;
+      const alpha    = progress < 0.15 ? progress / 0.15
+                     : progress > 0.75 ? (1 - progress) / 0.25
+                     : 1;
+      ctx.globalAlpha = alpha * (this.star ? 0.75 : 0.45);
+      ctx.fillStyle   = this.col + (this.star ? '1)' : '.8)');
+      if (this.star) {
+        drawStar4(this.x, this.y, this.r * 2.2);
+      } else {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    update() {
+      this.x    += this.vx;
+      this.y    += this.vy;
+      this.life++;
+      if (this.life > this.max || this.y < -20) this.reset();
+    }
+  }
+
+  function drawStar4(cx, cy, r) {
+    const ir = r * 0.38;
+    ctx.beginPath();
+    for (let i = 0; i < 8; i++) {
+      const a = (i * Math.PI) / 4;
+      const rr = i % 2 === 0 ? r : ir;
+      i === 0 ? ctx.moveTo(cx + rr * Math.cos(a), cy + rr * Math.sin(a))
+              : ctx.lineTo(cx + rr * Math.cos(a), cy + rr * Math.sin(a));
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  for (let i = 0; i < 90; i++) particles.push(new Particle());
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.globalAlpha = 1;
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(animate);
+  }
+  animate();
+</script>
+</body>
+</html>

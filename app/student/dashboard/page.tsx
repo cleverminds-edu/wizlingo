@@ -1,9 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { LogOut } from "lucide-react";
 import Image from "next/image";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { BadgeCelebration } from "@/components/badges/BadgeCelebration";
+import { BadgeType } from "@/app/generated/prisma/client";
+import DesktopDashboard from "@/components/dashboard/DesktopDashboard";
 
 interface StudentData {
   id: string;
@@ -82,9 +86,12 @@ function Confetti() {
 
 export default function StudentDashboard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isMobile = useIsMobile();
   const [student, setStudent] = useState<StudentData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [earnedBadge, setEarnedBadge] = useState<BadgeType | null>(null);
 
   useEffect(() => {
     fetch("/api/auth/me", { credentials: "include" })
@@ -95,6 +102,20 @@ export default function StudentDashboard() {
       .catch(() => router.push("/login"))
       .finally(() => setLoading(false));
   }, [router]);
+
+  // Listen for badge earned from URL params
+  useEffect(() => {
+    const badgeParam = searchParams.get('badgeEarned');
+    if (badgeParam && ['SPARK', 'WORD_WIZARD', 'VOICE_WIZARD', 'LANGUAGE_WIZARD', 'GRAND_WIZARD'].includes(badgeParam)) {
+      setEarnedBadge(badgeParam as BadgeType);
+    }
+  }, [searchParams]);
+
+  const handleBadgeCelebrationClose = () => {
+    setEarnedBadge(null);
+    // Clear the URL param
+    window.history.replaceState({}, '', '/student/dashboard');
+  };
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
@@ -119,6 +140,22 @@ export default function StudentDashboard() {
 
   if (!student) return null;
 
+  if (!isMobile) {
+    return (
+      <>
+        <DesktopDashboard student={student} onLogout={logout} />
+        {earnedBadge && (
+          <BadgeCelebration
+            badgeType={earnedBadge}
+            studentName={student.name}
+            isVisible={!!earnedBadge}
+            onClose={handleBadgeCelebrationClose}
+          />
+        )}
+      </>
+    );
+  }
+
   const level = student.progress?.currentLevel ?? 1;
   const totalSessions = student.progress?.totalSessions ?? 0;
   const passedSessions = student.progress?.passedSessions ?? 0;
@@ -129,6 +166,16 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen flex flex-col"
       style={{ background: "linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%)" }}>
+
+      {/* Badge Celebration Modal */}
+      {earnedBadge && (
+        <BadgeCelebration
+          badgeType={earnedBadge}
+          studentName={student.name}
+          isVisible={!!earnedBadge}
+          onClose={handleBadgeCelebrationClose}
+        />
+      )}
 
       {/* Welcome splash */}
       {showWelcome && (
@@ -151,8 +198,8 @@ export default function StudentDashboard() {
 
       {/* Header */}
       <header className="flex justify-between items-center px-8 py-4 border-b border-white/10">
-        <Image src="/edvanta-logo1.png" alt="Edvanta" width={130} height={36}
-          className="brightness-0 invert opacity-80" />
+        <Image src="/wiziingo-logo.svg" alt="WizLingo" width={148} height={38}
+          />
         <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/20">
           <span className="text-yellow-400 text-lg">⭐</span>
           <span className="text-white font-bold">Level {level} {levelInfo.label}</span>

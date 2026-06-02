@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import ReadingSession from "@/components/ReadingSession";
+import DesktopReadingSession from "@/components/session/DesktopReadingSession";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import { GradeBand } from "@/app/generated/prisma/enums";
 
 interface Passage {
@@ -59,7 +61,7 @@ function LevelUpOverlay({ newLevel, onContinue }: { newLevel: number; onContinue
       <div className={`relative rounded-3xl p-14 text-center animate-pop-in bg-gradient-to-br ${info.color} shadow-2xl max-w-lg w-full mx-6`}>
 
         {/* Burst ring */}
-        <div className="absolute inset-0 rounded-3xl animate-pulse-ring opacity-40"
+        <div className="absolute inset-0 rounded-3xl animate-pulse-ring opacity-40 pointer-events-none"
           style={{ background: "rgba(255,255,255,0.3)" }} />
 
         <div className="text-[110px] leading-none mb-2 animate-float">{info.emoji}</div>
@@ -95,8 +97,10 @@ function LevelUpOverlay({ newLevel, onContinue }: { newLevel: number; onContinue
 
 export default function SessionPage() {
   const router = useRouter();
+  const isMobile = useIsMobile();
   const [passage, setPassage] = useState<Passage | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [studentName, setStudentName] = useState("");
   const [phase, setPhase] = useState<"loading" | "reading" | "done" | "error">("loading");
   const [score, setScore] = useState<ScoreResult | null>(null);
   const [error, setError] = useState("");
@@ -105,9 +109,16 @@ export default function SessionPage() {
   async function loadSession() {
     setPhase("loading"); setError(""); setScore(null); setShowLevelUp(false);
     try {
-      const passageRes = await fetch("/api/passages", { credentials: "include" });
+      const [passageRes, meRes] = await Promise.all([
+        fetch("/api/passages", { credentials: "include" }),
+        fetch("/api/auth/me", { credentials: "include" }),
+      ]);
       if (!passageRes.ok) throw new Error("No passage available");
       const p: Passage = await passageRes.json();
+      if (meRes.ok) {
+        const me = await meRes.json();
+        setStudentName(me.name ?? "");
+      }
 
       const sessionRes = await fetch("/api/sessions", {
         method: "POST",
@@ -168,6 +179,25 @@ export default function SessionPage() {
     );
   }
 
+  // ── Desktop: full-page session component handles its own layout ──────────────
+  if (!isMobile && passage && sessionId) {
+    return (
+      <>
+        {showLevelUp && score && (
+          <LevelUpOverlay newLevel={score.newLevel} onContinue={() => setShowLevelUp(false)} />
+        )}
+        <DesktopReadingSession
+          passage={passage}
+          sessionId={sessionId}
+          timeLimitSec={timeLimitSec}
+          studentName={studentName}
+          onComplete={handleComplete}
+          onTryAgain={loadSession}
+        />
+      </>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col"
       style={{ background: "linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%)" }}>
@@ -204,6 +234,7 @@ export default function SessionPage() {
           <ReadingSession
             passage={passage}
             sessionId={sessionId}
+            studentName={studentName}
             timeLimitSec={timeLimitSec}
             onComplete={handleComplete}
           />

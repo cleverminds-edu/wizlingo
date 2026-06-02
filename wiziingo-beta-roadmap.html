@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WizLingo Beta Roadmap — 100 Warm Users</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0F0C29 0%, #302B63 50%, #24243E 100%);
+      color: #2c3e50;
+      line-height: 1.6;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    header {
+      background: linear-gradient(135deg, #F97316 0%, #F43F88 50%, #9333EA 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    header p {
+      font-size: 1.1em;
+      opacity: 0.95;
+    }
+    .content {
+      padding: 40px;
+    }
+    section {
+      margin-bottom: 50px;
+    }
+    section h2 {
+      font-size: 1.8em;
+      color: #F97316;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #F97316;
+    }
+    section h3 {
+      font-size: 1.3em;
+      color: #2c3e50;
+      margin-top: 25px;
+      margin-bottom: 15px;
+    }
+    p {
+      margin-bottom: 15px;
+      color: #34495e;
+    }
+    ul, ol {
+      margin-left: 25px;
+      margin-bottom: 15px;
+    }
+    li {
+      margin-bottom: 10px;
+      color: #34495e;
+    }
+    .box {
+      background: #f8f9fa;
+      border-left: 4px solid #F97316;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 6px;
+    }
+    .box.info {
+      border-left-color: #3B82F6;
+    }
+    .box.success {
+      border-left-color: #22c55e;
+    }
+    .box.warning {
+      border-left-color: #f59e0b;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.95em;
+    }
+    table th {
+      background: #2c3e50;
+      color: white;
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+    }
+    table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #ecf0f1;
+    }
+    table tr:hover {
+      background: #f8f9fa;
+    }
+    table tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+    .metric-card {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 10px 10px 10px 0;
+      min-width: 200px;
+      text-align: center;
+    }
+    .metric-card strong {
+      display: block;
+      font-size: 1.5em;
+      margin-bottom: 5px;
+    }
+    .metric-card span {
+      display: block;
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
+    code {
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+    pre {
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 15px 0;
+      font-size: 0.9em;
+      line-height: 1.5;
+    }
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .timeline-item {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .timeline-item strong {
+      display: block;
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+    .step {
+      background: #e8f4f8;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 6px;
+      border-left: 4px solid #3B82F6;
+    }
+    .step strong {
+      color: #3B82F6;
+    }
+    .checkmark {
+      color: #22c55e;
+      font-weight: bold;
+    }
+    .footer {
+      background: #2c3e50;
+      color: white;
+      padding: 30px;
+      text-align: center;
+      font-size: 0.95em;
+    }
+    .footer p {
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 10px;
+    }
+    @media print {
+      body { background: white; }
+      .container { box-shadow: none; }
+      section { page-break-inside: avoid; }
+    }
+    @media (max-width: 768px) {
+      header h1 { font-size: 1.8em; }
+      .content { padding: 20px; }
+      table { font-size: 0.85em; }
+      table th, table td { padding: 10px; }
+      .metric-card { min-width: 150px; padding: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>🚀 WizLingo Beta Roadmap</h1>
+    <p>100 Warm Users • 8 Weeks • Closed Beta</p>
+  </header>
+
+  <div class="content">
+
+    <!-- Phase 1 -->
+    <section>
+      <h2>📋 Phase 1: Setup (Week 1)</h2>
+
+      <h3>Distribution Method (Pick One)</h3>
+
+      <h4 style="color: #34495e; margin-top: 15px;">Option A: Web App (Easiest)</h4>
+      <ul>
+        <li>Deploy the app to a web URL: <code>beta.wizlingo.app</code> or <code>beta.edvanta.in</code></li>
+        <li>Share the link via email: "Here's your beta access → [link]"</li>
+        <li>No app store, no TestFlight, no APK mess</li>
+        <li>Works on all devices instantly</li>
+        <li><strong>Best if:</strong> Your app is web-based (Next.js, React)</li>
+      </ul>
+
+      <h4 style="color: #34495e; margin-top: 15px;">Option B: TestFlight (iOS) + Google Play Closed Beta (Android)</h4>
+      <ul>
+        <li>iOS: Use Apple TestFlight (up to 100 testers, link-based)</li>
+        <li>Android: Google Play → "Internal testing" track (link-based)</li>
+        <li>More official, but requires app store setup</li>
+        <li><strong>Best if:</strong> You want real app binaries on phones</li>
+      </ul>
+
+      <h4 style="color: #34495e; margin-top: 15px;">Option C: Direct APK (Android) + Web (iOS)</h4>
+      <ul>
+        <li>Android: Generate APK, share via Google Drive/Dropbox link</li>
+        <li>iOS: Share web app link</li>
+        <li>Hybrid, simplest for fast iteration</li>
+      </ul>
+
+      <div class="box success">
+        <strong>✨ Recommendation: Web App + TestFlight</strong><br>
+        Web app: Main version, everyone uses this (easiest)<br>
+        TestFlight: For iOS power users who want native feel<br>
+        Single source of truth: One codebase, deploy once, both platforms work
+      </div>
+    </section>
+
+    <!-- Phase 2 -->
+    <section>
+      <h2>👥 Phase 2: User Onboarding (Weeks 1–2)</h2>
+
+      <h3>Invitation Flow</h3>
+
+      <div class="step">
+        <strong>Step 1: Build "Invite List"</strong><br>
+        Create a spreadsheet with: Name | Email | Grade | Source | Status
+      </div>
+
+      <div class="step">
+        <strong>Step 2: Send Invites</strong><br>
+        Use the email template provided below
+      </div>
+
+      <div class="step">
+        <strong>Step 3: Track Sign-Ups</strong><br>
+        Monitor: Invited → Signed up → Completed first session → Completed 3 sessions
+      </div>
+
+      <h3>Email Template</h3>
+      <pre>Subject: 🚀 You're invited to test WizLingo Beta!
+
+Hi [Name],
+
+We're excited to invite you to test WizLingo, an AI-powered
+reading & speaking app for students like [Child Name] (Grade [X]).
+
+🎯 What to do:
+1. Click here: https://beta.wizlingo.app
+2. Sign up with your email
+3. Start a reading session
+4. Earn badges!
+
+⏱ Beta runs for 8 weeks (June 2 – July 28)
+Your feedback shapes the final app.
+
+❓ Questions? Reply to this email.
+
+Happy reading! 📚
+— The WizLingo Team</pre>
+
+      <h3>Expected Sign-Up Rates</h3>
+      <pre>Invited: 100
+Signed up within 24h: 68 (68%)
+Completed first session: 54 (54%)
+Completed 3 sessions: 42 (42%)</pre>
+    </section>
+
+    <!-- Phase 3 -->
+    <section>
+      <h2>📊 Phase 3: Progress Monitoring (Weeks 2–8)</h2>
+
+      <h3>Daily Check (5 min)</h3>
+      <pre>✓ Active users today: 45/100 (45%)
+✓ New sessions today: 62
+✓ Avg session duration: 8.5 min
+✓ Crashes reported: 0
+✓ Top issue: "Speech doesn't understand my accent"</pre>
+
+      <h3>Key Metrics to Track</h3>
+      <table>
+        <tr>
+          <th>Metric</th>
+          <th>How to Measure</th>
+          <th>Goal</th>
+        </tr>
+        <tr>
+          <td><strong>DAU</strong></td>
+          <td>Active users/day</td>
+          <td>50+</td>
+        </tr>
+        <tr>
+          <td><strong>Session Completion</strong></td>
+          <td>Sessions finished / sessions started</td>
+          <td>80%+</td>
+        </tr>
+        <tr>
+          <td><strong>Avg WPM</strong></td>
+          <td>Speed trend</td>
+          <td>80–120</td>
+        </tr>
+        <tr>
+          <td><strong>Avg Accuracy</strong></td>
+          <td>Words correct / total</td>
+          <td>75%+</td>
+        </tr>
+        <tr>
+          <td><strong>Crash Rate</strong></td>
+          <td>Errors / sessions</td>
+          <td>&lt;1%</td>
+        </tr>
+        <tr>
+          <td><strong>Badge Earning</strong></td>
+          <td>Badges per user/week</td>
+          <td>2+</td>
+        </tr>
+        <tr>
+          <td><strong>Session Time</strong></td>
+          <td>Minutes per session</td>
+          <td>8–12 min</td>
+        </tr>
+      </table>
+
+      <h3>Feedback Collection (3 Methods)</h3>
+
+      <h4 style="color: #34495e;">1. In-App Survey (Post-Session)</h4>
+      <pre>"How was this session?"
+⭐ ⭐ ⭐ ⭐ ⭐
+
+"What could be better?" [Text]
+[Send]</pre>
+
+      <h4 style="color: #34495e;">2. Weekly Email Survey (Friday)</h4>
+      <pre>Quick 3-question survey:
+1. How often are you using WizLingo?
+   (Daily/3x week/weekly/less)
+2. What's your favorite feature?
+   (Reading/Speaking/Badges/Progress)
+3. What should we improve? (Text)</pre>
+
+      <h4 style="color: #34495e;">3. WhatsApp Group</h4>
+      <ul>
+        <li>Create: "WizLingo Beta Testers"</li>
+        <li>Weekly updates (1 message)</li>
+        <li>Quick questions: "Does speech work for you?"</li>
+        <li>Celebrate wins: "Priya earned 5 badges this week! 🎉"</li>
+      </ul>
+    </section>
+
+    <!-- Phase 4 -->
+    <section>
+      <h2>📝 Phase 4: Data Organization (Ongoing)</h2>
+
+      <h3>Tracking Spreadsheet</h3>
+      <p>Track: User | Email | Grade | Signup Date | Sessions Done | Badges | Last Active | Feedback | Status</p>
+      <p>Update weekly. Helps you spot:</p>
+      <ul>
+        <li>Who's active vs. dropped off</li>
+        <li>Which grades are struggling</li>
+        <li>Patterns in feedback</li>
+      </ul>
+
+      <div class="box info">
+        <strong>💡 Tip:</strong> Use Google Sheets for real-time collaboration. Share with your team for transparency.
+      </div>
+    </section>
+
+    <!-- Phase 5 -->
+    <section>
+      <h2>🔧 Phase 5: Bug Fixing & Iteration (Weeks 2–8)</h2>
+
+      <h3>Weekly Cycle</h3>
+
+      <div class="step">
+        <strong>Monday–Wednesday:</strong> Monitor feedback, prioritize top 3 bugs, dev fixes them
+      </div>
+
+      <div class="step">
+        <strong>Thursday:</strong> Deploy fix to beta, ask testers to test
+      </div>
+
+      <div class="step">
+        <strong>Friday:</strong> Retrospective: what worked, what broke, what's next?
+      </div>
+
+      <h3>Example Bug Cycle</h3>
+      <pre>Week 2 Bug: "Speech doesn't understand my Hindi accent"
+Action: Improve speech recognition model, test with 10 Hindi speakers
+Week 3: Deploy improved version
+Week 3 Feedback: "Much better! 90% accuracy now"
+→ Keep it, move to next issue</pre>
+    </section>
+
+    <!-- Phase 6 -->
+    <section>
+      <h2>💬 Phase 6: Communication (Keep Them Engaged)</h2>
+
+      <h3>Weekly Email Template</h3>
+      <pre>Subject: 📊 WizLingo Beta Update (Week 3)
+
+Hi Beta Testers,
+
+Great progress this week! Here's what happened:
+
+📈 Stats:
+- 78 of you were active (78% DAU)
+- 340 sessions completed
+- 142 badges earned
+
+✨ New this week:
+- Fixed speech recognition for accents
+- Added 5 new "hard" passages for Grade 7+
+- Bug fix: crash on iPad (thanks for reporting!)
+
+🎯 Your feedback:
+"Loved the badge designs!" — Rahul
+"Passage too easy" — Priya
+→ We're adding harder levels next week
+
+❓ Question of the week:
+Would you use a parent dashboard to track progress?
+Reply to this email!
+
+Happy reading,
+The WizLingo Team</pre>
+
+      <div class="box success">
+        <strong>✨ Keep them invested & feeling heard.</strong> This email keeps engagement high and shows progress.
+      </div>
+    </section>
+
+    <!-- Phase 7 -->
+    <section>
+      <h2>🚀 Phase 7: Transition to Public (Week 9)</h2>
+
+      <h3>Decision Criteria</h3>
+      <ul>
+        <li><strong>If >60% D7 retention:</strong> Ready for public → App Store launch</li>
+        <li><strong>If <40% D7 retention:</strong> Need more work → Extend beta, iterate</li>
+        <li><strong>Top issue:</strong> Fix it before public launch</li>
+      </ul>
+
+      <h3>Gradual Roll-Out</h3>
+      <pre>Week 9: Launch on Google Play beta channel (500 users)
+Week 10: Monitor, fix issues
+Week 11: Full Google Play + TestFlight public launch</pre>
+    </section>
+
+    <!-- Technical Setup -->
+    <section>
+      <h2>⚙️ Technical Setup (What You Need)</h2>
+
+      <table>
+        <tr>
+          <th>Component</th>
+          <th>Status</th>
+          <th>Details</th>
+        </tr>
+        <tr>
+          <td><strong>App</strong></td>
+          <td><span class="checkmark">✅</span></td>
+          <td>Reading, speaking, badges — you have this</td>
+        </tr>
+        <tr>
+          <td><strong>User Authentication</strong></td>
+          <td><span class="checkmark">✅</span></td>
+          <td>Email/password signup</td>
+        </tr>
+        <tr>
+          <td><strong>Database</strong></td>
+          <td><span class="checkmark">✅</span></td>
+          <td>Store user progress (Firebase, PostgreSQL, etc.)</td>
+        </tr>
+        <tr>
+          <td><strong>Analytics</strong></td>
+          <td><span class="checkmark">✅</span></td>
+          <td>Firebase Events or custom logging</td>
+        </tr>
+        <tr>
+          <td><strong>Feedback Form</strong></td>
+          <td><span class="checkmark">✅</span></td>
+          <td>In-app modal or external Typeform</td>
+        </tr>
+        <tr>
+          <td><strong>WhatsApp Group</strong></td>
+          <td><span class="checkmark">✅</span></td>
+          <td>For quick comms</td>
+        </tr>
+        <tr>
+          <td><strong>Dashboard</strong></td>
+          <td>Build Week 1</td>
+          <td>Simple web page showing stats (fetch from Firebase every 5 min)</td>
+        </tr>
+      </table>
+
+      <h3>Quick Dashboard Idea</h3>
+      <pre>&lt;h1&gt;WizLingo Beta Dashboard&lt;/h1&gt;
+&lt;p&gt;Active today: 45/100&lt;/p&gt;
+&lt;p&gt;Sessions this week: 340&lt;/p&gt;
+&lt;p&gt;Avg WPM: 85&lt;/p&gt;
+&lt;p&gt;Crash rate: 0.8%&lt;/p&gt;</pre>
+    </section>
+
+    <!-- Timeline -->
+    <section>
+      <h2>📅 8-Week Timeline</h2>
+
+      <table>
+        <tr>
+          <th>Week</th>
+          <th>Focus</th>
+          <th>You Do</th>
+        </tr>
+        <tr>
+          <td><strong>1</strong></td>
+          <td>Setup, invite 100 users</td>
+          <td>Email invites, build simple dashboard</td>
+        </tr>
+        <tr>
+          <td><strong>2</strong></td>
+          <td>First sessions, collect feedback</td>
+          <td>Monitor daily, fix top 3 bugs</td>
+        </tr>
+        <tr>
+          <td><strong>3</strong></td>
+          <td>Iterate based on feedback</td>
+          <td>Deploy bug fixes, weekly email</td>
+        </tr>
+        <tr>
+          <td><strong>4</strong></td>
+          <td>Pattern recognition</td>
+          <td>"Hard passages" complaint → add easier levels</td>
+        </tr>
+        <tr>
+          <td><strong>5</strong></td>
+          <td>Momentum</td>
+          <td>Celebrate: "200 badges earned!"</td>
+        </tr>
+        <tr>
+          <td><strong>6</strong></td>
+          <td>Retention focus</td>
+          <td>Weekly check-ins, keep engagement high</td>
+        </tr>
+        <tr>
+          <td><strong>7</strong></td>
+          <td>Final polish</td>
+          <td>Last round of feedback, fix remaining bugs</td>
+        </tr>
+        <tr>
+          <td><strong>8</strong></td>
+          <td>Decide next step</td>
+          <td>Public launch or extend beta?</td>
+        </tr>
+      </table>
+    </section>
+
+    <!-- Success Criteria -->
+    <section>
+      <h2>✅ Success Criteria (End of Week 8)</h2>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0;">
+        <div class="metric-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <strong>D7 Retention</strong>
+          <span>50%+ users active after 7 days</span>
+        </div>
+        <div class="metric-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <strong>Avg WPM</strong>
+          <span>85+ (baseline established)</span>
+        </div>
+        <div class="metric-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <strong>Crash Rate</strong>
+          <span>&lt;1% of sessions</span>
+        </div>
+        <div class="metric-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+          <strong>User Satisfaction</strong>
+          <span>80%+ gave 4+ stars</span>
+        </div>
+      </div>
+
+      <ul>
+        <li><span class="checkmark">✅</span> Clear top 3 improvements for next version</li>
+        <li><span class="checkmark">✅</span> Users average 3+ sessions/week</li>
+      </ul>
+    </section>
+
+    <!-- Key Insights -->
+    <section>
+      <h2>💡 Key Insights</h2>
+
+      <h3>Why 100 Warm Users is Perfect</h3>
+      <ul>
+        <li>They'll actually use it (not abandon after 1 day)</li>
+        <li>They'll give detailed feedback (not just ⭐⭐⭐)</li>
+        <li>You can iterate fast (smaller group = quicker feedback loops)</li>
+        <li>They'll share bugs naturally (invested in your success)</li>
+        <li>Lower stress (no public reputation on the line yet)</li>
+      </ul>
+
+      <h3>Biggest Risk & Mitigation</h3>
+      <div class="box warning">
+        <strong>⚠️ Risk:</strong> Low DAU means hard to spot bugs<br><br>
+        <strong>Mitigation:</strong>
+        <ul style="margin-top: 10px; margin-left: 20px;">
+          <li>Weekly email reminding them to test</li>
+          <li>Celebrate wins ("Rahul earned 10 badges!")</li>
+          <li>Quick bug fixes (24 hours max)</li>
+        </ul>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="footer">
+    <p><strong>WizLingo Beta Program</strong></p>
+    <p>100 Warm Users • 8 Weeks • June 2 – July 28, 2026</p>
+    <p>Document generated for internal planning and team alignment.</p>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,111 @@
+<svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 3D Background Gradient -->
+    <radialGradient id="sparkBg3D" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" style="stop-color:#FFD54F;stop-opacity:1" />
+      <stop offset="40%" style="stop-color:#FF8C00;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#FF6B35;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#C41E3A;stop-opacity:1" />
+    </radialGradient>
+
+    <!-- Metallic Inner Glow -->
+    <radialGradient id="sparkInner3D" cx="40%" cy="40%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFACD;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFD700;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#FF8C00;stop-opacity:0" />
+    </radialGradient>
+
+    <!-- Top Shine -->
+    <radialGradient id="sparkShine" cx="40%" cy="30%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0" />
+    </radialGradient>
+
+    <!-- Outer Ring Light -->
+    <radialGradient id="sparkRing" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.3" />
+    </radialGradient>
+
+    <!-- Shadow filters -->
+    <filter id="shadowDeep3D">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#000000" flood-opacity="0.6"/>
+      <feDropShadow dx="2" dy="8" stdDeviation="8" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+
+    <filter id="innerShadow3D">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Deep shadow for 3D depth -->
+  <circle cx="140" cy="152" r="135" fill="#000000" opacity="0.3"/>
+  <circle cx="140" cy="148" r="133" fill="#000000" opacity="0.15"/>
+
+  <!-- Main badge base - 3D sphere illusion -->
+  <circle cx="140" cy="140" r="130" fill="url(#sparkBg3D)" filter="url(#shadowDeep3D)"/>
+  <circle cx="140" cy="140" r="128" fill="url(#sparkRing)"/>
+
+  <!-- Inner glow for 3D volume -->
+  <circle cx="140" cy="140" r="125" fill="url(#sparkInner3D)"/>
+  <circle cx="140" cy="130" r="100" fill="url(#sparkShine)" opacity="0.5"/>
+
+  <!-- 3D Edge Bevels -->
+  <circle cx="140" cy="140" r="130" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.4"/>
+  <circle cx="140" cy="140" r="131" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.15"/>
+  <circle cx="140" cy="140" r="128" fill="none" stroke="#D97706" stroke-width="2" opacity="0.5"/>
+
+  <!-- 3D FLAME ICON WITH DEPTH -->
+  <g transform="translate(140, 108)" filter="url(#innerShadow3D)">
+    <!-- Flame shadow (3D depth) -->
+    <path d="M 3,-48 C -25,-20 -30,12 -25,38 C -12,58 3,68 3,68 C 3,68 18,56 28,36 C 33,10 30,-20 3,-48 Z"
+          fill="#000000" opacity="0.25" transform="translate(4, 4)"/>
+
+    <!-- Outer flame glow -->
+    <path d="M 0,-50 C -30,-25 -35,10 -30,40 C -18,60 0,70 0,70 C 0,70 18,60 30,40 C 35,10 30,-25 0,-50 Z"
+          fill="#FFB84D" opacity="0.25"/>
+
+    <!-- Main flame - metallic orange -->
+    <path d="M 0,-48 C -28,-22 -32,8 -28,35 C -16,55 0,65 0,65 C 0,65 16,55 28,35 C 32,8 28,-22 0,-48 Z"
+          fill="#FF8C00" stroke="#FF6B35" stroke-width="0.5"/>
+
+    <!-- Mid flame - gradient transition -->
+    <path d="M -2,-35 C -16,-15 -18,14 -14,32 C -6,47 0,54 0,54 C 0,54 6,47 14,32 C 18,14 16,-15 -2,-35 Z"
+          fill="#FFD700" opacity="0.95"/>
+
+    <!-- Inner bright core -->
+    <ellipse cx="0" cy="10" rx="14" ry="20" fill="#FFFACD" opacity="0.95"/>
+    <circle cx="0" cy="2" r="8" fill="#FFFFFF" opacity="0.95"/>
+    <circle cx="0" cy="0" r="4" fill="#FFFACD" opacity="0.7"/>
+  </g>
+
+  <!-- Sparkle stars (3D positioned) -->
+  <g filter="url(#innerShadow3D)" opacity="0.95">
+    <g transform="translate(225, 70)">
+      <path d="M 0,-10 L 3,-2 L 12,-1 L 5,4 L 7,13 L 0,8 L -7,13 L -5,4 L -12,-1 L -3,-2 Z" fill="#FFD700" opacity="0.9"/>
+      <circle cx="0" cy="-6" r="1.5" fill="#FFFFFF" opacity="0.8"/>
+    </g>
+    <g transform="translate(60, 85)">
+      <path d="M 0,-8 L 2,-1 L 10,0 L 4,5 L 5,11 L 0,7 L -5,11 L -4,5 L -10,0 L -2,-1 Z" fill="#FFD700" opacity="0.7"/>
+    </g>
+  </g>
+
+  <!-- Bottom shine bar (3D reflection) -->
+  <defs>
+    <linearGradient id="sparkShineBar" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0.05" />
+    </linearGradient>
+  </defs>
+  <ellipse cx="140" cy="238" rx="92" ry="14" fill="url(#sparkShineBar)"/>
+
+  <!-- Bold 3D Text -->
+  <text x="140" y="237" font-family="Fredoka, Arial" font-size="33" font-weight="900" text-anchor="middle"
+        fill="url(#sparkBg3D)" letter-spacing="2" stroke="#FF6B35" stroke-width="1.5" opacity="0.95">SPARK</text>
+  <text x="140" y="237" font-family="Fredoka, Arial" font-size="33" font-weight="900" text-anchor="middle"
+        fill="#FFFFFF" letter-spacing="2" opacity="0.6" stroke="none">SPARK</text>
+</svg>

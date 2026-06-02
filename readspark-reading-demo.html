@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReadSpark — AI Reading Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+#stage {
+  width: min(100vw, 177.78vh);
+  height: min(56.25vw, 100vh);
+  background: linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── KEYFRAMES ── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+@keyframes pop-in {
+  0%   { transform: scale(0.5); }
+  70%  { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.8; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.3); }
+  50%       { transform: scaleY(1); }
+}
+@keyframes confetti-fall {
+  0%   { transform: translateY(-20px) rotate(0deg);   opacity: 1; }
+  100% { transform: translateY(500px) rotate(720deg); opacity: 0; }
+}
+@keyframes star-in {
+  0%   { transform: scale(0)   rotate(0deg); }
+  70%  { transform: scale(1.4) rotate(20deg); }
+  100% { transform: scale(1)   rotate(0deg); }
+}
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes orb-float-1 {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-30px); }
+}
+@keyframes orb-float-2 {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(20px); }
+}
+@keyframes glow-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes check-in {
+  0%   { transform: scale(0); }
+  70%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+@keyframes typewriter {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+@keyframes count-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.05); }
+}
+@keyframes dot-wave {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+/* ── SCENES ── */
+.scene {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+  display: flex;
+  flex-direction: column;
+}
+.scene.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ═══════════════════════════════════════════
+   START OVERLAY — MOVIE POSTER
+═══════════════════════════════════════════ */
+#startOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  background: linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 1.5vh, 1rem);
+  padding: 3vh 6%;
+}
+.so-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.so-orb-1 {
+  width: clamp(120px, 28vw, 320px);
+  height: clamp(120px, 28vw, 320px);
+  background: radial-gradient(circle, rgba(129,140,248,0.38) 0%, transparent 70%);
+  top: -8%; left: -6%;
+  animation: orb-float-1 8s ease-in-out infinite;
+}
+.so-orb-2 {
+  width: clamp(100px, 22vw, 260px);
+  height: clamp(100px, 22vw, 260px);
+  background: radial-gradient(circle, rgba(251,146,60,0.32) 0%, transparent 70%);
+  bottom: -5%; right: -4%;
+  animation: orb-float-2 11s ease-in-out infinite;
+}
+.so-orb-3 {
+  width: clamp(80px, 18vw, 200px);
+  height: clamp(80px, 18vw, 200px);
+  background: radial-gradient(circle, rgba(167,139,250,0.28) 0%, transparent 70%);
+  top: 35%; right: 8%;
+  animation: orb-float-1 9s ease-in-out infinite 2s;
+}
+.so-orb-4 {
+  width: clamp(60px, 14vw, 160px);
+  height: clamp(60px, 14vw, 160px);
+  background: radial-gradient(circle, rgba(244,114,182,0.22) 0%, transparent 70%);
+  bottom: 20%; left: 5%;
+  animation: orb-float-2 13s ease-in-out infinite 1s;
+}
+.so-wordmark-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+.so-glow-halo {
+  position: absolute;
+  width: clamp(200px, 42vw, 460px);
+  height: clamp(70px, 14vh, 110px);
+  background: radial-gradient(ellipse, rgba(251,146,60,0.48) 0%, transparent 68%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation: glow-pulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+.so-wordmark {
+  font-size: clamp(2.5rem, 6vh, 4rem);
+  font-weight: 900;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+  letter-spacing: -0.01em;
+}
+.so-wordmark .read  { color: #ffffff; }
+.so-wordmark .spark { color: #fb923c; }
+.so-by {
+  color: rgba(255,255,255,0.42);
+  font-size: clamp(0.55rem, 1.1vh, 0.78rem);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  margin-top: 0.4vh;
+  animation: fade-in 0.7s ease 0.4s both;
+  z-index: 2;
+}
+.so-pill {
+  background: rgba(99,102,241,0.22);
+  border: 1px solid rgba(99,102,241,0.48);
+  color: #a5b4fc;
+  font-size: clamp(0.52rem, 0.95vh, 0.7rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.45vh 2.2%;
+  border-radius: 9999px;
+  animation: fade-in 0.6s ease 0.6s both;
+  z-index: 2;
+}
+.so-profile-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 1.2rem;
+  padding: clamp(0.65rem, 1.7vh, 1.15rem) clamp(1rem, 3.5%, 2.2rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65vh;
+  animation: slide-up 0.6s ease 0.5s both;
+  backdrop-filter: blur(8px);
+  z-index: 2;
+  width: min(340px, 52%);
+}
+.so-profile-top {
+  display: flex;
+  align-items: center;
+  gap: 3%;
+}
+.so-avatar {
+  font-size: clamp(1.6rem, 3.8vh, 2.6rem);
+  line-height: 1;
+}
+.so-name  { color: #fff; font-size: clamp(0.78rem, 1.55vh, 1.05rem); font-weight: 800; }
+.so-grade { color: #a5b4fc; font-size: clamp(0.58rem, 1.05vh, 0.72rem); font-weight: 500; margin-top: 1px; }
+.so-badges {
+  display: flex;
+  gap: 2%;
+  flex-wrap: wrap;
+}
+.so-badge {
+  background: rgba(139,92,246,0.22);
+  border: 1px solid rgba(139,92,246,0.38);
+  color: #c4b5fd;
+  font-size: clamp(0.48rem, 0.88vh, 0.62rem);
+  font-weight: 600;
+  padding: 0.3vh 1.4%;
+  border-radius: 9999px;
+}
+.so-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55vh;
+  z-index: 2;
+  animation: fade-in 0.6s ease 0.7s both;
+}
+.so-benefit {
+  display: flex;
+  align-items: center;
+  gap: 1.8%;
+  color: #fff;
+  font-size: clamp(0.58rem, 1.08vh, 0.76rem);
+  font-weight: 500;
+}
+.so-check { color: #4ade80; font-weight: 700; font-size: clamp(0.65rem, 1.2vh, 0.85rem); flex-shrink: 0; }
+.so-btn {
+  background: linear-gradient(135deg, #f97316 0%, #7c3aed 100%);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(0.72rem, 1.45vh, 0.98rem);
+  font-weight: 800;
+  border: none;
+  border-radius: 9999px;
+  padding: 1.5vh 8%;
+  cursor: pointer;
+  box-shadow: 0 0 28px rgba(249,115,22,0.52), 0 0 58px rgba(124,58,237,0.3);
+  animation: fade-in 0.6s ease 0.9s both;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: transform 0.15s, box-shadow 0.15s;
+  z-index: 2;
+}
+.so-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 42px rgba(249,115,22,0.72), 0 0 80px rgba(124,58,237,0.44);
+}
+.so-volume {
+  color: rgba(255,255,255,0.2);
+  font-size: clamp(0.48rem, 0.88vh, 0.62rem);
+  font-weight: 400;
+  z-index: 2;
+  animation: fade-in 0.6s ease 1.1s both;
+}
+
+/* ═══════════════════════════════════════════
+   SCENE 1 — SPLASH
+═══════════════════════════════════════════ */
+#sceneSplash {
+  align-items: center;
+  justify-content: center;
+  gap: 1.4vh;
+}
+.splash-orb-1 {
+  position: absolute;
+  width: clamp(150px, 38vw, 420px);
+  height: clamp(150px, 38vw, 420px);
+  background: radial-gradient(circle, rgba(129,140,248,0.42) 0%, transparent 65%);
+  top: -12%; right: -10%;
+  animation: orb-float-1 8s ease-in-out infinite;
+  pointer-events: none;
+}
+.splash-orb-2 {
+  position: absolute;
+  width: clamp(100px, 26vw, 300px);
+  height: clamp(100px, 26vw, 300px);
+  background: radial-gradient(circle, rgba(251,146,60,0.36) 0%, transparent 65%);
+  bottom: -8%; left: -5%;
+  animation: orb-float-2 11s ease-in-out infinite;
+  pointer-events: none;
+}
+.splash-wm-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+.splash-glow {
+  position: absolute;
+  width: clamp(200px, 42vw, 450px);
+  height: clamp(70px, 15vh, 120px);
+  background: radial-gradient(ellipse, rgba(251,146,60,0.42) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation: glow-pulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+.splash-wm {
+  font-size: clamp(2.8rem, 7.5vh, 5.5rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  position: relative;
+  z-index: 1;
+}
+.splash-wm .read  { color: #fff; }
+.splash-wm .spark { color: #fb923c; }
+.splash-by {
+  color: rgba(255,255,255,0.45);
+  font-size: clamp(0.58rem, 1.1vh, 0.8rem);
+  font-weight: 500;
+  margin-top: 0.5vh;
+  animation: fade-in 0.8s ease 0.3s both;
+}
+.splash-badge {
+  background: rgba(99,102,241,0.2);
+  border: 1px solid rgba(99,102,241,0.45);
+  color: #a5b4fc;
+  font-size: clamp(0.58rem, 1.05vh, 0.75rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.5vh 2.5%;
+  border-radius: 9999px;
+  animation: fade-in 0.6s ease 0.6s both;
+  z-index: 2;
+}
+.loading-dots {
+  display: flex;
+  gap: 0.55rem;
+  margin-top: 1vh;
+  z-index: 2;
+}
+.loading-dot {
+  width: clamp(7px, 1.1vh, 10px);
+  height: clamp(7px, 1.1vh, 10px);
+  border-radius: 50%;
+  background: #818cf8;
+}
+.loading-dot:nth-child(1) { animation: dot-wave 1s ease-in-out infinite 0s; }
+.loading-dot:nth-child(2) { animation: dot-wave 1s ease-in-out infinite 0.2s; }
+.loading-dot:nth-child(3) { animation: dot-wave 1s ease-in-out infinite 0.4s; }
+
+/* ═══════════════════════════════════════════
+   SCENE 2 — STUDENT INTRO
+═══════════════════════════════════════════ */
+#sceneIntro {
+  align-items: center;
+  justify-content: center;
+  gap: 1.8vh;
+}
+.intro-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 1.5rem;
+  padding: clamp(1rem, 2.6vh, 1.9rem) clamp(1.2rem, 5%, 3.5rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9vh;
+  backdrop-filter: blur(12px);
+  animation: slide-up 0.6s ease both;
+  max-width: 58%;
+  width: 100%;
+}
+.intro-avatar {
+  font-size: clamp(2rem, 4.2vh, 3.5rem);
+  animation: pop-in 0.5s ease both;
+}
+.intro-name  { color: #fff; font-size: clamp(0.88rem, 1.85vh, 1.28rem); font-weight: 800; text-align: center; }
+.intro-level { color: #a5b4fc; font-size: clamp(0.62rem, 1.15vh, 0.82rem); font-weight: 500; text-align: center; }
+.intro-badges {
+  display: flex; gap: 2%; flex-wrap: wrap; justify-content: center; width: 100%;
+}
+.intro-badge {
+  background: rgba(99,102,241,0.2);
+  border: 1px solid rgba(99,102,241,0.35);
+  color: #c4b5fd;
+  font-size: clamp(0.52rem, 0.95vh, 0.68rem);
+  font-weight: 600;
+  padding: 0.38vh 1.8%;
+  border-radius: 9999px;
+}
+.loading-passage {
+  display: flex;
+  align-items: center;
+  gap: 1.5%;
+  color: rgba(165,180,252,0.8);
+  font-size: clamp(0.62rem, 1.15vh, 0.82rem);
+  font-weight: 500;
+  animation: fade-in 0.5s ease 0.4s both;
+}
+.spinner {
+  width: clamp(13px, 1.9vh, 17px);
+  height: clamp(13px, 1.9vh, 17px);
+  border: 2px solid rgba(165,180,252,0.28);
+  border-top-color: #818cf8;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   SCENE 3 — READING SESSION
+═══════════════════════════════════════════ */
+#sceneReading { flex-direction: column; }
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2vh 3%;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  flex-shrink: 0;
+}
+.back-btn {
+  color: #818cf8;
+  font-size: clamp(0.58rem, 1.05vh, 0.75rem);
+  font-weight: 600;
+  cursor: default;
+}
+.header-pill {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.8);
+  font-size: clamp(0.5rem, 0.9vh, 0.66rem);
+  font-weight: 600;
+  padding: 0.4vh 1.5%;
+  border-radius: 9999px;
+}
+.reading-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 2%;
+  padding: 1.5vh 3%;
+  overflow: hidden;
+}
+
+/* Passage card */
+.passage-card {
+  background: #fff;
+  border-radius: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.55);
+  padding: clamp(0.75rem, 1.9vh, 1.35rem) clamp(0.8rem, 2.5%, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75vh;
+  overflow: hidden;
+}
+.passage-topic {
+  color: #6366f1;
+  font-size: clamp(0.48rem, 0.85vh, 0.62rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.passage-title {
+  color: #111827;
+  font-size: clamp(0.82rem, 1.75vh, 1.25rem);
+  font-weight: 900;
+  line-height: 1.2;
+}
+.passage-text {
+  flex: 1;
+  color: #374151;
+  line-height: 2.1;
+  font-size: clamp(0.62rem, 1.22vh, 0.86rem);
+  font-weight: 400;
+  overflow: hidden;
+}
+.word { cursor: default; }
+.word.done   { color: #059669; font-weight: 600; }
+.word.active { background: #fef3c7; color: #d97706; font-weight: 700; padding: 1px 4px; border-radius: 4px; }
+.passage-hint {
+  color: #6366f1;
+  font-size: clamp(0.48rem, 0.82vh, 0.6rem);
+  font-weight: 500;
+  padding-top: 0.6vh;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+/* Controls column */
+.controls-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vh;
+  overflow: hidden;
+}
+.glass-card {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 1.5rem;
+  backdrop-filter: blur(4px);
+  padding: 1.5vh;
+}
+/* Ready state */
+.ready-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2vh;
+}
+.ready-text {
+  color: #a5b4fc;
+  font-size: clamp(0.58rem, 1.05vh, 0.75rem);
+  font-weight: 500;
+  text-align: center;
+}
+.mic-btn-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(80px, 16vh, 120px);
+  height: clamp(80px, 16vh, 120px);
+}
+.pulse-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(99,102,241,0.32);
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+.pulse-ring-2 { animation-delay: 0.75s; }
+.mic-btn {
+  width: clamp(58px, 11.5vh, 88px);
+  height: clamp(58px, 11.5vh, 88px);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #7c3aed);
+  border: none;
+  cursor: pointer;
+  font-size: clamp(1.2rem, 2.6vh, 1.9rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(99,102,241,0.42);
+  position: relative;
+  z-index: 1;
+  transition: transform 0.15s;
+}
+.mic-btn:hover { transform: scale(1.05); }
+.tap-label {
+  color: rgba(255,255,255,0.58);
+  font-size: clamp(0.48rem, 0.82vh, 0.6rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.chrome-note {
+  color: rgba(255,255,255,0.3);
+  font-size: clamp(0.42rem, 0.72vh, 0.54rem);
+  text-align: center;
+  font-weight: 400;
+}
+/* Recording state */
+.recording-state {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2vh;
+}
+.recording-state.active { display: flex; }
+.timer-wrap {
+  position: relative;
+  width: clamp(76px, 15vh, 108px);
+  height: clamp(76px, 15vh, 108px);
+}
+.timer-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.timer-track { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 6; }
+.timer-arc {
+  fill: none;
+  stroke: #4ade80;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 314;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1s linear, stroke 0.5s;
+}
+.timer-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: clamp(0.78rem, 1.55vh, 1.1rem);
+  font-weight: 700;
+}
+.wave-bars {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  height: clamp(18px, 3.2vh, 26px);
+}
+.wave-bar {
+  width: clamp(3px, 0.45vw, 5px);
+  height: 100%;
+  background: #818cf8;
+  border-radius: 2px;
+  animation: wave 0.8s ease-in-out infinite;
+}
+.wave-bar:nth-child(1)  { animation-delay: 0s;    height: 40%; }
+.wave-bar:nth-child(2)  { animation-delay: 0.07s; height: 70%; }
+.wave-bar:nth-child(3)  { animation-delay: 0.14s; height: 100%; }
+.wave-bar:nth-child(4)  { animation-delay: 0.21s; height: 80%; }
+.wave-bar:nth-child(5)  { animation-delay: 0.28s; height: 55%; }
+.wave-bar:nth-child(6)  { animation-delay: 0.35s; height: 90%; }
+.wave-bar:nth-child(7)  { animation-delay: 0.42s; height: 65%; }
+.wave-bar:nth-child(8)  { animation-delay: 0.49s; height: 45%; }
+.wave-bar:nth-child(9)  { animation-delay: 0.56s; height: 75%; }
+.wave-bar:nth-child(10) { animation-delay: 0.63s; height: 50%; }
+.wave-bar:nth-child(11) { animation-delay: 0.70s; height: 35%; }
+.done-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(0.58rem, 1.05vh, 0.75rem);
+  font-weight: 700;
+  border: none;
+  border-radius: 1.5rem;
+  padding: 1vh 0;
+  cursor: pointer;
+}
+.transcript-panel {
+  background: rgba(0,0,0,0.22);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 1rem;
+  padding: 1vh;
+  flex: 1;
+  overflow: hidden;
+}
+.transcript-label {
+  color: rgba(165,180,252,0.7);
+  font-size: clamp(0.42rem, 0.75vh, 0.58rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.5vh;
+}
+.transcript-text {
+  color: rgba(255,255,255,0.82);
+  font-size: clamp(0.52rem, 0.95vh, 0.68rem);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════
+   SCENE 4 — AI PROCESSING
+═══════════════════════════════════════════ */
+#sceneProcessing {
+  align-items: center;
+  justify-content: center;
+  gap: 2vh;
+}
+.proc-emoji {
+  font-size: clamp(3rem, 7vh, 5.5rem);
+  animation: float 3s ease-in-out infinite;
+  line-height: 1;
+}
+.proc-title {
+  color: #fff;
+  font-size: clamp(0.88rem, 1.95vh, 1.38rem);
+  font-weight: 800;
+  text-align: center;
+}
+.check-rows { display: flex; flex-direction: column; gap: 0.9vh; }
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 2%;
+  opacity: 0;
+  pointer-events: none;
+}
+.check-row.show {
+  animation: slide-up 0.5s ease both;
+  opacity: 1;
+}
+.check-icon  { color: #4ade80; font-size: clamp(0.78rem, 1.45vh, 1rem); font-weight: 700; animation: check-in 0.4s ease both; flex-shrink: 0; }
+.check-label { color: #fff; font-size: clamp(0.62rem, 1.15vh, 0.82rem); font-weight: 500; }
+.proc-progress-track {
+  width: clamp(160px, 38%, 280px);
+  height: clamp(5px, 0.9vh, 7px);
+  background: rgba(255,255,255,0.12);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.proc-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #818cf8, #a78bfa);
+  border-radius: 9999px;
+  width: 0%;
+  transition: width 3s ease;
+}
+
+/* ═══════════════════════════════════════════
+   SCENE 5 — RESULT
+═══════════════════════════════════════════ */
+#sceneResult {
+  flex-direction: row !important;
+  overflow: hidden;
+}
+.confetti-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  animation: confetti-fall linear forwards;
+  border-radius: 2px;
+}
+.result-left {
+  background: linear-gradient(135deg, #4ade80 0%, #059669 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2vh;
+  padding: 3vh 4%;
+  flex: 2;
+  position: relative;
+  z-index: 2;
+}
+.result-trophy {
+  font-size: clamp(2.5rem, 6vh, 4.5rem);
+  animation: float 3s ease-in-out infinite;
+  line-height: 1;
+}
+.result-title {
+  color: #fff;
+  font-size: clamp(1rem, 2.8vh, 2rem);
+  font-weight: 900;
+  text-align: center;
+  line-height: 1.15;
+}
+.result-sub {
+  color: rgba(255,255,255,0.82);
+  font-size: clamp(0.52rem, 1.05vh, 0.75rem);
+  font-weight: 500;
+  text-align: center;
+}
+.stars-row { display: flex; gap: 1.5%; }
+.star {
+  font-size: clamp(1.2rem, 3.5vh, 2.2rem);
+  animation: star-in 0.5s ease both;
+}
+.star:nth-child(1) { animation-delay: 0s; }
+.star:nth-child(2) { animation-delay: 0.2s; }
+.star:nth-child(3) { animation-delay: 0.4s; }
+.result-green-pill {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: clamp(0.48rem, 0.92vh, 0.68rem);
+  font-weight: 700;
+  padding: 0.5vh 2.5%;
+  border-radius: 9999px;
+  text-align: center;
+}
+.result-amber-pill {
+  background: rgba(251,191,36,0.2);
+  border: 1px solid rgba(251,191,36,0.5);
+  color: #fbbf24;
+  font-size: clamp(0.48rem, 0.92vh, 0.68rem);
+  font-weight: 700;
+  padding: 0.5vh 2.5%;
+  border-radius: 9999px;
+  text-align: center;
+}
+.result-right {
+  flex: 3;
+  background: rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1.4vh;
+  padding: 2.5vh 4%;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+}
+.saved-badge {
+  background: rgba(16,185,129,0.14);
+  border: 1px solid rgba(16,185,129,0.32);
+  color: #6ee7b7;
+  font-size: clamp(0.46rem, 0.82vh, 0.6rem);
+  font-weight: 600;
+  padding: 0.5vh 2%;
+  border-radius: 0.5rem;
+  text-align: center;
+  width: 100%;
+}
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5%; }
+.stat-card { border-radius: 1rem; padding: 1vh 4%; display: flex; flex-direction: column; gap: 0.3vh; }
+.stat-card.green-card  { background: rgba(74,222,128,0.12); border: 1px solid rgba(74,222,128,0.3); }
+.stat-card.purple-card { background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.3); }
+.stat-label { color: rgba(255,255,255,0.58); font-size: clamp(0.43rem, 0.78vh, 0.58rem); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+.stat-value { font-size: clamp(1.6rem, 4.5vh, 3.2rem); font-weight: 900; color: #fff; line-height: 1; }
+.stat-value.green  { color: #4ade80; }
+.stat-value.purple { color: #a78bfa; }
+.stat-sub { color: rgba(74,222,128,0.8); font-size: clamp(0.42rem, 0.75vh, 0.56rem); font-weight: 600; }
+.progress-section {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 1rem;
+  padding: 0.9vh 3%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6vh;
+}
+.progress-section-title { color: #a5b4fc; font-size: clamp(0.43rem, 0.75vh, 0.56rem); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+.prog-row { display: flex; flex-direction: column; gap: 0.25vh; }
+.prog-row-labels { display: flex; justify-content: space-between; color: rgba(255,255,255,0.62); font-size: clamp(0.42rem, 0.72vh, 0.54rem); font-weight: 500; }
+.prog-track { height: clamp(4px, 0.65vh, 6px); background: rgba(255,255,255,0.1); border-radius: 9999px; overflow: hidden; }
+.prog-fill { height: 100%; background: #4ade80; border-radius: 9999px; width: 0%; transition: width 1.5s ease 0.5s; }
+.missed-section { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 0.9vh 3%; }
+.missed-label { color: rgba(255,255,255,0.58); font-size: clamp(0.43rem, 0.75vh, 0.56rem); font-weight: 600; margin-bottom: 0.5vh; }
+.missed-chips { display: flex; gap: 1.5%; flex-wrap: wrap; }
+.missed-chip {
+  background: rgba(239,68,68,0.14);
+  border: 1px solid rgba(239,68,68,0.32);
+  color: #fca5a5;
+  font-size: clamp(0.43rem, 0.75vh, 0.56rem);
+  font-weight: 600;
+  padding: 0.3vh 1.5%;
+  border-radius: 0.5rem;
+}
+
+/* ── SUBTITLE BAR ── */
+.subtitle-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,0.72);
+  padding: 1vh 3%;
+  z-index: 10;
+  display: none;
+}
+.subtitle-bar.visible { display: block; }
+.subtitle-text {
+  color: #fff;
+  font-weight: 600;
+  font-size: clamp(0.75rem, 1.3vh, 1rem);
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* ── READABILITY BOOST — ensures text is legible at all embed sizes ── */
+html { font-size: clamp(15px, 1.3vw, 20px); }
+.so-wordmark   { font-size: clamp(2.8rem, 6.5vh, 4.5rem) !important; }
+.so-name, .intro-name { font-size: clamp(1rem, 1.9vh, 1.35rem) !important; }
+.so-grade, .intro-level { font-size: clamp(0.78rem, 1.3vh, 0.95rem) !important; }
+.so-badge, .intro-badge { font-size: clamp(0.7rem, 1.15vh, 0.85rem) !important; }
+.so-benefit    { font-size: clamp(0.82rem, 1.4vh, 1rem) !important; }
+.so-btn        { font-size: clamp(0.88rem, 1.6vh, 1.1rem) !important; }
+.so-pill, .so-by, .so-volume { font-size: clamp(0.72rem, 1.2vh, 0.88rem) !important; }
+.back-btn, .header-pill { font-size: clamp(0.72rem, 1.2vh, 0.88rem) !important; }
+.passage-topic { font-size: clamp(0.72rem, 1.15vh, 0.88rem) !important; }
+.passage-title { font-size: clamp(1rem, 2.2vh, 1.5rem) !important; }
+.passage-text  { font-size: clamp(0.82rem, 1.5vh, 1.05rem) !important; }
+.passage-hint  { font-size: clamp(0.68rem, 1.1vh, 0.82rem) !important; }
+.ready-text    { font-size: clamp(0.78rem, 1.3vh, 0.95rem) !important; }
+.tap-label     { font-size: clamp(0.7rem, 1.15vh, 0.85rem) !important; }
+.chrome-note   { font-size: clamp(0.65rem, 1.05vh, 0.8rem) !important; }
+.timer-text    { font-size: clamp(0.95rem, 1.8vh, 1.3rem) !important; }
+.transcript-label { font-size: clamp(0.68rem, 1.1vh, 0.82rem) !important; }
+.transcript-text  { font-size: clamp(0.75rem, 1.25vh, 0.92rem) !important; }
+.done-btn      { font-size: clamp(0.78rem, 1.3vh, 0.95rem) !important; }
+.stat-label    { font-size: clamp(0.72rem, 1.15vh, 0.88rem) !important; }
+.stat-value    { font-size: clamp(2rem, 5vh, 3.5rem) !important; }
+.stat-sub      { font-size: clamp(0.68rem, 1.1vh, 0.82rem) !important; }
+.saved-badge   { font-size: clamp(0.72rem, 1.2vh, 0.88rem) !important; }
+.result-title  { font-size: clamp(1.2rem, 3vh, 2.2rem) !important; }
+.result-sub    { font-size: clamp(0.78rem, 1.35vh, 1rem) !important; }
+.result-green-pill, .result-amber-pill { font-size: clamp(0.7rem, 1.15vh, 0.85rem) !important; }
+.progress-section-title { font-size: clamp(0.68rem, 1.1vh, 0.82rem) !important; }
+.prog-row-labels { font-size: clamp(0.68rem, 1.1vh, 0.82rem) !important; }
+.missed-label  { font-size: clamp(0.7rem, 1.1vh, 0.85rem) !important; }
+.missed-chip   { font-size: clamp(0.7rem, 1.1vh, 0.85rem) !important; }
+.splash-wm     { font-size: clamp(3rem, 8vh, 6rem) !important; }
+.splash-badge, .splash-by { font-size: clamp(0.78rem, 1.3vh, 0.95rem) !important; }
+.proc-emoji    { font-size: clamp(3.5rem, 8vh, 6rem) !important; }
+.proc-title    { font-size: clamp(1rem, 2.2vh, 1.6rem) !important; }
+.check-label   { font-size: clamp(0.8rem, 1.4vh, 1rem) !important; }
+.result-trophy { font-size: clamp(3rem, 6.5vh, 5rem) !important; }
+.star          { font-size: clamp(1.5rem, 4vh, 2.8rem) !important; }
+.so-avatar     { font-size: clamp(2rem, 4.5vh, 3.2rem) !important; }
+.intro-avatar  { font-size: clamp(2.5rem, 5.5vh, 4rem) !important; }
+.mic-btn       { font-size: clamp(1.5rem, 3.2vh, 2.2rem) !important; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- ══════════ START OVERLAY ══════════ -->
+  <div id="startOverlay">
+    <div class="so-orb so-orb-1"></div>
+    <div class="so-orb so-orb-2"></div>
+    <div class="so-orb so-orb-3"></div>
+    <div class="so-orb so-orb-4"></div>
+
+    <div class="so-wordmark-wrap">
+      <div class="so-glow-halo"></div>
+      <div class="so-wordmark"><span class="read">Read</span><span class="spark">Spark</span></div>
+    </div>
+    <div class="so-by">by Edvanta</div>
+    <div class="so-pill">AI Reading Assessment</div>
+
+    <div class="so-profile-card">
+      <div class="so-profile-top">
+        <div class="so-avatar">👦</div>
+        <div>
+          <div class="so-name">Arjun Mehta</div>
+          <div class="so-grade">Grade 5 · Level 1 Beginner</div>
+        </div>
+      </div>
+      <div class="so-badges">
+        <span class="so-badge">📖 Session 14</span>
+        <span class="so-badge">🔥 5-day streak</span>
+        <span class="so-badge">🎯 Goal: 80 WPM</span>
+      </div>
+    </div>
+
+    <div class="so-benefits">
+      <div class="so-benefit"><span class="so-check">✓</span><span>AI scores every word in real-time</span></div>
+      <div class="so-benefit"><span class="so-check">✓</span><span>Improvement tracked session-to-session</span></div>
+      <div class="so-benefit"><span class="so-check">✓</span><span>Progress report sent to teacher instantly</span></div>
+    </div>
+
+    <button class="so-btn" onclick="startDemo()">▶ Watch Live Demo</button>
+    <div class="so-volume">🔊 Turn on volume — hear the AI coach speak</div>
+  </div>
+
+  <!-- ══════════ SCENE 1: SPLASH ══════════ -->
+  <div class="scene" id="sceneSplash">
+    <div class="splash-orb-1"></div>
+    <div class="splash-orb-2"></div>
+    <div class="splash-wm-wrap">
+      <div class="splash-glow"></div>
+      <div class="splash-wm"><span class="read">Read</span><span class="spark">Spark</span></div>
+    </div>
+    <div class="splash-by">by Edvanta</div>
+    <div class="splash-badge">AI Reading Assessment</div>
+    <div class="loading-dots">
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+    </div>
+  </div>
+
+  <!-- ══════════ SCENE 2: INTRO ══════════ -->
+  <div class="scene" id="sceneIntro">
+    <div class="intro-card">
+      <div class="intro-avatar">👦</div>
+      <div class="intro-name">Arjun Mehta</div>
+      <div class="intro-level">Grade 5 · Level 1 Beginner</div>
+      <div class="intro-badges">
+        <span class="intro-badge">📖 Session 14</span>
+        <span class="intro-badge">🔥 5-day streak</span>
+        <span class="intro-badge">🎯 Goal: 80 WPM</span>
+      </div>
+    </div>
+    <div class="loading-passage">
+      <div class="spinner"></div>
+      Loading Ocean Life passage…
+    </div>
+  </div>
+
+  <!-- ══════════ SCENE 3: READING ══════════ -->
+  <div class="scene" id="sceneReading">
+    <div class="app-header">
+      <div class="back-btn">← Dashboard</div>
+      <img src="edvanta-logo1.png"
+           style="height:clamp(20px,3.8vh,30px);filter:brightness(0) invert(1);opacity:0.8;"
+           alt="Edvanta"
+           onerror="this.replaceWith(Object.assign(document.createElement('span'),{style:'color:#a5b4fc;font-weight:800;font-size:clamp(0.7rem,1.3vh,0.9rem)',textContent:'edvanta'}))">
+      <div class="header-pill">⭐ Level 1 · Beginner</div>
+    </div>
+
+    <div class="reading-body">
+      <!-- Passage -->
+      <div class="passage-card">
+        <div class="passage-topic">Level 1 · Ocean Life</div>
+        <div class="passage-title">The Ocean World</div>
+        <div class="passage-text" id="passageText"></div>
+        <div class="passage-hint">Read the passage out loud · AI is listening in real-time</div>
+      </div>
+
+      <!-- Controls column -->
+      <div class="controls-col">
+        <!-- READY -->
+        <div class="glass-card" id="readyCard">
+          <div class="ready-state">
+            <div class="ready-text">When you're ready, tap the mic!</div>
+            <div class="mic-btn-wrap">
+              <div class="pulse-ring"></div>
+              <div class="pulse-ring pulse-ring-2"></div>
+              <button class="mic-btn" id="micBtn">🎤</button>
+            </div>
+            <div class="tap-label">TAP TO READ</div>
+            <div class="chrome-note">Use Chrome for best experience</div>
+          </div>
+        </div>
+
+        <!-- RECORDING -->
+        <div class="glass-card" id="recordingCard" style="display:none;">
+          <div class="recording-state active">
+            <div class="timer-wrap">
+              <svg class="timer-svg" viewBox="0 0 120 120">
+                <circle class="timer-track" cx="60" cy="60" r="50"/>
+                <circle class="timer-arc" id="timerArc" cx="60" cy="60" r="50"/>
+              </svg>
+              <div class="timer-text" id="timerText">1:30</div>
+            </div>
+            <div class="wave-bars">
+              <div class="wave-bar"></div><div class="wave-bar"></div>
+              <div class="wave-bar"></div><div class="wave-bar"></div>
+              <div class="wave-bar"></div><div class="wave-bar"></div>
+              <div class="wave-bar"></div><div class="wave-bar"></div>
+              <div class="wave-bar"></div><div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+            </div>
+            <button class="done-btn">⏹ Done Reading</button>
+          </div>
+        </div>
+
+        <!-- TRANSCRIPT -->
+        <div class="transcript-panel" id="transcriptPanel" style="display:none;">
+          <div class="transcript-label">🎤 Live transcript</div>
+          <div class="transcript-text" id="transcriptText"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ SCENE 4: PROCESSING ══════════ -->
+  <div class="scene" id="sceneProcessing">
+    <div class="proc-emoji">🔍</div>
+    <div class="proc-title">AI Scoring in Progress…</div>
+    <div class="check-rows">
+      <div class="check-row" id="check1">
+        <span class="check-icon">✓</span>
+        <span class="check-label">Reading speed</span>
+      </div>
+      <div class="check-row" id="check2">
+        <span class="check-icon">✓</span>
+        <span class="check-label">Word accuracy</span>
+      </div>
+      <div class="check-row" id="check3">
+        <span class="check-icon">✓</span>
+        <span class="check-label">Fluency &amp; rhythm</span>
+      </div>
+    </div>
+    <div class="proc-progress-track">
+      <div class="proc-progress-fill" id="procFill"></div>
+    </div>
+  </div>
+
+  <!-- ══════════ SCENE 5: RESULT ══════════ -->
+  <div class="scene" id="sceneResult">
+    <div class="confetti-wrap" id="confettiWrap"></div>
+
+    <div class="result-left">
+      <div class="result-trophy">🏆</div>
+      <div class="result-title">Level Cleared!</div>
+      <div class="result-sub">Outstanding, Arjun! 🌟</div>
+      <div class="stars-row">
+        <span class="star">⭐</span>
+        <span class="star">⭐</span>
+        <span class="star">⭐</span>
+      </div>
+      <div class="result-green-pill">↑ +12 WPM from last session</div>
+      <div class="result-amber-pill">🔓 Level 2 Unlocked!</div>
+    </div>
+
+    <div class="result-right">
+      <div class="saved-badge">✅ Progress saved · Teacher report sent automatically</div>
+
+      <div class="stat-grid">
+        <div class="stat-card green-card">
+          <div class="stat-label">Words / Minute</div>
+          <div class="stat-value green" id="resWpm">0</div>
+          <div class="stat-sub">target: 80 WPM ✓</div>
+        </div>
+        <div class="stat-card purple-card">
+          <div class="stat-label">Accuracy</div>
+          <div class="stat-value purple" id="resAcc">0<span style="font-size:60%">%</span></div>
+          <div class="stat-sub">target: 80% ✓</div>
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-section-title">Your progress vs target</div>
+        <div class="prog-row">
+          <div class="prog-row-labels">
+            <span>Reading speed</span>
+            <span style="color:#4ade80;">94 WPM / 80 WPM ✓</span>
+          </div>
+          <div class="prog-track"><div class="prog-fill" id="progSpeed"></div></div>
+        </div>
+        <div class="prog-row">
+          <div class="prog-row-labels">
+            <span>Accuracy</span>
+            <span style="color:#4ade80;">88% / 80% ✓</span>
+          </div>
+          <div class="prog-track"><div class="prog-fill" id="progAcc"></div></div>
+        </div>
+      </div>
+
+      <div class="missed-section">
+        <div class="missed-label">📝 Practice these words:</div>
+        <div class="missed-chips">
+          <span class="missed-chip">unexplored</span>
+          <span class="missed-chip">frontiers</span>
+          <span class="missed-chip">creatures</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subtitle bar -->
+    <div class="subtitle-bar visible" id="subtitleBar">
+      <div class="subtitle-text" id="subtitleText"></div>
+    </div>
+  </div>
+
+</div><!-- /stage -->
+
+<script>
+/* ════════════════════════════════════════
+   AUDIO — WAV blob (bypasses AudioContext autoplay policy)
+════════════════════════════════════════ */
+function playBeep(freq, dur, vol) {
+  try {
+    const sr = 44100, n = Math.floor(sr * dur);
+    const buf = new ArrayBuffer(44 + n * 2);
+    const dv  = new DataView(buf);
+    const ws  = (o, s) => { for (let i = 0; i < s.length; i++) dv.setUint8(o + i, s.charCodeAt(i)); };
+    ws(0,'RIFF'); dv.setUint32(4, 36 + n*2, true); ws(8,'WAVE');
+    ws(12,'fmt '); dv.setUint32(16,16,true); dv.setUint16(20,1,true); dv.setUint16(22,1,true);
+    dv.setUint32(24,sr,true); dv.setUint32(28,sr*2,true); dv.setUint16(32,2,true); dv.setUint16(34,16,true);
+    ws(36,'data'); dv.setUint32(40, n*2, true);
+    for (let i = 0; i < n; i++) {
+      const attack = i < sr*0.01 ? i/(sr*0.01) : 1;
+      const decay  = Math.min(1, (n - i) / (sr * 0.07));
+      dv.setInt16(44 + i*2, Math.round(Math.sin(2*Math.PI*freq*i/sr) * vol * attack * decay * 32767), true);
+    }
+    const a = new Audio(URL.createObjectURL(new Blob([buf], {type:'audio/wav'})));
+    a.play().catch(() => {});
+    a.onended = () => URL.revokeObjectURL(a.src);
+  } catch(e) {}
+}
+
+function chimeGood() {
+  playBeep(523.25, 0.22, 0.55);
+  setTimeout(() => playBeep(659.25, 0.22, 0.55), 160);
+  setTimeout(() => playBeep(783.99, 0.38, 0.60), 320);
+}
+function chimeIntro() {
+  playBeep(440, 0.28, 0.45);
+  setTimeout(() => playBeep(523.25, 0.32, 0.50), 220);
+}
+function beepStart() {
+  playBeep(880, 0.18, 0.45);
+  setTimeout(() => playBeep(880, 0.18, 0.45), 200);
+}
+function beepStop() {
+  playBeep(440, 0.28, 0.45);
+}
+
+/* ════════════════════════════════════════
+   SPEECH SYNTHESIS — narrator + student reader
+════════════════════════════════════════ */
+let narratorVoice = null;
+let studentVoice  = null;
+
+function loadVoices() {
+  const all = speechSynthesis.getVoices();
+  const en  = all.filter(v => v.lang.startsWith('en'));
+  if (!en.length) return;
+
+  // Narrator: neutral adult voice
+  narratorVoice = en.find(v => /google/i.test(v.name))
+                || en[0];
+
+  // Student (Arjun — Indian boy): prefer Indian English, else US male
+  studentVoice = en.find(v => v.lang === 'en-IN')
+              || en.find(v => /alex|daniel|tom|junior/i.test(v.name) && v !== narratorVoice)
+              || en.find(v => v !== narratorVoice)
+              || narratorVoice;
+}
+
+if (window.speechSynthesis) {
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  try {
+    speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    if (narratorVoice) utt.voice = narratorVoice;
+    utt.rate   = 1.05;
+    utt.pitch  = 1.0;
+    utt.volume = 1.0;
+    speechSynthesis.speak(utt);
+  } catch(e) {}
+}
+
+function stopSpeech() {
+  try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch(e) {}
+}
+
+/* ════════════════════════════════════════
+   STUDENT READING VOICE
+   Speaks the passage with word-boundary highlighting
+════════════════════════════════════════ */
+function startReadingVoice() {
+  if (!window.speechSynthesis) {
+    startWordHighlight();
+    setTimeout(startTranscript, 800);
+    return;
+  }
+  try {
+    speechSynthesis.cancel();
+    const passageText = WORDS.join(' ');
+    const utt = new SpeechSynthesisUtterance(passageText);
+    if (studentVoice) utt.voice = studentVoice;
+    utt.rate   = 0.88;   // slightly slower — student reading carefully
+    utt.pitch  = 1.2;    // higher pitch — young student
+    utt.volume = 1.0;
+
+    let wordIdx = 0;
+    const txEl  = document.getElementById('transcriptText');
+
+    // Highlight each word as it is spoken
+    utt.onboundary = (e) => {
+      if (e.name === 'word' && wordIdx < WORDS.length) {
+        highlightWord(wordIdx);
+        if (txEl) txEl.textContent = WORDS.slice(0, wordIdx + 1).join(' ');
+        wordIdx++;
+      }
+    };
+
+    utt.onend = () => {
+      // Mark all remaining words done and move to processing
+      WORDS.forEach((_, i) => {
+        const el = document.getElementById('w' + i);
+        if (el) { el.classList.remove('active'); el.classList.add('done'); }
+      });
+      if (txEl) txEl.textContent = passageText;
+      clearTimeout(loopTimer);
+      setTimeout(runProcessing, 1200);
+    };
+
+    utt.onerror = () => {
+      // Browser doesn't support onboundary — fall back to simulation
+      startWordHighlight();
+      setTimeout(startTranscript, 800);
+    };
+
+    speechSynthesis.speak(utt);
+  } catch(e) {
+    startWordHighlight();
+    setTimeout(startTranscript, 800);
+  }
+}
+
+/* ════════════════════════════════════════
+   CONFETTI
+════════════════════════════════════════ */
+const CONFETTI_COLORS = [
+  '#f97316','#818cf8','#4ade80','#fbbf24',
+  '#f472b6','#34d399','#60a5fa','#a78bfa'
+];
+
+function makeConfetti() {
+  const wrap = document.getElementById('confettiWrap');
+  wrap.innerHTML = '';
+  for (let i = 0; i < 40; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.left            = (Math.random() * 100) + '%';
+    el.style.background      = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+    el.style.animationDuration = (2 + Math.random() * 2) + 's';
+    el.style.animationDelay  = (Math.random() * 1.5) + 's';
+    const sz = 6 + Math.random() * 8;
+    el.style.width  = sz + 'px';
+    el.style.height = sz + 'px';
+    el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    wrap.appendChild(el);
+  }
+}
+
+/* ════════════════════════════════════════
+   COUNT-UP
+════════════════════════════════════════ */
+function countUp(id, target, isPercent, totalMs) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const steps    = 40;
+  const interval = totalMs / steps;
+  const inc      = target / steps;
+  let current    = 0;
+  const timer = setInterval(() => {
+    current = Math.min(current + inc, target);
+    if (isPercent) {
+      el.innerHTML = Math.round(current) + '<span style="font-size:60%">%</span>';
+    } else {
+      el.textContent = Math.round(current);
+    }
+    if (current >= target) clearInterval(timer);
+  }, interval);
+}
+
+/* ════════════════════════════════════════
+   TYPEWRITER SUBTITLE
+════════════════════════════════════════ */
+function typewriterSubtitle(text, delayMs) {
+  const el = document.getElementById('subtitleText');
+  if (!el) return;
+  el.textContent = '';
+  let i = 0;
+  setTimeout(() => {
+    const iv = setInterval(() => {
+      if (i < text.length) {
+        el.textContent += text[i++];
+      } else {
+        clearInterval(iv);
+      }
+    }, 35);
+  }, delayMs);
+}
+
+/* Demo always runs in auto-play mode — mimics a real student reading session */
+
+/* ════════════════════════════════════════
+   SHOW SCENE
+════════════════════════════════════════ */
+function showScene(id) {
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('visible'));
+  const target = document.getElementById(id);
+  if (target) target.classList.add('visible');
+}
+
+/* ════════════════════════════════════════
+   PASSAGE WORDS
+════════════════════════════════════════ */
+const WORDS = [
+  "The","ocean","covers","more","than","seventy","percent","of","our","planet",
+  "Earth.","It","is","home","to","thousands","of","amazing","creatures,","from",
+  "tiny","fish","to","enormous","blue","whales.","The","deep","ocean","remains",
+  "one","of","the","last","unexplored","frontiers","on","our","beautiful","planet.",
+  "Scientists","discover","new","species","every","year"
+];
+const WORD_MS = 430;
+let wordTimers = [];
+
+function buildPassage() {
+  const container = document.getElementById('passageText');
+  container.innerHTML = '';
+  WORDS.forEach((w, i) => {
+    const span = document.createElement('span');
+    span.className   = 'word';
+    span.id          = 'w' + i;
+    span.textContent = w + ' ';
+    container.appendChild(span);
+  });
+}
+
+function highlightWord(idx) {
+  if (idx > 0) {
+    const prev = document.getElementById('w' + (idx - 1));
+    if (prev) { prev.classList.remove('active'); prev.classList.add('done'); }
+  }
+  const cur = document.getElementById('w' + idx);
+  if (cur) cur.classList.add('active');
+}
+
+function startWordHighlight() {
+  wordTimers.forEach(clearTimeout);
+  wordTimers = [];
+  WORDS.forEach((_, i) => {
+    wordTimers.push(setTimeout(() => highlightWord(i), i * WORD_MS));
+  });
+  wordTimers.push(setTimeout(() => {
+    WORDS.forEach((_, i) => {
+      const el = document.getElementById('w' + i);
+      if (el) { el.classList.remove('active'); el.classList.add('done'); }
+    });
+  }, WORDS.length * WORD_MS + 500));
+}
+
+function resetWords() {
+  wordTimers.forEach(clearTimeout);
+  wordTimers = [];
+  WORDS.forEach((_, i) => {
+    const el = document.getElementById('w' + i);
+    if (el) el.className = 'word';
+  });
+}
+
+/* ════════════════════════════════════════
+   TIMER
+════════════════════════════════════════ */
+const TOTAL_SECS = 90;
+let timerInterval  = null;
+let timerRemaining = TOTAL_SECS;
+
+function startTimer() {
+  timerRemaining = TOTAL_SECS;
+  updateTimerDisplay();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timerRemaining--;
+    if (timerRemaining <= 0) { clearInterval(timerInterval); timerRemaining = 0; }
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const arc = document.getElementById('timerArc');
+  const txt = document.getElementById('timerText');
+  const frac = timerRemaining / TOTAL_SECS;
+  if (arc) {
+    arc.style.strokeDashoffset = 314 * (1 - frac);
+    arc.style.stroke = timerRemaining > 50 ? '#4ade80' : timerRemaining > 25 ? '#fbbf24' : '#ef4444';
+  }
+  if (txt) {
+    const m = Math.floor(timerRemaining / 60);
+    const s = timerRemaining % 60;
+    txt.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  }
+}
+
+function stopTimer() { clearInterval(timerInterval); }
+
+/* ════════════════════════════════════════
+   TRANSCRIPT TYPEWRITER
+════════════════════════════════════════ */
+const TRANSCRIPT = "The ocean covers more than seventy percent of our planet Earth. It is home to thousands of amazing creatures, from tiny fish to enormous blue whales. The deep ocean remains one of the last unexplored frontiers on our beautiful planet.";
+
+function startTranscript() {
+  const el = document.getElementById('transcriptText');
+  if (!el) return;
+  el.textContent = '';
+  let i = 0;
+  const iv = setInterval(() => {
+    if (i < TRANSCRIPT.length) {
+      el.textContent += TRANSCRIPT[i++];
+    } else {
+      clearInterval(iv);
+    }
+  }, 55);
+}
+
+/* ════════════════════════════════════════
+   SCENE ORCHESTRATION
+════════════════════════════════════════ */
+let loopTimer = null;
+
+function clearLoop() {
+  if (loopTimer) { clearTimeout(loopTimer); loopTimer = null; }
+}
+
+function runSplash() {
+  stopSpeech();
+  showScene('sceneSplash');
+  chimeIntro();
+  loopTimer = setTimeout(runIntro, 3200);
+}
+
+function runIntro() {
+  showScene('sceneIntro');
+  chimeIntro();
+  loopTimer = setTimeout(runReady, 3000);
+}
+
+function runReady() {
+  showScene('sceneReading');
+  resetWords();
+  document.getElementById('readyCard').style.display       = '';
+  document.getElementById('recordingCard').style.display   = 'none';
+  document.getElementById('transcriptPanel').style.display = 'none';
+  // Simulate student tapping mic after a moment
+  loopTimer = setTimeout(runRecording, 1500);
+}
+
+function runRecording() {
+  beepStart();
+  document.getElementById('readyCard').style.display       = 'none';
+  document.getElementById('recordingCard').style.display   = '';
+  document.getElementById('transcriptPanel').style.display = '';
+  startTimer();
+  // Student reads the passage aloud — words highlight in sync with their voice
+  setTimeout(startReadingVoice, 600);
+  // Fallback: auto-advance after 18s if speech synthesis stalls
+  loopTimer = setTimeout(runProcessing, 18000);
+}
+
+function runProcessing() {
+  stopSpeech();
+  showScene('sceneProcessing');
+  beepStop();
+  stopTimer();
+  resetWords();
+
+  // Reset checks
+  ['check1','check2','check3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('show');
+  });
+
+  // Reset progress bar
+  const fill = document.getElementById('procFill');
+  if (fill) { fill.style.transition = 'none'; fill.style.width = '0%'; }
+
+  setTimeout(() => document.getElementById('check1').classList.add('show'), 500);
+  setTimeout(() => document.getElementById('check2').classList.add('show'), 1000);
+  setTimeout(() => document.getElementById('check3').classList.add('show'), 1500);
+
+  setTimeout(() => {
+    if (fill) { fill.style.transition = 'width 3s ease'; fill.style.width = '100%'; }
+  }, 100);
+
+  loopTimer = setTimeout(runResult, 3500);
+}
+
+function runResult() {
+  showScene('sceneResult');
+  chimeGood();
+  makeConfetti();
+
+  // Reset stat values
+  document.getElementById('resWpm').textContent = '0';
+  document.getElementById('resAcc').innerHTML   = '0<span style="font-size:60%">%</span>';
+
+  // Reset progress bars
+  ['progSpeed','progAcc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.transition = 'none'; el.style.width = '0%'; }
+  });
+
+  setTimeout(() => { countUp('resWpm', 94, false, 1800); }, 300);
+  setTimeout(() => { countUp('resAcc', 88, true,  1800); }, 600);
+
+  setTimeout(() => {
+    ['progSpeed','progAcc'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.style.transition = 'width 1.5s ease 0.5s'; el.style.width = '100%'; }
+    });
+  }, 200);
+
+  typewriterSubtitle(
+    "Arjun improved 12 words per minute from his last session — that's in the top 15% of Grade 5 students!",
+    1500
+  );
+  setTimeout(() => speak(
+    "Arjun improved 12 words per minute from his last session. That's in the top 15 percent of Grade 5 students!"
+  ), 1500);
+
+  loopTimer = setTimeout(runSplash, 11000);
+}
+
+function startDemo() {
+  document.getElementById('startOverlay').style.display = 'none';
+  clearLoop();
+  runSplash();
+}
+
+// Auto-start when embedded (iframe with ?auto=1)
+if (new URLSearchParams(location.search).has('auto')) {
+  window.addEventListener('load', () => setTimeout(startDemo, 800));
+}
+
+/* ── Build passage on load ── */
+buildPassage();
+</script>
+</body>
+</html>

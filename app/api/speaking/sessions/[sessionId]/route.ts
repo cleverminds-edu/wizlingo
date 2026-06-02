@@ -116,6 +116,49 @@ export async function PATCH(
     // AI feedback is non-critical
   }
 
+  // Build badge info for response
+  interface BadgeEarnedInfo {
+    isNew: boolean;
+    type: string;
+    narrative: string;
+    message: string;
+  }
+
+  let badgeEarnedInfo: BadgeEarnedInfo | null = null;
+
+  if (newBadges.length > 0) {
+    const badgeType = newBadges[0]; // Get the first new badge
+    const badgeNarratives: Record<string, string> = {
+      SPARK: "Every great journey begins with a single spark of courage.",
+      WORD_WIZARD:
+        "You've developed the ancient art of Word Wizardry. By achieving 80%+ accuracy, you've proven that you don't just read words—you understand them.",
+      VOICE_WIZARD:
+        "Your voice is powerful. By achieving 75%+ fluency in speaking, you've proven that you can express yourself with clarity and confidence.",
+      LANGUAGE_WIZARD:
+        "You've completed 10+ sessions. That's not luck—that's dedication. That's the mark of a true wizard.",
+      GRAND_WIZARD:
+        "You've done it. You've become a GRAND WIZARD. You started with a SPARK, mastered words, found your voice, and showed legendary dedication.",
+    };
+
+    const badgeMessages: Record<string, string> = {
+      SPARK: "You took the first step. You showed up. You're ready to embark on this adventure to master language and speak with confidence!",
+      WORD_WIZARD:
+        "Outstanding Reading Mastery! You achieved 80%+ accuracy! That's not just reading—that's comprehension mastery.",
+      VOICE_WIZARD: `Your Voice Is Powerful! You achieved ${Math.round(score.fluencyScore)}%+ fluency! You speak with clarity. You communicate with confidence. Your voice matters!`,
+      LANGUAGE_WIZARD:
+        "Your Dedication Is Legendary! You completed 10+ sessions! That's consistency. That's discipline. That's a wizard's oath.",
+      GRAND_WIZARD:
+        "LEGENDARY. UNSTOPPABLE. EXTRAORDINARY. Congratulations! You've earned ALL FOUR badges. You've mastered reading. You've mastered speaking. You've shown legendary dedication.",
+    };
+
+    badgeEarnedInfo = {
+      isNew: true,
+      type: badgeType,
+      narrative: badgeNarratives[badgeType] || "",
+      message: badgeMessages[badgeType] || "",
+    };
+  }
+
   return Response.json({
     ...score,
     leveledUp,
@@ -123,6 +166,7 @@ export async function PATCH(
     passedSessions: nextPassed,
     newBadges,
     certificateVerifyCode,
+    badgeEarned: badgeEarnedInfo,
     aiFeedback,
   });
 }

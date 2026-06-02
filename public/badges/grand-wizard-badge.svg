@@ -1,0 +1,129 @@
+<svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="grandBg3D" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" style="stop-color:#FDEF4F;stop-opacity:1" />
+      <stop offset="40%" style="stop-color:#FCD34D;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#F59E0B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D97706;stop-opacity:1" />
+    </radialGradient>
+
+    <radialGradient id="grandInner3D" cx="40%" cy="40%" r="50%">
+      <stop offset="0%" style="stop-color:#FEF3C7;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FDEF4F;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#FCD34D;stop-opacity:0" />
+    </radialGradient>
+
+    <radialGradient id="grandShine" cx="40%" cy="30%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0" />
+    </radialGradient>
+
+    <radialGradient id="grandRing" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.35" />
+    </radialGradient>
+
+    <filter id="shadowDeep3D5">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#000000" flood-opacity="0.7"/>
+      <feDropShadow dx="3" dy="10" stdDeviation="10" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+
+    <filter id="innerShadow3D5">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <linearGradient id="grandShineBar" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0.05" />
+    </linearGradient>
+
+    <!-- Gold gradients for crown -->
+    <linearGradient id="goldGrad3D" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FDEF4F;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FCD34D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Extra deep shadow for premium 3D -->
+  <circle cx="140" cy="156" r="138" fill="#000000" opacity="0.35"/>
+  <circle cx="140" cy="152" r="135" fill="#000000" opacity="0.2"/>
+
+  <circle cx="140" cy="140" r="130" fill="url(#grandBg3D)" filter="url(#shadowDeep3D5)"/>
+  <circle cx="140" cy="140" r="128" fill="url(#grandRing)"/>
+  <circle cx="140" cy="140" r="125" fill="url(#grandInner3D)"/>
+  <circle cx="140" cy="125" r="105" fill="url(#grandShine)" opacity="0.6"/>
+
+  <!-- Premium edge bevels -->
+  <circle cx="140" cy="140" r="130" fill="none" stroke="#FFFFFF" stroke-width="4" opacity="0.5"/>
+  <circle cx="140" cy="140" r="131" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.2"/>
+  <circle cx="140" cy="140" r="128" fill="none" stroke="#D97706" stroke-width="2.5" opacity="0.6"/>
+
+  <!-- 3D ROYAL CROWN - PREMIUM -->
+  <g transform="translate(140, 95)" filter="url(#innerShadow3D5)">
+    <!-- Crown base shadow -->
+    <ellipse cx="2" cy="30" rx="42" ry="16" fill="#000000" opacity="0.3"/>
+
+    <!-- Crown base band - metallic -->
+    <ellipse cx="0" cy="30" rx="42" ry="16" fill="url(#goldGrad3D)" stroke="#FFFFFF" stroke-width="4" opacity="0.98"/>
+    <ellipse cx="0" cy="28" rx="40" ry="14" fill="#FDEF4F" opacity="0.3"/>
+    <ellipse cx="0" cy="28" rx="38" ry="8" fill="#FFFFFF" opacity="0.25"/>
+
+    <!-- Crown points - bold 3D geometry -->
+    <path d="M -44,30 L -28,-42 L -14,-8 L 0,-54 L 14,-8 L 28,-42 L 44,30 Z"
+          fill="url(#goldGrad3D)" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="miter" opacity="0.98"/>
+
+    <!-- Point highlights - 3D effect -->
+    <path d="M -28,-42 L -16,-18 L -10,-32 Z" fill="#FFFFFF" opacity="0.4"/>
+    <path d="M 0,-54 L 8,-30 L 0,-42 Z" fill="#FFFFFF" opacity="0.55"/>
+    <path d="M 28,-42 L 16,-18 L 10,-32 Z" fill="#FFFFFF" opacity="0.4"/>
+
+    <!-- Center jewel - Ruby (3D) -->
+    <circle cx="0" cy="-54" r="11" fill="#DC2626" stroke="#FFFFFF" stroke-width="2.5" opacity="0.98"/>
+    <circle cx="1" cy="-56" r="5" fill="#FFFFFF" opacity="0.9"/>
+    <circle cx="2" cy="-54" r="2" fill="#FFFACD" opacity="0.7"/>
+
+    <!-- Left jewel - Sapphire -->
+    <circle cx="-28" cy="-42" r="10" fill="#2563EB" stroke="#FFFFFF" stroke-width="2.5" opacity="0.95"/>
+    <circle cx="-26" cy="-44" r="4" fill="#FFFFFF" opacity="0.8"/>
+
+    <!-- Right jewel - Sapphire -->
+    <circle cx="28" cy="-42" r="10" fill="#2563EB" stroke="#FFFFFF" stroke-width="2.5" opacity="0.95"/>
+    <circle cx="30" cy="-44" r="4" fill="#FFFFFF" opacity="0.8"/>
+
+    <!-- Base jewels - Emerald -->
+    <circle cx="-44" cy="30" r="9" fill="#10B981" stroke="#FFFFFF" stroke-width="2" opacity="0.95"/>
+    <circle cx="44" cy="30" r="9" fill="#10B981" stroke="#FFFFFF" stroke-width="2" opacity="0.95"/>
+
+    <!-- Crown aura - premium glow -->
+    <circle cx="0" cy="-8" r="50" fill="none" stroke="#FDEF4F" stroke-width="2.5" opacity="0.35"/>
+    <circle cx="0" cy="-8" r="52" fill="none" stroke="#FDEF4F" stroke-width="1" opacity="0.15"/>
+  </g>
+
+  <!-- Large premium sparkles -->
+  <g filter="url(#innerShadow3D5)" opacity="0.98">
+    <g transform="translate(240, 65)">
+      <path d="M 0,-12 L 4,-2 L 14,-1 L 6,5 L 8,15 L 0,9 L -8,15 L -6,5 L -14,-1 L -4,-2 Z" fill="#FDEF4F" opacity="0.95"/>
+      <circle cx="0" cy="-8" r="2" fill="#FFFFFF" opacity="0.9"/>
+    </g>
+    <g transform="translate(45, 70)">
+      <path d="M 0,-11 L 3,-2 L 12,0 L 5,6 L 7,15 L 0,9.5 L -7,15 L -5,6 L -12,0 L -3,-2 Z" fill="#FDEF4F" opacity="0.85"/>
+    </g>
+    <g transform="translate(250, 210)">
+      <path d="M 0,-10 L 3,-1 L 12,1 L 5,7 L 7,16 L 0,10 L -7,16 L -5,7 L -12,1 L -3,-1 Z" fill="#FDEF4F" opacity="0.75"/>
+    </g>
+  </g>
+
+  <!-- Premium shine bar -->
+  <ellipse cx="140" cy="236" rx="94" ry="16" fill="url(#grandShineBar)"/>
+
+  <!-- Text with gradient fill + glow -->
+  <text x="140" y="237" font-family="Fredoka, Arial" font-size="30" font-weight="900" text-anchor="middle"
+        fill="url(#grandBg3D)" letter-spacing="2" stroke="#D97706" stroke-width="2" opacity="0.98">GRAND WIZARD</text>
+  <text x="140" y="237" font-family="Fredoka, Arial" font-size="30" font-weight="900" text-anchor="middle"
+        fill="#FFFFFF" letter-spacing="2" opacity="0.7" stroke="none">GRAND WIZARD</text>
+</svg>
