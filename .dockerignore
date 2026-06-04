@@ -1,0 +1,64 @@
+# Development
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Testing
+.jest
+coverage
+*.lcov
+.nyc_output
+
+# CI/CD
+.github
+.circleci
+
+# Build
+.next
+dist
+build
+
+# Documentation
+README.md
+CONTRIBUTING.md
+CHANGELOG.md
+
+# Project files
+.claude
+.claude.md
+CLAUDE.md
+AGENTS.md
+*.md
+
+# Database
+*.db
+*.sqlite
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Misc
+.env.example
+docker-compose.yml
+Dockerfile
+.dockerignore
