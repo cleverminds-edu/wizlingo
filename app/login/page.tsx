@@ -279,6 +279,13 @@ export default function LoginPage() {
               ? "Your admission number and PIN are provided by your school"
               : "Your employee code and PIN are issued by your school administrator"}
           </p>
+
+            {/* Signup Link */}
+            <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+              <p className="text-sm text-gray-600">
+                New user? <a href="/auth/phone-signup" className="text-blue-600 hover:underline font-semibold">Start here</a>
+              </p>
+            </div>
           </div>
 
           {/* Demo role picker */}
