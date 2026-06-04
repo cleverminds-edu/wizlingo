@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function PhoneSignupPage() {
   const router = useRouter();
@@ -63,10 +64,16 @@ export default function PhoneSignupPage() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo Section */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center gap-2 mb-6 p-3 bg-gradient-to-r from-orange-100 to-purple-100 rounded-full">
-            <span className="text-3xl">✨</span>
-            <div className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent">
-              WizLingo
+          <div className="flex justify-center mb-6">
+            <div className="relative">
+              <Image
+                src="/wiziingo-logo.svg"
+                alt="WizLingo"
+                width={100}
+                height={50}
+                className="h-12 w-auto drop-shadow-md"
+              />
+              <span className="absolute -top-2 -right-2 text-xl animate-bounce">✨</span>
             </div>
           </div>
           <p className="text-gray-600 text-sm font-medium">Start your English learning journey</p>
