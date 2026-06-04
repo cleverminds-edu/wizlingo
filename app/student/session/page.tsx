@@ -229,7 +229,9 @@ export default function SessionPage() {
             </span>
           </div>
         )}
-        <div className="w-32" />
+        <div className="text-xs text-purple-300 whitespace-nowrap">
+          Powered by <span className="text-orange-400 font-bold">Edvanta AI</span>
+        </div>
       </header>
 
       {/* Session area */}

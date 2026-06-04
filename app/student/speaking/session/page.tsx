@@ -164,7 +164,9 @@ function SessionPageInner() {
             <span className="text-white font-bold text-sm">{topic.title}</span>
           </div>
         )}
-        <div className="w-24" />
+        <div className="text-xs text-purple-300 whitespace-nowrap">
+          Powered by <span className="text-orange-400 font-bold">Edvanta AI</span>
+        </div>
       </header>
 
       <div className="flex-1 px-8 py-6 max-w-3xl w-full mx-auto">

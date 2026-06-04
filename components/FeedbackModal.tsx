@@ -92,8 +92,11 @@ export default function FeedbackModal({
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Thank You!
           </h2>
-          <p className="text-gray-600">
+          <p className="text-gray-600 mb-4">
             Your feedback helps us improve WizLingo for everyone.
+          </p>
+          <p className="text-xs text-gray-500">
+            Powered by <span className="font-bold text-orange-500">Edvanta Intelligence System (AI)</span>
           </p>
         </div>
       </div>
@@ -105,9 +108,14 @@ export default function FeedbackModal({
       <div className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Help us improve 👇
-          </h2>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Help us improve 👇
+            </h2>
+            <p className="text-xs text-orange-500 font-bold mt-1">
+              Powered by Edvanta Intelligence System (AI)
+            </p>
+          </div>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-900 transition"
