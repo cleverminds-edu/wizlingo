@@ -80,6 +80,7 @@ model Student {
   referralsCreated     Referral[]              @relation("ReferrerRelation")
   referralsReceived    Referral[]              @relation("ReferredRelation")
   referralReward       ReferralReward?
+  betaFeedback         BetaFeedback[]
 }
 
 model StudentProgress {
@@ -547,9 +548,28 @@ model EmailVariantTest {
   conversions Int          @default(0)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  emailLogs   EmailLog[]
 
   @@unique([type, variant])
   @@index([type])
   @@index([createdAt])
+}
+
+// ════════════════════════════════════════════════════════════════
+// BETA FEEDBACK (Collect feedback during beta launch)
+// ════════════════════════════════════════════════════════════════
+
+model BetaFeedback {
+  id              String    @id @default(cuid())
+  studentId       String
+  sessionType     String    // "reading" or "speaking"
+  rating          Int       // 1-5 stars
+  selectedIssues  String[]  // ["too_easy", "speech_failed", etc]
+  comment         String?   // Free text feedback
+  createdAt       DateTime  @default(now())
+  student         Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([sessionType])
+  @@index([createdAt])
+  @@index([rating])
 }

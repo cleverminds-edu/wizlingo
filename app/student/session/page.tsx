@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import ReadingSession from "@/components/ReadingSession";
 import DesktopReadingSession from "@/components/session/DesktopReadingSession";
+import FeedbackModal from "@/components/FeedbackModal";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { GradeBand } from "@/app/generated/prisma/enums";
 
@@ -105,9 +106,11 @@ export default function SessionPage() {
   const [score, setScore] = useState<ScoreResult | null>(null);
   const [error, setError] = useState("");
   const [showLevelUp, setShowLevelUp] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [studentId, setStudentId] = useState<string | null>(null);
 
   async function loadSession() {
-    setPhase("loading"); setError(""); setScore(null); setShowLevelUp(false);
+    setPhase("loading"); setError(""); setScore(null); setShowLevelUp(false); setShowFeedback(false);
     try {
       const [passageRes, meRes] = await Promise.all([
         fetch("/api/passages", { credentials: "include" }),
@@ -118,6 +121,7 @@ export default function SessionPage() {
       if (meRes.ok) {
         const me = await meRes.json();
         setStudentName(me.name ?? "");
+        setStudentId(me.id ?? null);
       }
 
       const sessionRes = await fetch("/api/sessions", {
@@ -241,7 +245,7 @@ export default function SessionPage() {
         )}
 
         {/* Action buttons after result */}
-        {phase === "done" && score && !showLevelUp && (
+        {phase === "done" && score && !showLevelUp && !showFeedback && (
           <div className="mt-8 flex gap-4 max-w-xl mx-auto">
             {!score.passed && (
               <button onClick={loadSession}
@@ -249,12 +253,24 @@ export default function SessionPage() {
                 🔄 Try Again
               </button>
             )}
-            <button onClick={() => router.push("/student/dashboard")}
+            <button onClick={() => setShowFeedback(true)}
               className="flex-1 flex items-center justify-center gap-3 text-white font-bold py-5 rounded-2xl transition-all text-lg hover:opacity-90"
               style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}>
               🏠 {score.passed ? "Back to Home 🎉" : "Home"}
             </button>
           </div>
+        )}
+
+        {/* Feedback Modal */}
+        {showFeedback && studentId && (
+          <FeedbackModal
+            studentId={studentId}
+            sessionType="reading"
+            onClose={() => {
+              setShowFeedback(false);
+              router.push("/student/dashboard");
+            }}
+          />
         )}
       </div>
     </div>

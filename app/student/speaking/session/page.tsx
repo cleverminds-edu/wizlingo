@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import ConversationSession from "@/components/ConversationSession";
+import FeedbackModal from "@/components/FeedbackModal";
 import { CHARACTER_INFO } from "@/lib/speaking-topics";
 import { TurnRecord, getSpeakingLevelConfig } from "@/lib/speaking-score";
 import { GradeBand } from "@/app/generated/prisma/client";
@@ -65,16 +66,21 @@ function SessionPageInner() {
   const [phase, setPhase] = useState<"loading" | "conversation" | "saving" | "done" | "error">("loading");
   const [result, setResult] = useState<SessionResult | null>(null);
   const [error, setError] = useState("");
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [studentId, setStudentId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!topicId || !sessionId) { setPhase("error"); setError("Missing session info."); return; }
 
-    fetch(`/api/speaking/topics`, { credentials: "include" })
-      .then((r) => r.ok ? r.json() : Promise.reject())
-      .then((data: { topics: TopicData[] }) => {
+    Promise.all([
+      fetch(`/api/speaking/topics`, { credentials: "include" }).then((r) => r.ok ? r.json() : Promise.reject()),
+      fetch(`/api/auth/me`, { credentials: "include" }).then((r) => r.ok ? r.json() : Promise.reject()),
+    ])
+      .then(([data, me]) => {
         const t = data.topics.find((t: TopicData) => t.id === topicId);
         if (!t) throw new Error("Topic not found");
         setTopic(t);
+        if (me && me.id) setStudentId(me.id);
         setPhase("conversation");
       })
       .catch(() => { setPhase("error"); setError("Could not load topic."); });
@@ -245,17 +251,31 @@ function SessionPageInner() {
             )}
 
             {/* Actions */}
-            <div className="flex gap-4">
-              <button onClick={() => router.push("/student/speaking")}
-                className="flex-1 py-4 rounded-2xl font-bold text-white border border-white/20 bg-white/10 hover:bg-white/20 transition-all">
-                Try Another Topic
-              </button>
-              <button onClick={() => router.push("/student/dashboard")}
-                className="flex-1 py-4 rounded-2xl font-bold text-white transition-all hover:opacity-90"
-                style={{ background: "linear-gradient(135deg, #6366f1, #a855f7)" }}>
-                🏠 Home
-              </button>
-            </div>
+            {!showFeedback && (
+              <div className="flex gap-4">
+                <button onClick={() => router.push("/student/speaking")}
+                  className="flex-1 py-4 rounded-2xl font-bold text-white border border-white/20 bg-white/10 hover:bg-white/20 transition-all">
+                  Try Another Topic
+                </button>
+                <button onClick={() => setShowFeedback(true)}
+                  className="flex-1 py-4 rounded-2xl font-bold text-white transition-all hover:opacity-90"
+                  style={{ background: "linear-gradient(135deg, #6366f1, #a855f7)" }}>
+                  🏠 Home
+                </button>
+              </div>
+            )}
+
+            {/* Feedback Modal */}
+            {showFeedback && studentId && (
+              <FeedbackModal
+                studentId={studentId}
+                sessionType="speaking"
+                onClose={() => {
+                  setShowFeedback(false);
+                  router.push("/student/dashboard");
+                }}
+              />
+            )}
           </div>
         )}
 
