@@ -213,11 +213,11 @@ export default function SchoolPage() {
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Number of Students</label>
-                  <input type="number" placeholder="e.g. 150" defaultValue={150} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                  <input type="number" placeholder="e.g. 100" defaultValue={100} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Number of Classes</label>
-                  <input type="number" placeholder="e.g. 6" defaultValue={6} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                  <input type="number" placeholder="e.g. 4" defaultValue={4} className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Expected Score Improvement</label>
@@ -232,19 +232,19 @@ export default function SchoolPage() {
               <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl p-8 space-y-6">
                 <div className="border-b-2 border-purple-300 pb-4">
                   <p className="text-gray-600 text-sm">Annual Cost</p>
-                  <p className="text-4xl font-bold text-purple-600">₹30,000</p>
-                  <p className="text-xs text-gray-600">150 students × ₹200/year</p>
+                  <p className="text-4xl font-bold text-purple-600">₹20,000</p>
+                  <p className="text-xs text-gray-600">100 students × ₹200/year</p>
                 </div>
 
                 <div className="border-b-2 border-purple-300 pb-4">
                   <p className="text-gray-600 text-sm">Estimated Benefit (Per Year)</p>
-                  <p className="text-4xl font-bold text-green-600">₹2,25,000+</p>
-                  <p className="text-xs text-gray-600">40% students improve exam scores<br/>(Increased admissions, reputation, fee increase)</p>
+                  <p className="text-4xl font-bold text-green-600">₹1,50,000+</p>
+                  <p className="text-xs text-gray-600">40 students improve exam scores<br/>(Increased admissions, reputation, better rankings)</p>
                 </div>
 
                 <div className="bg-white rounded-lg p-4">
-                  <p className="text-gray-700 font-bold">ROI: <span className="text-3xl text-green-600">650%</span></p>
-                  <p className="text-xs text-gray-600 mt-1">Plus intangible: improved engagement, happier parents, better test scores for board exams</p>
+                  <p className="text-gray-700 font-bold">ROI: <span className="text-3xl text-green-600">650%+</span></p>
+                  <p className="text-xs text-gray-600 mt-1">(₹1,50,000 benefit ÷ ₹20,000 cost)<br/>Plus: happier parents, better board exam scores, school reputation</p>
                 </div>
               </div>
             </div>
@@ -265,7 +265,7 @@ export default function SchoolPage() {
             <p className="text-6xl font-bold text-gray-900 mb-2">
               ₹200<span className="text-2xl text-gray-600">/student/year</span>
             </p>
-            <p className="text-gray-600 mb-8">Minimum 25 students</p>
+            <p className="text-gray-600 mb-8">Minimum 100 students • Pricing negotiable for larger implementations</p>
 
             <div className="grid md:grid-cols-2 gap-6 mb-8 text-left">
               <div className="space-y-3">
@@ -291,12 +291,12 @@ export default function SchoolPage() {
               </div>
 
               <div className="space-y-3">
-                <h3 className="font-bold text-gray-900">Bulk Discounts</h3>
+                <h3 className="font-bold text-gray-900">Volume Pricing</h3>
                 <ul className="space-y-2 text-gray-700">
-                  <li>25–100 students: 10% discount</li>
-                  <li>101–500 students: 20% discount</li>
-                  <li>500+ students: 30% discount (custom)</li>
-                  <li>Multi-school implementation: Contact sales</li>
+                  <li><strong>100–250 students:</strong> ₹180/student/yr (10% discount)</li>
+                  <li><strong>251–500 students:</strong> ₹160/student/yr (20% discount)</li>
+                  <li><strong>500+ students:</strong> Custom pricing (30%+ discount)</li>
+                  <li><strong>Multi-school districts:</strong> Contact sales for negotiated rates</li>
                 </ul>
               </div>
             </div>
@@ -424,7 +424,7 @@ export default function SchoolPage() {
             <div>
               <h4 className="font-semibold text-white mb-4">Support</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="mailto:support@wizlingo.app" className="hover:text-white transition">support@wizlingo.app</a></li>
+                <li><a href="mailto:support@edvanta.co.in" className="hover:text-white transition">support@edvanta.co.in</a></li>
               </ul>
             </div>
           </div>

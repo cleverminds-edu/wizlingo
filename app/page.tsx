@@ -336,7 +336,7 @@ export default function HomePage() {
                 <p className="text-5xl font-bold text-gray-900">
                   ₹200<span className="text-lg text-gray-600">/student/year</span>
                 </p>
-                <p className="text-sm text-gray-600 mt-2">Minimum 25 students</p>
+                <p className="text-sm text-gray-600 mt-2">Minimum 100 students • Custom pricing available</p>
               </div>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-start gap-3">
@@ -644,7 +644,7 @@ export default function HomePage() {
 
           <div className="mt-12 bg-blue-50 border border-blue-200 rounded-xl p-8 text-center">
             <p className="text-gray-700 mb-4">Still have questions? We're here to help!</p>
-            <p className="text-gray-600">Email: <a href="mailto:support@wizlingo.app" className="text-blue-600 font-semibold hover:underline">support@wizlingo.app</a></p>
+            <p className="text-gray-600">Email: <a href="mailto:support@edvanta.co.in" className="text-blue-600 font-semibold hover:underline">support@edvanta.co.in</a></p>
             <p className="text-gray-600">WhatsApp: <a href="tel:+919876543210" className="text-blue-600 font-semibold hover:underline">+91 (XXXX) XXXX-XXXX</a> (School inquiries)</p>
           </div>
         </div>
@@ -702,7 +702,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <p className="text-purple-200 text-xs text-center">Powered by Edvanta • Questions? Email us at support@wizlingo.app</p>
+          <p className="text-purple-200 text-xs text-center">Powered by Edvanta • Questions? Email us at support@edvanta.co.in</p>
         </div>
       </section>
 
