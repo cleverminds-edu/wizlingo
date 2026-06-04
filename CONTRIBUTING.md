@@ -307,7 +307,7 @@ Button shows loading for 10 seconds, then shows error "Network error"
 
 - **GitHub Discussions:** Use for feature ideas and questions
 - **GitHub Issues:** Use for bugs and documentation requests
-- **Email:** info@clevermindsglobalschool.com
+- **Email:** support@edvanta.co.in
 
 ---
 

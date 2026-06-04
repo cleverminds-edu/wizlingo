@@ -439,7 +439,7 @@ All rights reserved ©2026
 
 ## 📞 Support
 
-- **Email:** info@clevermindsglobalschool.com
+- **Email:** support@edvanta.co.in
 - **Status Page:** Monitor uptime at dashboard
 - **Issue Tracker:** GitHub Issues
 - **Deployment Help:** See DEPLOYMENT.md

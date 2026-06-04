@@ -383,7 +383,7 @@ export default function BrandKitPage() {
           © {new Date().getFullYear()} Edvanta. WizLingo Brand Kit v1.0
         </p>
         <p className="text-sm" style={{ color: "#9ca3af" }}>
-          For brand queries: info@clevermindsglobalschool.com
+          For brand queries: support@edvanta.co.in
         </p>
       </footer>
     </div>

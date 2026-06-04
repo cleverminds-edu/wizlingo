@@ -188,7 +188,7 @@ function VerifyEmailPageContent() {
           <div className="mt-6 pt-6 border-t border-gray-200 text-center">
             <p className="text-xs text-gray-500">
               Need help?{" "}
-              <a href="mailto:info@clevermindsglobalschool.com" className="text-orange-600 hover:underline">
+              <a href="mailto:support@edvanta.co.in" className="text-orange-600 hover:underline">
                 Contact support
               </a>
             </p>
