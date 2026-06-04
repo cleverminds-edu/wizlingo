@@ -81,10 +81,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: "linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 50%, #f3e8ff 100%)" }}>
+    <div className="min-h-screen flex relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f172a 50%, #1a1a2e 75%, #16213e 100%)" }}>
+      {/* Animated background shapes */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400/10 rounded-full blur-3xl -z-10 animate-pulse"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+      <div className="absolute top-1/2 right-1/3 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDelay: '2s' }}></div>
+
       {/* Left panel — branding */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12"
-        style={{ background: "linear-gradient(160deg, #1e3a8a 0%, #3730a3 60%, #6d28d9 100%)" }}>
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative z-10"
+        style={{ background: "linear-gradient(160deg, #1e3a8a 0%, #3730a3 50%, #6d28d9 100%)" }}>
         {/* WizLingo Logo */}
         <div className="space-y-8">
           <div className="relative inline-block">
@@ -132,10 +137,15 @@ export default function LoginPage() {
       </div>
 
       {/* Right panel — login form */}
-      <div className="flex-1 flex items-center justify-center p-6" style={{ background: "linear-gradient(135deg, #ffffff 0%, #f8f9ff 50%, #f0f4ff 100%)" }}>
-        <div className="w-full max-w-md">
+      <div className="flex-1 flex items-center justify-center p-6 relative z-10" style={{ background: "linear-gradient(135deg, #ffffff 0%, #f8f9ff 30%, #f0f4ff 60%, #e0e7ff 100%)" }}>
+        {/* Subtle gradient orbs in background */}
+        <div className="absolute inset-0 opacity-30 pointer-events-none">
+          <div className="absolute top-20 right-20 w-40 h-40 bg-gradient-to-br from-yellow-200 to-yellow-300/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 left-20 w-40 h-40 bg-gradient-to-br from-purple-200 to-purple-300/20 rounded-full blur-3xl"></div>
+        </div>
+        <div className="w-full max-w-md relative z-20">
           {/* Mobile header */}
-          <div className="lg:hidden mb-8 space-y-3 text-center">
+          <div className="lg:hidden mb-8 space-y-3 text-center relative z-20">
             <div className="flex justify-center">
               <div className="relative">
                 <Image
@@ -148,12 +158,16 @@ export default function LoginPage() {
                 <span className="absolute -top-2 -right-2 text-xl animate-bounce">✨</span>
               </div>
             </div>
+            <p className="text-gray-600 text-sm font-medium">Sign in to WizLingo</p>
           </div>
 
-          <div className="bg-gradient-to-br from-white via-blue-50/50 to-white rounded-2xl shadow-xl p-8 border border-blue-100/50">
-            <div className="mb-6">
-              <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
-              <p className="text-gray-500 text-sm mt-1">Sign in to your WizLingo account</p>
+          <div className="bg-gradient-to-br from-white via-blue-50/80 to-white rounded-3xl shadow-2xl p-8 border-2 border-blue-100/60 backdrop-blur-sm">
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-1 h-6 bg-gradient-to-b from-yellow-400 to-cyan-400 rounded-full"></div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Welcome back</h1>
+              </div>
+              <p className="text-gray-600 text-sm">Sign in to continue your WizLingo journey</p>
             </div>
 
             {/* Role selector */}
@@ -268,10 +282,12 @@ export default function LoginPage() {
           </div>
 
           {/* Demo role picker */}
-          <div className="mt-6">
-            <p className="text-center text-xs text-gray-500 mb-3 font-medium uppercase tracking-wide">
-              Demo — click to auto-login
-            </p>
+          <div className="mt-8 relative z-20">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+              <p className="text-center text-xs text-gray-500 font-medium uppercase tracking-wider">Or try demo</p>
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               {DEMO_ROLES.map((r) => (
                 <button
