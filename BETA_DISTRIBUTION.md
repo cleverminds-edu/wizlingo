@@ -406,7 +406,7 @@ Beta Status: Limited availability for pilot schools
 
 ### For Teachers/Admins
 ```
-Direct web link: https://wizlingo.app/admin/beta-dashboard
+Direct web link: https://wizlingo.edvanta.co.in/admin/beta-dashboard
 No app needed - just browser
 ```
 
@@ -524,15 +524,15 @@ Great news! WizLingo is ready for your students. Here's how to get started:
 Android:
 1. Google Play Store → Search "WizLingo"
 2. Tap Install
-3. Or: Open https://wizlingo.app and tap "Install app"
+3. Or: Open https://wizlingo.edvanta.co.in and tap "Install app"
 
 iOS/iPad:
-1. Open https://wizlingo.app in Safari
+1. Open https://wizlingo.edvanta.co.in in Safari
 2. Tap Share → Add to Home Screen
 3. Tap Add
 
 👨‍🏫 Teacher Dashboard:
-- Login: https://wizlingo.app/teacher/dashboard
+- Login: https://wizlingo.edvanta.co.in/teacher/dashboard
 - Email: teacher@school.edu
 - Password: [will be sent separately]
 
