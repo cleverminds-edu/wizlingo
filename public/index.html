@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WizLingo Strategy Hub - Navigation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 60px;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.95;
+            margin-bottom: 10px;
+        }
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .doc-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #1a202c;
+        }
+        .doc-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .doc-card h2 {
+            font-size: 1.6em;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+        .doc-card .type {
+            display: inline-block;
+            background: #f0f9ff;
+            color: #0369a1;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .doc-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #5568d3;
+            transform: translateX(4px);
+        }
+        .section {
+            margin-bottom: 50px;
+        }
+        .section-title {
+            color: white;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 15px;
+        }
+        footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        .quick-start {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
+        }
+        .quick-start h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+        }
+        .quick-start ol {
+            margin-left: 20px;
+            color: #666;
+            line-height: 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧙 WizLingo Strategy Hub</h1>
+            <p class="subtitle">Complete Go-to-Market Documentation</p>
+            <p style="font-size: 1em; opacity: 0.9;">B2B Schools + B2C Direct Students (Dual-Track)</p>
+        </header>
+
+        <!-- Quick Start -->
+        <div class="quick-start">
+            <h2>⚡ Quick Start (3 Minutes)</h2>
+            <ol>
+                <li><strong>View Dashboard:</strong> Open <a href="dual-track-strategy.html" style="color: #667eea; font-weight: 600;">Dual-Track Strategy</a></li>
+                <li><strong>Understand Timeline:</strong> See 6-month execution plan with both tracks</li>
+                <li><strong>Next Steps:</strong> Assign team roles + launch today (B2C) and June 15 (B2B)</li>
+            </ol>
+        </div>
+
+        <!-- Main Documentation -->
+        <div class="section">
+            <h2 class="section-title">📊 Main Strategy Documents</h2>
+            <div class="docs-grid">
+                <!-- Dual-Track (Primary) -->
+                <a href="dual-track-strategy.html" class="doc-card">
+                    <div class="type">🎯 PRIMARY - START HERE</div>
+                    <h2>Dual-Track Strategy</h2>
+                    <p>B2B Schools + B2C Direct Students running simultaneously. Timeline, metrics, financial projections, and decision gates for both tracks.</p>
+                    <div class="btn">View Dashboard →</div>
+                </a>
+
+                <!-- B2C Direct -->
+                <a href="b2c-launch.html" class="doc-card">
+                    <div class="type">📱 B2C TRACK</div>
+                    <h2>B2C Direct Launch</h2>
+                    <p>Launch reading app directly to students & parents. Zero school dependencies, immediate signup, viral growth potential. Start June 5.</p>
+                    <div class="btn">View Plan →</div>
+                </a>
+
+                <!-- B2B Schools -->
+                <a href="june-15-pilot-launch.html" class="doc-card">
+                    <div class="type">🏫 B2B TRACK</div>
+                    <h2>B2B School Pilots</h2>
+                    <p>Onboard 2-3 pilot schools by June 15. Teacher workflows, school setup, student enrollment, and success metrics for B2B track.</p>
+                    <div class="btn">View Plan →</div>
+                </a>
+
+                <!-- Main Strategy -->
+                <a href="wizlingo-strategy.html" class="doc-card">
+                    <div class="type">🗺️ OVERVIEW</div>
+                    <h2>Strategic Overview</h2>
+                    <p>Complete go-to-market strategy with 3-stage framework, readiness assessment, pricing models, and investor pitch content.</p>
+                    <div class="btn">View Overview →</div>
+                </a>
+
+                <!-- Quick Reference -->
+                <a href="quick-reference.html" class="doc-card">
+                    <div class="type">📋 REFERENCE</div>
+                    <h2>Quick Reference</h2>
+                    <p>Print-and-post quick reference card. 48-hour launch plan, critical blockers, success metrics, and emergency fixes. Keep on desk.</p>
+                    <div class="btn">View Reference →</div>
+                </a>
+
+                <!-- Brand Kit -->
+                <a href="brand-kit.html" class="doc-card">
+                    <div class="type">🎨 BRAND</div>
+                    <h2>Brand Kit</h2>
+                    <p>WizLingo brand identity. Colors, typography, badges, certificates, and visual guidelines for all marketing materials.</p>
+                    <div class="btn">View Brand Kit →</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Detailed Documentation -->
+        <div class="section">
+            <h2 class="section-title">📚 Detailed Documentation (Markdown Files)</h2>
+            <div style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                <p style="color: #666; line-height: 1.8; margin-bottom: 20px;">
+                    For in-depth reading, see markdown files in repository root:
+                </p>
+                <ul style="margin-left: 20px; color: #666; line-height: 2;">
+                    <li><strong>DUAL_TRACK_EXECUTION_PLAN.md</strong> — Complete dual-track strategy (8000+ words)</li>
+                    <li><strong>STAGE_GATED_ROADMAP.md</strong> — Original B2B schools framework with gates</li>
+                    <li><strong>B2C_DIRECT_LAUNCH_PLAN.md</strong> — Detailed B2C strategy and channels</li>
+                    <li><strong>READINESS_ASSESSMENT.md</strong> — Current product status and blockers</li>
+                    <li><strong>PRICING_DECISION_SHEET.md</strong> — Pricing analysis for B2B and B2C</li>
+                    <li><strong>EXECUTIVE_SUMMARY.md</strong> — Everything wrapped up in one doc</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Implementation Checklist -->
+        <div class="section">
+            <h2 class="section-title">✅ Implementation Checklist</h2>
+            <div style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                <h3 style="color: #667eea; margin-bottom: 20px;">TODAY (June 4)</h3>
+                <div style="margin-bottom: 30px;">
+                    <p style="color: #666; margin-bottom: 12px;"><strong>B2C Lead:</strong></p>
+                    <ul style="margin-left: 40px; color: #666;">
+                        <li>☐ Create landing page + email signup form</li>
+                        <li>☐ Draft WhatsApp messages for parent groups</li>
+                        <li>☐ Identify 10+ parent groups to message</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 30px;">
+                    <p style="color: #666; margin-bottom: 12px;"><strong>B2B Lead:</strong></p>
+                    <ul style="margin-left: 40px; color: #666;">
+                        <li>☐ Identify 5-7 target schools</li>
+                        <li>☐ Call 2 schools, get verbal commitment</li>
+                        <li>☐ Prepare pitch deck and contract template</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <p style="color: #666; margin-bottom: 12px;"><strong>Engineering:</strong></p>
+                    <ul style="margin-left: 40px; color: #666;">
+                        <li>☐ Validate database migrations (npm run db:migrate)</li>
+                        <li>☐ Test speech recognition on 5 recordings</li>
+                        <li>☐ Verify email sending works</li>
+                        <li>☐ Setup analytics dashboard</li>
+                    </ul>
+                </div>
+
+                <h3 style="color: #667eea; margin-top: 30px; margin-bottom: 20px;">TOMORROW (June 5)</h3>
+                <div>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li>☐ 9am: B2C landing page LIVE</li>
+                        <li>☐ 10am: Send WhatsApp invites to parent groups</li>
+                        <li>☐ 10am: Start B2B school onboarding calls</li>
+                        <li>☐ All day: Monitor metrics (DAU, signups, errors)</li>
+                        <li>☐ 6pm: End-of-day review - both tracks on track?</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tips -->
+        <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 30px; color: white; margin-bottom: 40px;">
+            <h3 style="margin-bottom: 15px;">💡 Navigation Tips</h3>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+                <li><strong>For executives:</strong> Start with Dual-Track Strategy Dashboard</li>
+                <li><strong>For product/eng:</strong> Read DUAL_TRACK_EXECUTION_PLAN.md for technical details</li>
+                <li><strong>For sales/BD:</strong> Reference PRICING_DECISION_SHEET.md for contracts</li>
+                <li><strong>For daily work:</strong> Print Quick Reference and keep on your desk</li>
+                <li><strong>For investors:</strong> Use Executive Summary for Series A pitch</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p><strong>WizLingo Strategy Hub</strong> | All Documentation Complete</p>
+            <p style="margin-top: 15px;">June 4, 2026 | Ready to execute dual-track (B2B + B2C)</p>
+            <p style="margin-top: 15px; font-size: 0.9em;">For questions, refer to EXECUTIVE_SUMMARY.md or specific strategy documents</p>
+        </footer>
+    </div>
+</body>
+</html>

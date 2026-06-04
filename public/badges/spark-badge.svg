@@ -5,93 +5,29 @@
       <stop offset="50%" style="stop-color:#F97316;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#EA580C;stop-opacity:1" />
     </linearGradient>
-    <radialGradient id="sparkGlow" cx="50%" cy="30%">
-      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.4" />
-      <stop offset="100%" style="stop-color:#F97316;stop-opacity:0" />
-    </radialGradient>
     <filter id="sparkShadow">
       <feDropShadow dx="0" dy="8" stdDeviation="6" flood-opacity="0.3" />
     </filter>
-    <linearGradient id="sparkTextGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#F97316;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1" />
-    </linearGradient>
   </defs>
 
-  <!-- Background group for shadow -->
   <g filter="url(#sparkShadow)">
-    <!-- Hexagon outer ring (amber border) -->
-    <polygon points="140,20 210,50 210,155 140,185 70,155 70,50"
+    <!-- Hexagon border -->
+    <polygon points="140,30 235,75 235,205 140,250 45,205 45,75"
              fill="none" stroke="#FFB800" stroke-width="3" stroke-linejoin="round"/>
+    <!-- Shield -->
+    <path d="M 90 90 L 190 90 L 190 160 Q 190 180 140 205 Q 90 180 90 160 Z" fill="url(#sparkShield)"/>
 
-    <!-- Shield shape (pointed bottom) inside hexagon -->
-    <path d="M 100 60 L 180 60 L 180 130 Q 180 150 140 170 Q 100 150 100 130 Z"
-          fill="url(#sparkShield)" stroke="none"/>
+    <!-- Professional flame icon - angular, clean -->
+    <path d="M 140 130 L 130 100 L 135 95 Q 140 70 140 55 Q 140 70 145 95 L 150 100 Z" fill="#FFFFFF" opacity="0.95" stroke="#FFD700" stroke-width="1.5"/>
+    <path d="M 140 115 L 135 105 Q 135 100 140 95 Q 145 100 145 105 Z" fill="#FFD700" opacity="0.8"/>
 
-    <!-- Inner glow on shield -->
-    <path d="M 100 60 L 180 60 L 180 130 Q 180 150 140 170 Q 100 150 100 130 Z"
-          fill="url(#sparkGlow)" opacity="0.6" stroke="none"/>
-
-    <!-- Flame icon - bold, centered -->
-    <!-- Flame base (rounded bottom) -->
-    <ellipse cx="140" cy="140" rx="18" ry="22" fill="#FFFDE7" opacity="0.95"/>
-
-    <!-- Flame middle (tapers) -->
-    <path d="M 125 130 Q 125 100 140 90 Q 155 100 155 130" fill="#FFEB3B" opacity="0.9"/>
-
-    <!-- Flame top point -->
-    <path d="M 132 90 Q 125 70 140 55 Q 155 70 148 90" fill="#FDD835" opacity="0.8"/>
-
-    <!-- Hot core glow -->
-    <ellipse cx="140" cy="130" rx="8" ry="12" fill="#FFD700" opacity="0.8"/>
-
-    <!-- Sparkle stars orbiting flame -->
-    <!-- Top-left sparkle -->
-    <g transform="translate(110 90)">
-      <polygon points="0,-6 2,-2 6,-2 3,1 4,5 0,2 -4,5 -3,1 -6,-2 -2,-2"
-               fill="#FFD700" opacity="0.9"/>
+    <!-- Gold star accent -->
+    <g transform="translate(140, 45)">
+      <polygon points="0,-7 2.5,-2 8,-2 3.5,2 5.5,7 0,3.5 -5.5,7 -3.5,2 -8,-2 -2.5,-2" fill="#FFD700" opacity="0.95"/>
     </g>
 
-    <!-- Top-right sparkle -->
-    <g transform="translate(170 90)">
-      <polygon points="0,-6 2,-2 6,-2 3,1 4,5 0,2 -4,5 -3,1 -6,-2 -2,-2"
-               fill="#FFD700" opacity="0.9"/>
-    </g>
-
-    <!-- Bottom sparkle -->
-    <g transform="translate(140 160)">
-      <polygon points="0,-6 2,-2 6,-2 3,1 4,5 0,2 -4,5 -3,1 -6,-2 -2,-2"
-               fill="#FFD700" opacity="0.85"/>
-    </g>
-
-    <!-- Gold star accent at apex (matching WizLingo logo star) -->
-    <g transform="translate(140 35)">
-      <polygon points="0,-8 3,-2 9,-2 5,2 7,8 0,4 -7,8 -5,2 -9,-2 -3,-2"
-               fill="#FFD700" opacity="0.95"/>
-    </g>
-
-    <!-- Badge label text at bottom -->
-    <!-- Text shadow/background -->
-    <text x="140" y="225" font-family="Fredoka, Arial" font-size="28" font-weight="900"
-          text-anchor="middle" fill="#C2410C" letter-spacing="1" opacity="0.3">
-      SPARK
-    </text>
-
-    <!-- Main label text with gradient -->
-    <text x="140" y="223" font-family="Fredoka, Arial" font-size="28" font-weight="900"
-          text-anchor="middle" fill="url(#sparkTextGrad)" letter-spacing="1" opacity="0.95">
-      SPARK
-    </text>
-
-    <!-- WizLingo branding at bottom -->
-    <rect x="70" y="245" width="140" height="25" rx="12" fill="#C2410C" opacity="0.85"/>
-    <text x="85" y="263" font-family="Fredoka, Arial" font-size="11" font-weight="600"
-          fill="#FFFFFF" letter-spacing="0.5">
-      Wiz
-    </text>
-    <text x="115" y="263" font-family="Fredoka, Arial" font-size="11" font-weight="600"
-          fill="#FFD700" letter-spacing="0.5">
-      Lingo
-    </text>
+    <!-- Badge text -->
+    <text x="140" y="167" font-family="Fredoka, Arial" font-size="18" font-weight="900" text-anchor="middle" fill="#C2410C" opacity="0.3">SPARK</text>
+    <text x="140" y="165" font-family="Fredoka, Arial" font-size="18" font-weight="900" text-anchor="middle" fill="#FFFFFF" opacity="0.95">SPARK</text>
   </g>
 </svg>

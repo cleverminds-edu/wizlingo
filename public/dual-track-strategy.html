@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WizLingo Dual-Track B2B + B2C Strategy</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.95;
+            margin-bottom: 20px;
+        }
+        .dual-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .track-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .track-card.b2b { border-top: 5px solid #3b82f6; }
+        .track-card.b2c { border-top: 5px solid #10b981; }
+        .track-card h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+        .track-card.b2b h2 { color: #3b82f6; }
+        .track-card.b2c h2 { color: #10b981; }
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+            color: #666;
+        }
+        .metric:last-child { border-bottom: none; }
+        .metric strong { color: #1a202c; }
+        .metric-value {
+            font-weight: 600;
+            color: #1a202c;
+        }
+        .timeline {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
+        }
+        .month-block {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .month-block:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .month-header {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .track-activities {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .activity {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+        }
+        .activity.b2b { border-left-color: #3b82f6; }
+        .activity.b2c { border-left-color: #10b981; }
+        .activity h4 {
+            color: #1a202c;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+        .activity ul {
+            margin-left: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .activity li {
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
+        }
+        .comparison-table th {
+            background: #f3f4f6;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #1a202c;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #666;
+        }
+        .comparison-table tr:last-child td { border-bottom: none; }
+        .comparison-table tr:hover { background: #f9fafb; }
+        .gates {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
+        }
+        .gate {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f59e0b;
+        }
+        .gate h3 {
+            color: #1a202c;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+        .gate-option {
+            margin-bottom: 12px;
+            padding-left: 20px;
+            color: #666;
+            position: relative;
+        }
+        .gate-option::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: 700;
+        }
+        .success-box {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .success-box h2 { margin-bottom: 15px; font-size: 1.8em; }
+        .success-box p { font-size: 1.1em; line-height: 1.8; }
+        .action-list {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 40px;
+        }
+        .action-list h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+        }
+        .action-section {
+            margin-bottom: 25px;
+        }
+        .action-section h3 {
+            color: #1a202c;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+        .action-section ul {
+            margin-left: 20px;
+            color: #666;
+        }
+        .action-section li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 2.2em;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        footer {
+            text-align: center;
+            color: white;
+            padding: 30px 20px;
+            margin-top: 60px;
+            border-top: 2px solid rgba(255,255,255,0.2);
+        }
+        @media (max-width: 1024px) {
+            .dual-grid, .track-activities {
+                grid-template-columns: 1fr;
+            }
+            h1 { font-size: 1.8em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 WizLingo Dual-Track Strategy</h1>
+            <p class="subtitle">B2B Schools + B2C Direct Students (Parallel Execution)</p>
+            <p style="font-size: 1em; opacity: 0.9;">June 2026 - June 2027 | Series A Story: "Viral Consumer + Predictable Enterprise"</p>
+        </header>
+
+        <!-- Dual-Track Overview -->
+        <div class="dual-grid">
+            <div class="track-card b2b">
+                <h2>🏫 TRACK 1: B2B Schools</h2>
+                <div class="metric">
+                    <strong>Timeline:</strong>
+                    <span class="metric-value">Jun 15 - Start</span>
+                </div>
+                <div class="metric">
+                    <strong>Launch:</strong>
+                    <span class="metric-value">2-3 pilot schools</span>
+                </div>
+                <div class="metric">
+                    <strong>Growth:</strong>
+                    <span class="metric-value">20 schools/year</span>
+                </div>
+                <div class="metric">
+                    <strong>Pricing:</strong>
+                    <span class="metric-value">₹200K/school/year</span>
+                </div>
+                <div class="metric">
+                    <strong>CAC:</strong>
+                    <span class="metric-value">₹18K/school</span>
+                </div>
+                <div class="metric">
+                    <strong>LTV:</strong>
+                    <span class="metric-value">₹400K (3-year)</span>
+                </div>
+                <div class="metric">
+                    <strong>Year 1 ARR:</strong>
+                    <span class="metric-value">₹300L</span>
+                </div>
+                <div class="metric">
+                    <strong>Students:</strong>
+                    <span class="metric-value">15K by year 1</span>
+                </div>
+            </div>
+
+            <div class="track-card b2c">
+                <h2>📱 TRACK 2: B2C Direct</h2>
+                <div class="metric">
+                    <strong>Timeline:</strong>
+                    <span class="metric-value">Jun 5 - Start</span>
+                </div>
+                <div class="metric">
+                    <strong>Launch:</strong>
+                    <span class="metric-value">Immediate (landing page)</span>
+                </div>
+                <div class="metric">
+                    <strong>Growth:</strong>
+                    <span class="metric-value">Viral + referrals</span>
+                </div>
+                <div class="metric">
+                    <strong>Pricing:</strong>
+                    <span class="metric-value">₹99-299/month</span>
+                </div>
+                <div class="metric">
+                    <strong>CAC:</strong>
+                    <span class="metric-value">₹50-200 (organic)</span>
+                </div>
+                <div class="metric">
+                    <strong>LTV:</strong>
+                    <span class="metric-value">₹2-5K (3-year)</span>
+                </div>
+                <div class="metric">
+                    <strong>Year 1 MRR:</strong>
+                    <span class="metric-value">₹40K+</span>
+                </div>
+                <div class="metric">
+                    <strong>Users:</strong>
+                    <span class="metric-value">5K by year 1</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Combined Impact -->
+        <div class="success-box">
+            <h2>📊 Combined Impact</h2>
+            <p>
+                <strong>Total Students:</strong> 20K+ by year 1<br>
+                <strong>Total Revenue:</strong> ₹330L+ by year 1<br>
+                <strong>Series A Story:</strong> "Dual-motion growth - viral B2C + profitable B2B"<br>
+                <strong>Valuation Path:</strong> ₹50Cr+ by year 2
+            </p>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline">
+            <h2 style="color: #667eea; margin-bottom: 30px; font-size: 1.8em;">⏰ 6-Month Execution Timeline</h2>
+
+            <div class="month-block">
+                <div class="month-header">MONTH 1: JUNE 2026</div>
+                <div class="track-activities">
+                    <div class="activity b2b">
+                        <h4>🏫 B2B Track</h4>
+                        <ul>
+                            <li><strong>Week 1:</strong> Identify 5-7 schools, outreach</li>
+                            <li><strong>Week 2-3:</strong> Sign contracts, train teachers</li>
+                            <li><strong>Week 4:</strong> Monitor engagement, collect feedback</li>
+                            <li><strong>Target:</strong> 2-3 schools, 2000 students</li>
+                        </ul>
+                    </div>
+                    <div class="activity b2c">
+                        <h4>📱 B2C Track</h4>
+                        <ul>
+                            <li><strong>Jun 5:</strong> Landing page + email signup live</li>
+                            <li><strong>Week 1:</strong> 50-100 signups (organic)</li>
+                            <li><strong>Week 2-3:</strong> Scale parent groups, referrals</li>
+                            <li><strong>Target:</strong> 300+ signups by month-end</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="month-block">
+                <div class="month-header">MONTH 2: JULY 2026</div>
+                <div class="track-activities">
+                    <div class="activity b2b">
+                        <h4>🏫 B2B Track</h4>
+                        <ul>
+                            <li>Schools stable at 4 weeks in</li>
+                            <li>Teacher NPS survey (target: >45)</li>
+                            <li>Build case studies + testimonials</li>
+                            <li><strong>Target:</strong> 3 schools, ₹75L ARR</li>
+                        </ul>
+                    </div>
+                    <div class="activity b2c">
+                        <h4>📱 B2C Track</h4>
+                        <ul>
+                            <li>800+ signups (organic growth)</li>
+                            <li>40+ paid subscribers (5% conversion)</li>
+                            <li>MRR: ₹4K</li>
+                            <li><strong>Target:</strong> Viral coefficient clear</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="month-block">
+                <div class="month-header">MONTH 3: AUGUST 2026 (CRITICAL GATE)</div>
+                <div class="track-activities">
+                    <div class="activity b2b">
+                        <h4>🏫 B2B Gate Decision</h4>
+                        <ul>
+                            <li><strong>Criteria:</strong> Teacher NPS >50? Schools renew?</li>
+                            <li><strong>GO:</strong> Expand to 10-15 schools</li>
+                            <li><strong>HOLD:</strong> Consolidate, improve</li>
+                            <li><strong>PIVOT:</strong> Focus on B2C only</li>
+                        </ul>
+                    </div>
+                    <div class="activity b2c">
+                        <h4>📱 B2C Gate Decision</h4>
+                        <ul>
+                            <li><strong>Criteria:</strong> 2000+ signups? 5%+ conversion?</li>
+                            <li><strong>GO:</strong> Scale organic + test ads</li>
+                            <li><strong>HOLD:</strong> Improve retention</li>
+                            <li><strong>PIVOT:</strong> Focus on B2B only</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="month-block">
+                <div class="month-header">MONTHS 4-6: SEP-NOV 2026 (SERIES A + SCALE)</div>
+                <div class="track-activities">
+                    <div class="activity b2b">
+                        <h4>🏫 B2B Track</h4>
+                        <ul>
+                            <li>Hire BD team (2 people)</li>
+                            <li>Close 5-10 new schools</li>
+                            <li><strong>Target:</strong> 10-15 schools, ₹300L ARR</li>
+                        </ul>
+                    </div>
+                    <div class="activity b2c">
+                        <h4>📱 B2C Track</h4>
+                        <ul>
+                            <li>Scale to 3000-5000 signups</li>
+                            <li>250-400 paid subscribers</li>
+                            <li><strong>Target:</strong> ₹25-40K MRR</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; padding: 15px; background: #fef3c7; border-radius: 8px; color: #92400e;">
+                    <strong>SERIES A LAUNCH:</strong> September 1<br>
+                    Story: "Dual-motion growth" | Target: ₹3-5Cr @ ₹30-50Cr valuation
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Table -->
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Aspect</th>
+                    <th>B2B Schools</th>
+                    <th>B2C Direct</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Launch Date</strong></td>
+                    <td>June 15 (schools need setup)</td>
+                    <td>June 5 (immediate)</td>
+                </tr>
+                <tr>
+                    <td><strong>Decision Timeline</strong></td>
+                    <td>6-9 months per school</td>
+                    <td>2 minutes per signup</td>
+                </tr>
+                <tr>
+                    <td><strong>Initial Users</strong></td>
+                    <td>2000 (from 2-3 schools)</td>
+                    <td>100-150 (organic)</td>
+                </tr>
+                <tr>
+                    <td><strong>Pricing Model</strong></td>
+                    <td>Annual contract, ₹200K/school</td>
+                    <td>Freemium, ₹99-299/month</td>
+                </tr>
+                <tr>
+                    <td><strong>CAC</strong></td>
+                    <td>₹18K per school</td>
+                    <td>₹50-200 (organic/referral)</td>
+                </tr>
+                <tr>
+                    <td><strong>LTV</strong></td>
+                    <td>₹400K (3-year contract)</td>
+                    <td>₹2-5K per student</td>
+                </tr>
+                <tr>
+                    <td><strong>LTV:CAC Ratio</strong></td>
+                    <td>20:1 (excellent)</td>
+                    <td>10-20:1 (good)</td>
+                </tr>
+                <tr>
+                    <td><strong>Growth Rate</strong></td>
+                    <td>Slower, predictable (20 schools/yr)</td>
+                    <td>Faster, viral potential (1000+/yr)</td>
+                </tr>
+                <tr>
+                    <td><strong>Churn Risk</strong></td>
+                    <td>Low (1-year contract)</td>
+                    <td>High (free users)</td>
+                </tr>
+                <tr>
+                    <td><strong>Year 1 Revenue</strong></td>
+                    <td>₹300L (20 schools × ₹150K avg)</td>
+                    <td>₹30L (400 subs × ₹99 × 7.5mo)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Decision Gates -->
+        <div class="gates">
+            <h2 style="color: #667eea; margin-bottom: 25px; font-size: 1.6em;">🚦 Three Critical Gates</h2>
+
+            <div class="gate">
+                <h3>GATE 1: June 28 (After Month 1)</h3>
+                <p style="margin-bottom: 12px; color: #1a202c;"><strong>Question: Are both tracks working?</strong></p>
+                <div class="gate-option"><strong>B2B GO:</strong> 2+ schools running, teachers positive</div>
+                <div class="gate-option"><strong>B2C GO:</strong> 300+ signups, 50%+ DAU, organic growth</div>
+                <div class="gate-option"><strong>Decision:</strong> Both green? Proceed dual-track. One red? Pivot.</div>
+            </div>
+
+            <div class="gate">
+                <h3>GATE 2: August 15 (After 2.5 Months)</h3>
+                <p style="margin-bottom: 12px; color: #1a202c;"><strong>Question: Should we scale both or focus one?</strong></p>
+                <div class="gate-option"><strong>B2B:</strong> Teacher NPS >50? Schools will renew?</div>
+                <div class="gate-option"><strong>B2C:</strong> 2000+ signups? 5%+ conversion? Churn <35%?</div>
+                <div class="gate-option"><strong>Decision:</strong> If both strong, Series A confirmed. If one weak, double down on other.</div>
+            </div>
+
+            <div class="gate">
+                <h3>GATE 3: September 1 (Series A Launch)</h3>
+                <p style="margin-bottom: 12px; color: #1a202c;"><strong>Question: Ready to raise?</strong></p>
+                <div class="gate-option"><strong>B2B:</strong> 3-5 schools, ₹100L+ ARR, teacher NPS >50</div>
+                <div class="gate-option"><strong>B2C:</strong> 2000+ signups, ₹15K+ MRR, viral proven</div>
+                <div class="gate-option"><strong>Decision:</strong> Combined 5000+ students, ₹330L+ run-rate → Launch Series A</div>
+            </div>
+        </div>
+
+        <!-- Financial Projections -->
+        <h2 style="color: #667eea; text-align: center; margin-bottom: 30px; font-size: 1.8em;">💰 Financial Projections</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">₹330L</div>
+                <div class="stat-label">Year 1 ARR (Combined)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">20K</div>
+                <div class="stat-label">Total Active Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">88-90%</div>
+                <div class="stat-label">Gross Margin</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">₹3-5Cr</div>
+                <div class="stat-label">Series A Target</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">₹2.7Cr</div>
+                <div class="stat-label">Year 2 ARR (8x)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">₹50Cr+</div>
+                <div class="stat-label">Year 2 Valuation</div>
+            </div>
+        </div>
+
+        <!-- Action Items -->
+        <div class="action-list">
+            <h2>✅ Immediate Action Plan</h2>
+
+            <div class="action-section">
+                <h3>🎯 TODAY (June 4) - Both Tracks Launch Setup</h3>
+                <ul>
+                    <li><strong>B2B Lead:</strong> Identify 5 schools, call 2, get commitment</li>
+                    <li><strong>B2C Lead:</strong> Create landing page + email signup form</li>
+                    <li><strong>Eng:</strong> Validate all systems (DB, speech rec, email, analytics)</li>
+                    <li><strong>CEO:</strong> Confirm: Full dual-track? (yes/no by 6pm)</li>
+                </ul>
+            </div>
+
+            <div class="action-section">
+                <h3>🚀 TOMORROW (June 5) - B2C Goes Live, B2B Starts Negotiations</h3>
+                <ul>
+                    <li><strong>B2C:</strong> Landing page LIVE at 9am</li>
+                    <li><strong>B2C:</strong> Send WhatsApp messages (50 parent groups)</li>
+                    <li><strong>B2B:</strong> Onboarding calls with 2 schools</li>
+                    <li><strong>All:</strong> Monitor metrics hourly</li>
+                </ul>
+            </div>
+
+            <div class="action-section">
+                <h3>⚡ WEEK 1 (June 6-12) - Both Tracks Running</h3>
+                <ul>
+                    <li><strong>B2C:</strong> Reach 100+ signups via organic growth</li>
+                    <li><strong>B2B:</strong> Get 2 schools trained + students onboarded</li>
+                    <li><strong>All:</strong> Daily metrics dashboard live</li>
+                    <li><strong>Decision:</strong> Both looking good? Proceed as planned.</li>
+                </ul>
+            </div>
+
+            <div class="action-section">
+                <h3>📈 ONGOING (Jun 12 - Aug 15) - Scale Phase</h3>
+                <ul>
+                    <li><strong>B2B:</strong> Scale from 2 to 3-5 schools, reach ₹100L+ ARR</li>
+                    <li><strong>B2C:</strong> Scale from 300 to 2000+ signups, reach ₹15K+ MRR</li>
+                    <li><strong>Series A:</strong> Prep deck, gather metrics, identify investors</li>
+                    <li><strong>Decision Gate (Aug 15):</strong> Both tracks green? → Series A ready</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Why Dual-Track -->
+        <div style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); margin-bottom: 40px;">
+            <h2 style="color: #667eea; margin-bottom: 20px; font-size: 1.6em;">🎯 Why Dual-Track (The Ultimate Hedge)</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; border-left: 3px solid #3b82f6;">
+                    <h4 style="color: #3b82f6; margin-bottom: 10px;">✅ Speed</h4>
+                    <p style="color: #666; font-size: 0.9em;">B2C launches in 2 days (no school dependency)</p>
+                </div>
+                <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; border-left: 3px solid #10b981;">
+                    <h4 style="color: #10b981; margin-bottom: 10px;">✅ Stability</h4>
+                    <p style="color: #666; font-size: 0.9em;">B2B provides predictable, high-LTV revenue</p>
+                </div>
+                <div style="background: #f5f3ff; padding: 15px; border-radius: 8px; border-left: 3px solid #8b5cf6;">
+                    <h4 style="color: #8b5cf6; margin-bottom: 10px;">✅ Growth</h4>
+                    <p style="color: #666; font-size: 0.9em;">B2C provides viral growth narrative</p>
+                </div>
+                <div style="background: #fef3c7; padding: 15px; border-radius: 8px; border-left: 3px solid #f59e0b;">
+                    <h4 style="color: #f59e0b; margin-bottom: 10px;">✅ Series A</h4>
+                    <p style="color: #666; font-size: 0.9em;">"Dual-motion" is compelling investor story</p>
+                </div>
+                <div style="background: #fce7f3; padding: 15px; border-radius: 8px; border-left: 3px solid #ec4899;">
+                    <h4 style="color: #ec4899; margin-bottom: 10px;">✅ Risk Hedge</h4>
+                    <p style="color: #666; font-size: 0.9em;">If one stalls, other carries momentum</p>
+                </div>
+                <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; border-left: 3px solid #059669;">
+                    <h4 style="color: #059669; margin-bottom: 10px;">✅ TAM</h4>
+                    <p style="color: #666; font-size: 0.9em;">Combined market = 260M students + parents</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendation -->
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; padding: 40px; text-align: center; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <h2 style="margin-bottom: 20px; font-size: 2em;">🎯 Recommended: DUAL-TRACK</h2>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                Run both simultaneously. B2C for speed and viral growth, B2B for stability and high LTV.<br>
+                <strong>Together:</strong> Powerful dual-motion Series A story.<br>
+                <strong>Can launch both THIS WEEK.</strong> No dependencies. Just execute.
+            </p>
+        </div>
+
+        <footer>
+            <p><strong>WizLingo Dual-Track Strategy</strong> | HTML Version</p>
+            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <a href="index.html" style="color: white; text-decoration: none; padding: 10px 15px; background: rgba(255,255,255,0.2); border-radius: 6px;">← Back to Hub</a>
+                <a href="wizlingo-strategy.html" style="color: white; text-decoration: none; padding: 10px 15px; background: rgba(255,255,255,0.2); border-radius: 6px;">Main Strategy</a>
+                <a href="b2c-launch.html" style="color: white; text-decoration: none; padding: 10px 15px; background: rgba(255,255,255,0.2); border-radius: 6px;">B2C Launch</a>
+                <a href="june-15-pilot-launch.html" style="color: white; text-decoration: none; padding: 10px 15px; background: rgba(255,255,255,0.2); border-radius: 6px;">B2B Pilots</a>
+            </div>
+            <p style="margin-top: 15px; font-size: 0.9em; opacity: 0.9;">See DUAL_TRACK_EXECUTION_PLAN.md for full details</p>
+            <p style="margin-top: 5px; font-size: 0.9em; opacity: 0.9;">June 4, 2026 | Ready to execute both tracks in parallel</p>
+        </footer>
+    </div>
+</body>
+</html>

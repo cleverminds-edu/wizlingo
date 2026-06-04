@@ -85,21 +85,25 @@ export default function LoginPage() {
       {/* Left panel — branding */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12"
         style={{ background: "linear-gradient(160deg, #1e3a8a 0%, #3730a3 60%, #6d28d9 100%)" }}>
-        {/* Dark-background logo — SVG so no white patch */}
-        <div className="flex items-center gap-3">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="36" height="36" rx="8" fill="url(#eg)"/>
-            <text x="7" y="26" fontFamily="Arial Black, sans-serif" fontWeight="900" fontSize="22" fill="white">E</text>
-            <defs>
-              <linearGradient id="eg" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#818cf8"/>
-                <stop offset="100%" stopColor="#a855f7"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          <div>
-            <p className="text-white font-extrabold text-xl leading-none tracking-tight">Edvanta</p>
-            <p className="text-indigo-300 text-xs mt-0.5">The Digital Advantage for Schools</p>
+        {/* WizLingo Logo */}
+        <div className="space-y-8">
+          <div className="relative inline-block">
+            <Image
+              src="/wiziingo-logo.svg"
+              alt="WizLingo"
+              width={100}
+              height={50}
+              className="h-12 w-auto drop-shadow-md"
+            />
+            <span className="absolute -top-2 -right-2 text-xl animate-bounce">✨</span>
+          </div>
+
+          {/* Welcome Text */}
+          <div className="space-y-3">
+            <p className="text-white text-lg font-bold">Welcome to WizLingo</p>
+            <p className="text-blue-100 text-sm leading-relaxed">
+              AI-powered reading and speaking practice for Grade I to Grade X. Trusted by 50+ schools across India.
+            </p>
           </div>
         </div>
 
@@ -128,35 +132,49 @@ export default function LoginPage() {
       </div>
 
       {/* Right panel — login form */}
-      <div className="flex-1 flex items-center justify-center p-6">
+      <div className="flex-1 flex items-center justify-center p-6" style={{ background: "linear-gradient(135deg, #ffffff 0%, #f8f9ff 50%, #f0f4ff 100%)" }}>
         <div className="w-full max-w-md">
-          {/* Mobile logo — on white background, no filter needed */}
-          <div className="lg:hidden mb-8 flex justify-center">
-            <Image src="/edvanta-logo1.png" alt="Edvanta" width={140} height={36} />
+          {/* Mobile header */}
+          <div className="lg:hidden mb-8 space-y-3 text-center">
+            <div className="flex justify-center">
+              <div className="relative">
+                <Image
+                  src="/wiziingo-logo.svg"
+                  alt="WizLingo"
+                  width={100}
+                  height={50}
+                  className="h-12 w-auto drop-shadow-md"
+                />
+                <span className="absolute -top-2 -right-2 text-xl animate-bounce">✨</span>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-xl p-8">
+          <div className="bg-gradient-to-br from-white via-blue-50/50 to-white rounded-2xl shadow-xl p-8 border border-blue-100/50">
             <div className="mb-6">
               <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
-              <p className="text-gray-500 text-sm mt-1">Sign in to WizLingo</p>
+              <p className="text-gray-500 text-sm mt-1">Sign in to your WizLingo account</p>
             </div>
 
             {/* Role selector */}
-            <div className="flex rounded-xl bg-gray-100 p-1 mb-6 gap-1">
-              {(["student", "teacher", "admin"] as Role[]).map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => { setRole(r); setError(""); }}
-                  className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
-                    role === r
-                      ? "bg-white shadow text-blue-700"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  {ROLE_LABELS[r]}
-                </button>
-              ))}
+            <div className="mb-6">
+              <p className="text-xs font-semibold text-gray-600 mb-3 uppercase tracking-wider">Select your role</p>
+              <div className="flex rounded-xl bg-gray-100 p-1 gap-1">
+                {(["student", "teacher", "admin"] as Role[]).map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => { setRole(r); setError(""); }}
+                    className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
+                      role === r
+                        ? "bg-white shadow text-blue-700"
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    {ROLE_LABELS[r]}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">

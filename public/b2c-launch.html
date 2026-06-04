@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WizLingo B2C Direct Student Launch</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 40px; }
+        h1 {
+            font-size: 2.5em;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .subtitle { color: rgba(255,255,255,0.9); font-size: 1.1em; margin-bottom: 30px; }
+        .alert {
+            background: #10b981;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .comp-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .comp-card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .comp-item {
+            margin-bottom: 15px;
+            color: #666;
+            line-height: 1.6;
+        }
+        .comp-item strong { color: #1a202c; display: block; margin-bottom: 4px; }
+        .timeline {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .timeline h2 {
+            color: #667eea;
+            margin-bottom: 25px;
+            font-size: 1.4em;
+        }
+        .day-block {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .day-block h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .time-label {
+            background: #667eea;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            font-weight: 600;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+        .tasks { margin-left: 20px; color: #666; }
+        .tasks li { margin-bottom: 8px; }
+        .targets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .target-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .target-value {
+            font-size: 2em;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        .target-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .channels {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .channels h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+        .channel {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 3px solid #667eea;
+        }
+        .channel h4 {
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+        .channel p {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 6px;
+        }
+        .channel .cost { color: #10b981; font-weight: 600; }
+        .pricing {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .pricing h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+        .plan {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        .plan h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .plan ul { margin-left: 20px; color: #666; }
+        .plan li { margin-bottom: 6px; }
+        .decision {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .decision h2 { margin-bottom: 20px; font-size: 1.6em; }
+        .decision p { font-size: 1.1em; line-height: 1.8; }
+        footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            margin-top: 40px;
+        }
+        @media (max-width: 768px) {
+            .comparison { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8em; }
+            .targets { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📱 WizLingo B2C Direct Student Launch</h1>
+            <p class="subtitle">Skip Schools → Go Straight to Students & Parents</p>
+        </header>
+
+        <div class="alert">
+            ✅ <strong>FASTER LAUNCH:</strong> June 5-6 (not dependent on school approvals)<br>
+            Can get 100+ students in 48 hours via organic signup
+        </div>
+
+        <!-- B2B vs B2C Comparison -->
+        <div class="comparison">
+            <div class="comp-card">
+                <h2>❌ B2B School Model (Original)</h2>
+                <div class="comp-item">
+                    <strong>How Students Join</strong>
+                    School admin provides roster (2-3 weeks)
+                </div>
+                <div class="comp-item">
+                    <strong>CAC (Cost per Student)</strong>
+                    ₹0 (bulk school deal)
+                </div>
+                <div class="comp-item">
+                    <strong>Launch Timeline</strong>
+                    10-15 days (depends on school)
+                </div>
+                <div class="comp-item">
+                    <strong>Pricing</strong>
+                    ₹200/student/year (school pays)
+                </div>
+                <div class="comp-item">
+                    <strong>Churn Risk</strong>
+                    Low (1-year contract)
+                </div>
+                <div class="comp-item">
+                    <strong>Growth Speed</strong>
+                    Slower, predictable
+                </div>
+                <div class="comp-item">
+                    <strong>Blocker</strong>
+                    School commitment needed
+                </div>
+            </div>
+
+            <div class="comp-card">
+                <h2>✅ B2C Direct Model (NEW)</h2>
+                <div class="comp-item">
+                    <strong>How Students Join</strong>
+                    Individual email/WhatsApp signup (2 minutes)
+                </div>
+                <div class="comp-item">
+                    <strong>CAC (Cost per Student)</strong>
+                    ₹50-200 (organic/ads)
+                </div>
+                <div class="comp-item">
+                    <strong>Launch Timeline</strong>
+                    2-3 days (TODAY or tomorrow)
+                </div>
+                <div class="comp-item">
+                    <strong>Pricing</strong>
+                    ₹99-299/month (freemium)
+                </div>
+                <div class="comp-item">
+                    <strong>Churn Risk</strong>
+                    High (free users drop off)
+                </div>
+                <div class="comp-item">
+                    <strong>Growth Speed</strong>
+                    Faster, viral potential
+                </div>
+                <div class="comp-item">
+                    <strong>Blocker</strong>
+                    NONE (direct launch)
+                </div>
+            </div>
+        </div>
+
+        <!-- 48-Hour Launch Timeline -->
+        <div class="timeline">
+            <h2>⚡ 48-Hour Launch Plan</h2>
+
+            <div class="day-block">
+                <h3>TODAY (June 4)</h3>
+                <div class="time-label">4 Critical Hours</div>
+                <ul class="tasks">
+                    <li><strong>Create landing page</strong> (30 min) - Simple sign-up form</li>
+                    <li><strong>Setup email signup</strong> (1 hour) - Collect name, email, grade</li>
+                    <li><strong>Enable email login</strong> (1 hour) - Click link = instant access</li>
+                    <li><strong>Prepare recruitment channels</strong> (1 hour) - WhatsApp, Facebook, SMS</li>
+                </ul>
+                <p style="margin-top: 15px; color: #10b981; font-weight: 600;">✅ Outcome: Ready to collect students</p>
+            </div>
+
+            <div class="day-block">
+                <h3>TOMORROW (June 5)</h3>
+                <div class="time-label">Soft Launch Day</div>
+                <ul class="tasks">
+                    <li><strong>9am: Go Live</strong> - Share landing page link</li>
+                    <li><strong>10am: Send invites</strong> - WhatsApp groups, parent communities</li>
+                    <li><strong>12pm: Monitor signups</strong> - Analytics dashboard</li>
+                    <li><strong>3pm: Fix bugs</strong> - Real user feedback</li>
+                    <li><strong>6pm: Check metrics</strong> - 50+ signups? Launch successful?</li>
+                </ul>
+                <p style="margin-top: 15px; color: #10b981; font-weight: 600;">✅ Expected: 50-100 students signup</p>
+            </div>
+
+            <div class="day-block">
+                <h3>JUNE 6 ONWARDS</h3>
+                <div class="time-label">Growth Phase</div>
+                <ul class="tasks">
+                    <li><strong>Daily monitoring:</strong> DAU, engagement, bugs</li>
+                    <li><strong>Parent referrals:</strong> Track viral coefficient</li>
+                    <li><strong>Content sharing:</strong> Students share badges → Parents signup</li>
+                    <li><strong>Weekly optimization:</strong> Fix UX friction, improve conversion</li>
+                </ul>
+                <p style="margin-top: 15px; color: #10b981; font-weight: 600;">✅ Target: 300-500 by end of June</p>
+            </div>
+        </div>
+
+        <!-- Week 1 Growth Targets -->
+        <h2 style="color: white; margin-bottom: 20px; text-align: center;">📈 Week 1 Growth Targets</h2>
+        <div class="targets">
+            <div class="target-card">
+                <div class="target-value">30</div>
+                <div class="target-label">Day 1 Signups</div>
+            </div>
+            <div class="target-card">
+                <div class="target-value">100</div>
+                <div class="target-label">Day 3 Cumulative</div>
+            </div>
+            <div class="target-card">
+                <div class="target-value">50%</div>
+                <div class="target-label">DAU Rate</div>
+            </div>
+            <div class="target-card">
+                <div class="target-value">400</div>
+                <div class="target-label">Day 7 Total</div>
+            </div>
+        </div>
+
+        <!-- Recruitment Channels -->
+        <div class="channels">
+            <h2>📱 Zero-CAC Growth Channels (No Money Spent)</h2>
+
+            <div class="channel">
+                <h4>1️⃣ Parent WhatsApp Groups (BEST)</h4>
+                <p>Post in 50+ parent WhatsApp groups: "Free English app, help us test"</p>
+                <p><span class="cost">Cost: ₹0</span> | Expected: 50-100 signups/day</p>
+            </div>
+
+            <div class="channel">
+                <h4>2️⃣ Organic Referrals</h4>
+                <p>Parents see child's badge → Share on WhatsApp → Friend signs up</p>
+                <p><span class="cost">Cost: ₹0</span> | Expected: 10-20% viral coefficient</p>
+            </div>
+
+            <div class="channel">
+                <h4>3️⃣ Edvanta Network</h4>
+                <p>Email existing Edvanta users: "Try WizLingo for free"</p>
+                <p><span class="cost">Cost: ₹0</span> | Expected: 50-200 signups</p>
+            </div>
+
+            <div class="channel">
+                <h4>4️⃣ Facebook Parent Groups</h4>
+                <p>Join education + parenting groups, share link</p>
+                <p><span class="cost">Cost: ₹0</span> | Expected: 20-50 signups/day</p>
+            </div>
+
+            <div class="channel">
+                <h4>5️⃣ Schools (Hybrid)</h4>
+                <p>Ask schools to share WizLingo with parents (no contract, just share)</p>
+                <p><span class="cost">Cost: ₹0</span> | Expected: 100-300 per school</p>
+            </div>
+
+            <div class="channel">
+                <h4>6️⃣ Paid Ads (Optional)</h4>
+                <p>Facebook/Instagram ads targeting parents (education-interested)</p>
+                <p><span class="cost">Cost: ₹500-2K</span> | Expected: ₹100-300 per student CAC</p>
+            </div>
+        </div>
+
+        <!-- Freemium Pricing -->
+        <div class="pricing">
+            <h2>💰 Freemium Pricing Model</h2>
+
+            <div class="plan">
+                <h4>🆓 FREE (Forever)</h4>
+                <ul>
+                    <li>5 reading sessions/week</li>
+                    <li>3 speaking sessions/week</li>
+                    <li>View badges</li>
+                    <li>Share on WhatsApp</li>
+                    <li>Expires after 1 month (encourages upgrade)</li>
+                </ul>
+            </div>
+
+            <div class="plan">
+                <h4>⭐ PREMIUM (₹99/month)</h4>
+                <ul>
+                    <li>Unlimited reading + speaking</li>
+                    <li>All badges + color variants</li>
+                    <li>Parent progress reports</li>
+                    <li>No ads</li>
+                    <li>Cancel anytime</li>
+                </ul>
+            </div>
+
+            <div class="plan">
+                <h4>🎯 ANNUAL (₹999/year)</h4>
+                <ul>
+                    <li>Same as Premium</li>
+                    <li>₹83/month effective</li>
+                    <li>20% discount vs monthly</li>
+                    <li>Auto-renew (sticky)</li>
+                </ul>
+            </div>
+
+            <p style="margin-top: 20px; color: #666;">
+                <strong>Conversion target:</strong> 5-10% of free users upgrade<br>
+                <strong>Revenue:</strong> 500 users × 5% × ₹99 = ₹2,475/month
+            </p>
+        </div>
+
+        <!-- Success Metrics -->
+        <h2 style="color: white; margin-bottom: 20px; text-align: center;">🎯 Success Metrics (B2C Different from B2B)</h2>
+        <div class="targets">
+            <div class="target-card">
+                <div class="target-value">50%+</div>
+                <div class="target-label">DAU (of signups)</div>
+            </div>
+            <div class="target-card">
+                <div class="target-value">60%+</div>
+                <div class="target-label">Session Completion</div>
+            </div>
+            <div class="target-card">
+                <div class="target-value">90%+</div>
+                <div class="target-label">Speech Rec Accuracy</div>
+            </div>
+            <div class="target-card">
+                <div class="target-value">20%+</div>
+                <div class="target-label">Badge Unlock Rate</div>
+            </div>
+        </div>
+
+        <!-- Decision -->
+        <div class="decision">
+            <h2>🚀 Your Decision: B2C or Hybrid?</h2>
+            <p style="margin-bottom: 20px;">
+                <strong style="font-size: 1.2em;">Option A: Pure B2C</strong><br>
+                100% focus on direct students → Viral growth → Series A on "organic expansion"
+            </p>
+            <p style="margin-bottom: 20px;">
+                <strong style="font-size: 1.2em;">Option B: Hybrid (Recommended)</strong><br>
+                Launch B2C day 1 (fast) + Pitch 1-2 schools day 15 (parallel) → Two growth engines
+            </p>
+            <p>
+                <strong>My recommendation: HYBRID</strong><br>
+                Gives you speed + predictability = best Series A story
+            </p>
+        </div>
+
+        <!-- Next Steps -->
+        <div style="background: white; padding: 30px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h2 style="color: #667eea; margin-bottom: 20px;">✅ Next Steps</h2>
+            <ol style="color: #666; line-height: 2; margin-left: 20px;">
+                <li><strong>TODAY:</strong> Read B2C_DIRECT_LAUNCH_PLAN.md (full details)</li>
+                <li><strong>TODAY:</strong> Create landing page (template in doc)</li>
+                <li><strong>TODAY:</strong> Set up email signup form</li>
+                <li><strong>TOMORROW:</strong> Go live, start collecting students</li>
+                <li><strong>DAY 3+:</strong> Monitor growth, iterate based on feedback</li>
+            </ol>
+        </div>
+
+        <footer>
+            <p><strong>You can launch tomorrow.</strong> No school dependencies. Direct to users.</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">See B2C_DIRECT_LAUNCH_PLAN.md for full playbook</p>
+        </footer>
+    </div>
+</body>
+</html>
+<script>
+document.body.insertAdjacentHTML('beforeend', `
+<div style="position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; flex-wrap: wrap; z-index: 1000;">
+  <a href="index.html" style="background: #667eea; color: white; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: 600;">← Hub</a>
+  <a href="dual-track-strategy.html" style="background: #667eea; color: white; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: 600;">Dual-Track</a>
+  <a href="june-15-pilot-launch.html" style="background: #667eea; color: white; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: 600;">B2B Pilots</a>
+</div>
+`);
+</script>

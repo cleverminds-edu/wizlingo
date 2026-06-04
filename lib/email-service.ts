@@ -58,7 +58,7 @@ async function processEmailQueue() {
   isProcessing = false;
 }
 
-async function sendEmailActual(email: {
+export async function sendEmailActual(email: {
   to: string;
   subject: string;
   html: string;

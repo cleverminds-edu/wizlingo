@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WizLingo June 15 Pilot Schools Launch Plan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #fef3c7 0%, #fecaca 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #1a202c;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            color: #dc2626;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .phase {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #dc2626;
+        }
+
+        .phase h2 {
+            font-size: 1.6em;
+            margin-bottom: 8px;
+            color: #1a202c;
+        }
+
+        .phase-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .date-badge {
+            background: #fef3c7;
+            padding: 6px 12px;
+            border-radius: 6px;
+            color: #92400e;
+            font-weight: 600;
+        }
+
+        .day {
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 3px solid #10b981;
+        }
+
+        .day h3 {
+            color: #1a202c;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+
+        .day-date {
+            color: #10b981;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 12px;
+        }
+
+        .tasks {
+            margin-top: 15px;
+        }
+
+        .task {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border-left: 2px solid #10b981;
+        }
+
+        .task-number {
+            font-weight: 700;
+            color: #10b981;
+            min-width: 30px;
+        }
+
+        .task-content {
+            flex: 1;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .task-content strong {
+            color: #1a202c;
+        }
+
+        .milestone {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        .critical {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 0.95em;
+        }
+
+        .metrics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .metrics-table th {
+            background: #f3f4f6;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #1a202c;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .metrics-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .metrics-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-green {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .status-yellow {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .status-red {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .success-criteria {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            color: #065f46;
+        }
+
+        .success-criteria h4 {
+            margin-bottom: 10px;
+            color: #047857;
+        }
+
+        .success-criteria ul {
+            margin-left: 20px;
+        }
+
+        .success-criteria li {
+            margin-bottom: 8px;
+        }
+
+        .budget-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .budget-table th {
+            background: #f3f4f6;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .budget-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .budget-table tr:last-child td {
+            border-bottom: none;
+            font-weight: 600;
+            background: #fef3c7;
+        }
+
+        .school-profile {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 3px solid #dc2626;
+        }
+
+        .school-profile h4 {
+            color: #1a202c;
+            margin-bottom: 10px;
+        }
+
+        .school-profile .field {
+            display: flex;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .school-profile .field strong {
+            width: 120px;
+            color: #1a202c;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            color: #1e40af;
+        }
+
+        .alert-warning {
+            background: #fed7aa;
+            border-left: 4px solid #f59e0b;
+            color: #92400e;
+        }
+
+        .timeline-visual {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .timeline-visual::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e5e7eb;
+            z-index: -1;
+        }
+
+        .timeline-point {
+            background: white;
+            border: 3px solid #e5e7eb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #666;
+            text-align: center;
+            font-size: 0.8em;
+        }
+
+        .timeline-point.active {
+            border-color: #10b981;
+            background: #10b981;
+            color: white;
+        }
+
+        .timeline-point.completed {
+            border-color: #059669;
+            background: #059669;
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            color: #666;
+            padding: 40px 20px;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.6em;
+            }
+
+            .phase-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .timeline-visual {
+                flex-direction: column;
+            }
+
+            .timeline-visual::before {
+                left: 20px;
+                height: 100%;
+                width: 2px;
+            }
+
+            .timeline-point {
+                margin-left: 50px;
+                margin-bottom: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 WizLingo June 15 Pilot Schools Launch</h1>
+            <p class="subtitle">Stage 2: Move from Free Beta (100-150 students) to PAID Pilots (2-3 schools, ₹50K each)</p>
+            <div style="color: #666; margin-top: 15px; font-size: 0.95em;">
+                <strong>Timeline:</strong> June 6-15 (10 days) | <strong>Parallel:</strong> Beta testing + school recruitment
+            </div>
+        </header>
+
+        <div class="alert alert-warning">
+            <strong>⚠️ Critical Success Factor:</strong> You MUST have strong beta metrics (DAU >70%, speech rec >85%, parent opens >25%) by June 12 to confidently pitch schools. If beta is weak, delay pilot schools to June 22.
+        </div>
+
+        <!-- Phase 1: Parallel with Beta -->
+        <section class="phase">
+            <h2>📋 PHASE 1: School Identification & Outreach</h2>
+            <div class="phase-meta">
+                <span class="date-badge">June 6-10 (Parallel with Beta Launch)</span>
+                <span>Duration: 2-3 hours outreach</span>
+            </div>
+
+            <div class="day">
+                <h3>DAY 1: June 6 (Launch Day)</h3>
+                <div class="day-date">While beta students are onboarding</div>
+                <div class="tasks">
+                    <div class="task">
+                        <div class="task-number">1</div>
+                        <div class="task-content">
+                            <strong>Create target school list</strong><br>
+                            Research 7-10 schools: 500-1500 students, English-medium, Tier 1-2 cities (Delhi, Bangalore, Pune, Mumbai, Hyderabad)
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">2</div>
+                        <div class="task-content">
+                            <strong>Find decision makers</strong><br>
+                            Get: Principal name, email, phone. Secondary: English HOD name, email
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">3</div>
+                        <div class="task-content">
+                            <strong>Prepare pitch deck</strong><br>
+                            Create 5-slide deck: Problem, Solution, Beta Results (pending), Pricing, Timeline
+                        </div>
+                    </div>
+                </div>
+                <div class="milestone">✅ Target: 7-10 schools identified with contact info</div>
+            </div>
+
+            <div class="day">
+                <h3>DAY 2-3: June 7-8 (Personalized Outreach)</h3>
+                <div class="day-date">School recruitment calls</div>
+                <div class="tasks">
+                    <div class="task">
+                        <div class="task-number">1</div>
+                        <div class="task-content">
+                            <strong>Send personalized emails</strong><br>
+                            Subject: "AI-Powered Reading Platform for {SchoolName} Students" | Mention: beta results, 4-month pilot, 75% discount
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">2</div>
+                        <div class="task-content">
+                            <strong>Follow-up phone calls</strong><br>
+                            Call within 2 hours of email. Pitch: "We validated with 150 students. Want to pilot with your school?"
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">3</div>
+                        <div class="task-content">
+                            <strong>Schedule kickoff calls</strong><br>
+                            Book 30-min calls with interested principals. Offer: June 9-10 (this week)
+                        </div>
+                    </div>
+                </div>
+                <div class="milestone">✅ Target: 3-4 schools interested, kickoff meetings scheduled</div>
+            </div>
+
+            <div class="day">
+                <h3>DAY 4-5: June 9-10 (Kickoff Calls)</h3>
+                <div class="day-date">Sales conversations with principals</div>
+                <div class="tasks">
+                    <div class="task">
+                        <div class="task-number">1</div>
+                        <div class="task-content">
+                            <strong>Hold kickoff calls</strong><br>
+                            Present: Beta metrics (if strong), pricing (75% discount), timeline, teacher involvement, success metrics
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">2</div>
+                        <div class="task-content">
+                            <strong>Address objections</strong><br>
+                            Common: "What's the price?" → ₹50K for 1000 students (75% off normal ₹200K) | "How long?" → 4 months + renewal at full price
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">3</div>
+                        <div class="task-content">
+                            <strong>Get verbal commitment</strong><br>
+                            Ask: "Are you ready to sign a 4-month contract at ₹50K for 1000 students?"
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">4</div>
+                        <div class="task-content">
+                            <strong>Collect info</strong><br>
+                            If interested: "Send me your student count, grades, which teachers to involve"
+                        </div>
+                    </div>
+                </div>
+                <div class="critical">🔴 CRITICAL: If beta metrics are weak (DAU <70%, speech rec <85%), DO NOT pitch schools yet. Wait until June 15-20 when metrics are strong.</div>
+                <div class="milestone">✅ Target: 2-3 schools agree verbally to 4-month pilot</div>
+            </div>
+        </section>
+
+        <!-- Phase 2: Implementation -->
+        <section class="phase">
+            <h2>🔧 PHASE 2: School Setup & Contract</h2>
+            <div class="phase-meta">
+                <span class="date-badge">June 11-12 (2 days)</span>
+                <span>Duration: 4-6 hours per school</span>
+            </div>
+
+            <div class="day">
+                <h3>DAY 6: June 11 (Contract & Commitments)</h3>
+                <div class="day-date">Legal & scheduling</div>
+                <div class="tasks">
+                    <div class="task">
+                        <div class="task-number">1</div>
+                        <div class="task-content">
+                            <strong>Prepare contracts</strong><br>
+                            Use template: School name, student count, price (₹50K), 4-month period, renewal terms, teacher involvement
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">2</div>
+                        <div class="task-content">
+                            <strong>Send contracts for signature</strong><br>
+                            Email with: Contract, invoice, payment instructions (bank transfer or check)
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">3</div>
+                        <div class="task-content">
+                            <strong>Schedule teacher training</strong><br>
+                            Email: "We'll do a 30-min training for your English teachers on June 12. When?"
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">4</div>
+                        <div class="task-content">
+                            <strong>Prepare school branding</strong><br>
+                            Request: School logo, colors, any specific branding guidelines for certificates/dashboards
+                        </div>
+                    </div>
+                </div>
+                <div class="milestone">✅ Target: 2 schools return signed contracts</div>
+            </div>
+
+            <div class="day">
+                <h3>DAY 7: June 12 (Teacher Training & Preparation)</h3>
+                <div class="day-date">School implementation starts</div>
+                <div class="tasks">
+                    <div class="task">
+                        <div class="task-number">1</div>
+                        <div class="task-content">
+                            <strong>Create school profiles in app</strong><br>
+                            Add: School name, logo, colors, teacher accounts (5-10 per school), student count
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">2</div>
+                        <div class="task-content">
+                            <strong>Hold teacher training calls</strong><br>
+                            30 min per school. Agenda: How to use WizLingo, assign homework, view student progress, support
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">3</div>
+                        <div class="task-content">
+                            <strong>Send teacher guides</strong><br>
+                            PDF + video: "How to Use WizLingo (5 min walkthrough)" for each teacher
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">4</div>
+                        <div class="task-content">
+                            <strong>Request student rosters</strong><br>
+                            Email: "By tomorrow morning, please send: Student name, grade, email (if available) for all enrolled students"
+                        </div>
+                    </div>
+                </div>
+                <div class="milestone">✅ Target: Teachers trained, student roster requests sent</div>
+            </div>
+        </section>
+
+        <!-- Phase 3: Launch -->
+        <section class="phase">
+            <h2>🎬 PHASE 3: Student Enrollment & Launch</h2>
+            <div class="phase-meta">
+                <span class="date-badge">June 13-15 (Final 3 days)</span>
+                <span>Duration: 4-6 hours per school</span>
+            </div>
+
+            <div class="day">
+                <h3>DAY 8: June 13 (Credential Generation)</h3>
+                <div class="day-date">Student preparation</div>
+                <div class="tasks">
+                    <div class="task">
+                        <div class="task-number">1</div>
+                        <div class="task-content">
+                            <strong>Receive student rosters</strong><br>
+                            By 10am: School A (1000 names), School B (1000 names) | Validate: names, grades, no duplicates
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">2</div>
+                        <div class="task-content">
+                            <strong>Generate credentials</strong><br>
+                            Run script: 2000 username+PIN pairs (5 min) | Export as CSV + formatted for printing
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">3</div>
+                        <div class="task-content">
+                            <strong>Print credentials</strong><br>
+                            Option A: Schools print in-house (provide PDF) | Option B: Print + ship to schools (overnight delivery)
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">4</div>
+                        <div class="task-content">
+                            <strong>Prepare launch materials</strong><br>
+                            Create: Email to parents, SMS to students, poster for school notice board (all with login info)
+                        </div>
+                    </div>
+                </div>
+                <div class="milestone">✅ Target: 2000 credentials generated, printed, ready for distribution</div>
+            </div>
+
+            <div class="day">
+                <h3>DAY 9: June 14 (Final Prep & Logistics)</h3>
+                <div class="day-date">Distribution preparation</div>
+                <div class="tasks">
+                    <div class="task">
+                        <div class="task-number">1</div>
+                        <div class="task-content">
+                            <strong>Distribute credential cards</strong><br>
+                            School A: Print at school, distribute in class (via teachers) | School B: Ship cards overnight + print backup at school
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">2</div>
+                        <div class="task-content">
+                            <strong>Send launch instructions to schools</strong><br>
+                            Email to principal + all teachers: "Launch is tomorrow! Here's the timeline, FAQs, support contact"
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">3</div>
+                        <div class="task-content">
+                            <strong>Send parent communication</strong><br>
+                            Schools send emails/SMSes to parents: "Your child will use WizLingo for English practice starting June 15"
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">4</div>
+                        <div class="task-content">
+                            <strong>Final system checks</strong><br>
+                            Engineer checklist: App stable, emails working, analytics tracking, support on-call
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-warning">
+                    <strong>⚠️ Logistics Risk:</strong> If cards aren't distributed by 5pm June 14, schools won't be ready for June 15 launch. Plan delivery by June 13 evening.
+                </div>
+                <div class="milestone">✅ Target: 100% of credentials distributed, teachers ready, families informed</div>
+            </div>
+
+            <div class="day">
+                <h3>DAY 10: June 15 (LAUNCH DAY)</h3>
+                <div class="day-date">Live monitoring</div>
+                <div class="tasks">
+                    <div class="task">
+                        <div class="task-number">1</div>
+                        <div class="task-content">
+                            <strong>6:00 AM - Systems Check</strong><br>
+                            All servers up, monitoring active, Slack alerts configured
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">2</div>
+                        <div class="task-content">
+                            <strong>9:00 AM - Expected First Logins</strong><br>
+                            Monitor: Login errors, database queries, speech rec issues. Have team on-call.
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">3</div>
+                        <div class="task-content">
+                            <strong>12:00 PM - Mid-Day Check</strong><br>
+                            Analytics: How many students logged in? Session completion rate? Any critical bugs?
+                        </div>
+                    </div>
+                    <div class="task">
+                        <div class="task-number">4</div>
+                        <div class="task-content">
+                            <strong>6:00 PM - End-of-Day Review</strong><br>
+                            Success metrics: DAU >70%, 50%+ completed session, 0 critical bugs, teachers engaged
+                        </div>
+                    </div>
+                </div>
+                <div class="success-criteria">
+                    <h4>✅ June 15 Success Criteria</h4>
+                    <ul>
+                        <li><strong>Students:</strong> 1400+ logins (70% of 2000)</li>
+                        <li><strong>Sessions:</strong> 800+ sessions completed (50% completion rate)</li>
+                        <li><strong>Stability:</strong> 0 critical bugs, <100ms response time</li>
+                        <li><strong>Teachers:</strong> 60%+ teachers have assigned first task</li>
+                        <li><strong>Engagement:</strong> 5%+ earned SPARK badge</li>
+                        <li><strong>Parent emails:</strong> 100+ parent notifications sent successfully</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pilot School Profiles -->
+        <section class="phase">
+            <h2>🏫 Target Pilot Schools</h2>
+
+            <div class="school-profile">
+                <h4>School A: [Name TBD]</h4>
+                <div class="field">
+                    <strong>Size:</strong> ~1000 students
+                </div>
+                <div class="field">
+                    <strong>Location:</strong> Bangalore / Pune
+                </div>
+                <div class="field">
+                    <strong>Type:</strong> English-medium private school
+                </div>
+                <div class="field">
+                    <strong>Decision Maker:</strong> Principal + English HOD
+                </div>
+                <div class="field">
+                    <strong>Price:</strong> ₹50K (75% discount)
+                </div>
+                <div class="field">
+                    <strong>Teachers:</strong> 5-8 English teachers
+                </div>
+                <div class="field">
+                    <strong>Expected students:</strong> 1000 (all grades)</div>
+                </div>
+            </div>
+
+            <div class="school-profile">
+                <h4>School B: [Name TBD]</h4>
+                <div class="field">
+                    <strong>Size:</strong> ~800 students
+                </div>
+                <div class="field">
+                    <strong>Location:</strong> Delhi / Hyderabad
+                </div>
+                <div class="field">
+                    <strong>Type:</strong> English-medium private school
+                </div>
+                <div class="field">
+                    <strong>Decision Maker:</strong> Principal + English HOD
+                </div>
+                <div class="field">
+                    <strong>Price:</strong> ₹40K (75% discount)
+                </div>
+                <div class="field">
+                    <strong>Teachers:</strong> 4-6 English teachers
+                </div>
+                <div class="field">
+                    <strong>Expected students:</strong> 800 (grades 3-8)</div>
+                </div>
+            </div>
+
+            <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                <h4 style="margin-bottom: 12px;">School Recruitment Script</h4>
+                <p style="color: #666; font-size: 0.95em; line-height: 1.7;">
+                    <strong>Email subject:</strong> "AI-Powered Reading Platform for {SchoolName} Students" <br><br>
+                    <strong>Body:</strong> "Hi {PrincipalName}, We just completed a successful beta with 150 students. Results: 70% daily engagement, 90%+ speech recognition accuracy, strong parent interest. We're looking for 2-3 partner schools for our 4-month pilot program at a special rate: ₹50K for your entire school (normally ₹200K). Would {SchoolName} be interested? I'm available for a call this week."
+                </p>
+            </div>
+        </section>
+
+        <!-- Budget & Costs -->
+        <section class="phase">
+            <h2>💰 Pilot Schools Budget</h2>
+
+            <table class="budget-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>School A</th>
+                        <th>School B</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Student count</strong></td>
+                        <td>1000</td>
+                        <td>800</td>
+                        <td>1800</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Normal price (₹200/student/year)</strong></td>
+                        <td>₹2,00,000</td>
+                        <td>₹1,60,000</td>
+                        <td>₹3,60,000</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pilot price (75% discount)</strong></td>
+                        <td>₹50,000</td>
+                        <td>₹40,000</td>
+                        <td>₹90,000</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Schools receive</strong></td>
+                        <td>✅</td>
+                        <td>✅</td>
+                        <td>2 schools</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Revenue collected</strong></td>
+                        <td>₹50K</td>
+                        <td>₹40K</td>
+                        <td>₹90K</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Discount (our cost)</strong></td>
+                        <td>₹150K</td>
+                        <td>₹120K</td>
+                        <td>₹270K</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Break-even month</strong></td>
+                        <td>Month 8</td>
+                        <td>Month 8</td>
+                        <td>Month 8</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Renewal (if at 50% full price)</strong></td>
+                        <td>₹1,00,000</td>
+                        <td>₹80,000</td>
+                        <td>₹1,80,000/yr</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p style="color: #666; margin-top: 20px; font-size: 0.95em;">
+                <strong>Rationale:</strong> 75% discount = ₹90K revenue vs ₹360K normal. We "lose" ₹270K short-term, but get: case studies (worth ₹50L+ in Series A), teacher feedback (invaluable), renewal data (proves model works). If both schools renew at 50% full price, we've broken even by month 8 and secured ₹180K annual recurring.
+            </p>
+        </section>
+
+        <!-- Decision Gate: June 12 -->
+        <section class="phase" style="border-left-color: #dc2626;">
+            <h2>🚦 Decision Gate: June 12</h2>
+            <div class="alert alert-warning">
+                <strong>Before pitching schools, check beta metrics:</strong>
+            </div>
+
+            <table class="metrics-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Target</th>
+                        <th>Status</th>
+                        <th>Decision</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>DAU (Daily Active Users)</strong></td>
+                        <td>>70%</td>
+                        <td class="status-green">✓ TBD</td>
+                        <td>If <50% → DELAY pilots</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Speech Recognition Accuracy</strong></td>
+                        <td>>85%</td>
+                        <td class="status-green">✓ TBD</td>
+                        <td>If <80% → DON'T pitch schools</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Parent Email Opens</strong></td>
+                        <td>>25%</td>
+                        <td class="status-green">✓ TBD</td>
+                        <td>If <15% → mention "email ops coming soon"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Badge Unlock Rate</strong></td>
+                        <td>>30%</td>
+                        <td class="status-green">✓ TBD</td>
+                        <td>If <20% → focus on engagement features</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Session Completion</strong></td>
+                        <td>>70%</td>
+                        <td class="status-green">✓ TBD</td>
+                        <td>If <50% → tell schools "content difficulty being tuned"</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="critical" style="margin-top: 20px;">
+                🔴 <strong>If 3+ metrics are RED:</strong> DO NOT pitch schools on June 9-10. Wait until metrics are green (likely June 15-20). Pitching with weak metrics = wasted calls + damaged credibility.
+            </div>
+        </section>
+
+        <!-- Success Metrics June 15 -->
+        <section class="phase">
+            <h2>🎯 June 15 Success Criteria</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div style="background: #d1fae5; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981;">
+                    <h4 style="color: #047857; margin-bottom: 10px;">Student Adoption</h4>
+                    <ul style="color: #065f46; margin-left: 20px;">
+                        <li>1400+ students login (70% of 2000)</li>
+                        <li>800+ sessions completed (50% completion)</li>
+                        <li>100+ earn SPARK badge (5%)</li>
+                        <li>0 critical bugs</li>
+                    </ul>
+                </div>
+
+                <div style="background: #dbeafe; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                    <h4 style="color: #1e40af; margin-bottom: 10px;">Teacher Adoption</h4>
+                    <ul style="color: #1e40af; margin-left: 20px;">
+                        <li>60%+ teachers assigned first task</li>
+                        <li>Teachers understand dashboard</li>
+                        <li>NPS > 45 (provisional)</li>
+                        <li>No "system confusing" feedback</li>
+                    </ul>
+                </div>
+
+                <div style="background: #fed7aa; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                    <h4 style="color: #92400e; margin-bottom: 10px;">Parent Engagement</h4>
+                    <ul style="color: #92400e; margin-left: 20px;">
+                        <li>100+ parents notified (badge emails)</li>
+                        <li>25%+ email open rate</li>
+                        <li>5%+ click WhatsApp share link</li>
+                        <li>First referrals starting</li>
+                    </ul>
+                </div>
+
+                <div style="background: #fce7f3; padding: 15px; border-radius: 8px; border-left: 4px solid #ec4899;">
+                    <h4 style="color: #be185d; margin-bottom: 10px;">Infrastructure</h4>
+                    <ul style="color: #be185d; margin-left: 20px;">
+                        <li>99%+ uptime</li>
+                        <li>Speech rec >85% accurate</li>
+                        <li>Emails delivering</li>
+                        <li>Analytics tracking live</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Risk Mitigation -->
+        <section class="phase">
+            <h2>⚠️ Risk Mitigation</h2>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px; color: #1a202c;">If School Commits BUT Beta Metrics Are Weak</h3>
+                <p style="color: #666; margin-bottom: 12px;">
+                    <strong>Scenario:</strong> School A agrees to pilot, but your DAU is only 40% (below target of 70%)
+                </p>
+                <p style="color: #666;">
+                    <strong>Action:</strong> Be honest. "Our beta showed some engagement challenges we're fixing. Rather than launch June 15 with imperfect product, let's launch June 20 after we tune difficulty." Schools respect honesty + transparency. This builds trust for renewal.
+                </p>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px; color: #1a202c;">If Teacher Adoption Is Low</h3>
+                <p style="color: #666; margin-bottom: 12px;">
+                    <strong>Scenario:</strong> June 15 launch: only 20% of teachers assigned homework
+                </p>
+                <p style="color: #666;">
+                    <strong>Action:</strong> (1) Call each teacher personally, "Did you get our guide? Any questions?" (2) Simplify assignment UI if feedback is "too complex" (3) Do in-person training June 16-17 at each school
+                </p>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px; color: #1a202c;">If Speech Rec Accuracy Drops</h3>
+                <p style="color: #666; margin-bottom: 12px;">
+                    <strong>Scenario:</strong> June 15 launch: speech rec only 78% accurate (below 85% target)
+                </p>
+                <p style="color: #666;">
+                    <strong>Action:</strong> (1) Pause VOICE_WIZARD badge (speaking) temporarily (2) Focus on WORD_WIZARD (reading, no speech rec) (3) Collect accent/dialect samples, retrain model June 16-20 (4) Relaunch speaking June 22
+                </p>
+            </div>
+
+            <div>
+                <h3 style="margin-bottom: 15px; color: #1a202c;">If Logistics Fails (Credentials Not Printed)</h3>
+                <p style="color: #666; margin-bottom: 12px;">
+                    <strong>Scenario:</strong> June 15 morning: credential cards not at School B yet
+                </p>
+                <p style="color: #666;">
+                    <strong>Action:</strong> (1) Email login links directly to students (if emails available) (2) SMS links to parent phones (if available) (3) Schools print QR codes with login info, post in class (4) Launch with 90% of students instead of waiting for all cards
+                </p>
+            </div>
+        </section>
+
+        <!-- Post-Launch: June 16-30 -->
+        <section class="phase">
+            <h2>📈 Post-Launch: June 16-30 (2 Weeks of Monitoring)</h2>
+
+            <div class="alert alert-info">
+                <strong>After June 15 launch, daily monitoring continues for 2 weeks:</strong>
+            </div>
+
+            <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                <h4 style="color: #1a202c; margin-bottom: 15px;">Daily (9am Slack post)</h4>
+                <ul style="color: #666; line-height: 1.8; margin-left: 20px;">
+                    <li>DAU from both schools</li>
+                    <li>Session completion rate</li>
+                    <li>Bugs found + severity</li>
+                    <li>Teacher assignment rate</li>
+                    <li>Critical alerts (if any)</li>
+                </ul>
+            </div>
+
+            <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                <h4 style="color: #1a202c; margin-bottom: 15px;">Weekly (Friday 6pm review)</h4>
+                <ul style="color: #666; line-height: 1.8; margin-left: 20px;">
+                    <li>Weekly engagement trend (DAU, sessions, badges)</li>
+                    <li>Teacher NPS survey (send week 2)</li>
+                    <li>Parent email analytics</li>
+                    <li>Technical debt (bugs to fix before renewal)</li>
+                    <li>School satisfaction (informal check-in calls)</li>
+                </ul>
+            </div>
+
+            <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                <h4 style="color: #1a202c; margin-bottom: 15px;">End of Month 1 (June 30 - 16 Days Post-Launch)</h4>
+                <ul style="color: #666; line-height: 1.8; margin-left: 20px;">
+                    <li>Full metrics review: DAU, completion, badges, retention</li>
+                    <li>Teacher feedback: What's working? What needs fixing?</li>
+                    <li>School admin feedback: Dashboards useful? Teachers satisfied?</li>
+                    <li>Decision: Continue current path or iterate?</li>
+                    <li>Early renewal signal: Would schools renew at 50%+ full price?</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Timeline Visual -->
+        <section class="phase">
+            <h2>📅 Timeline Visual</h2>
+            <p style="color: #666; margin-bottom: 30px; text-align: center;">
+                June 6 → June 15: 10 days from beta to paid pilots
+            </p>
+
+            <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 30px;">
+                <div style="text-align: center;">
+                    <div style="background: #10b981; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto 10px;">
+                        1
+                    </div>
+                    <div style="font-size: 0.85em; color: #666;">Jun 6<br>Beta Launch</div>
+                </div>
+
+                <div style="color: #e5e7eb;">→</div>
+
+                <div style="text-align: center;">
+                    <div style="background: #3b82f6; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto 10px;">
+                        2
+                    </div>
+                    <div style="font-size: 0.85em; color: #666;">Jun 7-10<br>School Outreach</div>
+                </div>
+
+                <div style="color: #e5e7eb;">→</div>
+
+                <div style="text-align: center;">
+                    <div style="background: #f59e0b; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto 10px;">
+                        3
+                    </div>
+                    <div style="font-size: 0.85em; color: #666;">Jun 11-12<br>School Setup</div>
+                </div>
+
+                <div style="color: #e5e7eb;">→</div>
+
+                <div style="text-align: center;">
+                    <div style="background: #10b981; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto 10px;">
+                        4
+                    </div>
+                    <div style="font-size: 0.85em; color: #666;">Jun 13-15<br>Launch 2000</div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p><strong>WizLingo June 15 Pilot Schools Plan</strong></p>
+            <p style="margin-top: 10px; color: #999; font-size: 0.9em;">
+                Version 1.0 | June 4, 2026 | Reference: STAGE_GATED_ROADMAP.md Stage 2
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
+<script>
+document.body.insertAdjacentHTML('beforeend', `
+<div style="position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; flex-wrap: wrap; z-index: 1000;">
+  <a href="index.html" style="background: #dc2626; color: white; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: 600;">← Hub</a>
+  <a href="dual-track-strategy.html" style="background: #dc2626; color: white; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: 600;">Dual-Track</a>
+  <a href="b2c-launch.html" style="background: #dc2626; color: white; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-weight: 600;">B2C Launch</a>
+</div>
+`);
+</script>

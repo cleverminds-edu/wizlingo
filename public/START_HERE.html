@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WizLingo - START HERE</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .subtitle {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+        .cta-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        .steps {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .step {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+        .step-content h3 {
+            color: #1a202c;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        .step-content p {
+            color: #666;
+            line-height: 1.6;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .feature {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .feature h4 {
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+        .feature p {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Main Card -->
+        <div class="card">
+            <h1>🧙 Welcome to WizLingo</h1>
+            <p class="subtitle">Complete Go-to-Market Strategy Suite</p>
+            <p style="color: #666; margin-bottom: 40px; font-size: 1.05em;">
+                Everything you need to launch B2B schools + B2C direct students in parallel
+            </p>
+            <a href="index.html" class="cta-button">Enter Dashboard →</a>
+        </div>
+
+        <!-- Quick Start Steps -->
+        <div class="steps">
+            <h2 style="color: #667eea; margin-bottom: 30px; font-size: 1.8em;">3-Step Quick Start</h2>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Choose Your Strategy</h3>
+                    <p>View the Dual-Track Strategy dashboard to understand B2B + B2C execution. Both tracks launch in parallel: B2C on June 5, B2B on June 15.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Assign Your Team</h3>
+                    <p>B2B Lead (school negotiations) + B2C Lead (growth/marketing) + Engineering (infrastructure) + CEO (gates/decisions).</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Launch Today & Tomorrow</h3>
+                    <p>Today (June 4): Setup. Tomorrow (June 5): B2C goes live + B2B starts negotiations. Both running by June 30.</p>
+                </div>
+            </div>
+
+            <h2 style="color: #667eea; margin-top: 50px; margin-bottom: 30px; font-size: 1.6em;">📊 What You Have</h2>
+            
+            <div class="features">
+                <div class="feature">
+                    <h4>🎯 Dual-Track Dashboard</h4>
+                    <p>Visual strategy showing B2B + B2C execution, timeline, financial projections, and decision gates.</p>
+                </div>
+                <div class="feature">
+                    <h4>📱 B2C Launch Plan</h4>
+                    <p>Complete guide to launching directly to students June 5. Landing page, email signup, viral growth mechanics.</p>
+                </div>
+                <div class="feature">
+                    <h4>🏫 B2B School Plan</h4>
+                    <p>June 15 pilot school launch. Teacher training, student enrollment, success metrics, case study building.</p>
+                </div>
+                <div class="feature">
+                    <h4>📊 Readiness Assessment</h4>
+                    <p>Honest evaluation: Can we launch 100-150 students in 2-3 days? YES, but with conditions. What to fix first.</p>
+                </div>
+                <div class="feature">
+                    <h4>💰 Pricing Models</h4>
+                    <p>Analysis of 3 pricing models for B2B and B2C. Recommended: Per-student annual (₹200/student/year) for B2B.</p>
+                </div>
+                <div class="feature">
+                    <h4>📋 Quick Reference</h4>
+                    <p>Print-and-post card. 48-hour launch plan, critical blockers, success metrics, emergency fixes. Keep on desk.</p>
+                </div>
+            </div>
+
+            <h2 style="color: #667eea; margin-top: 50px; margin-bottom: 30px; font-size: 1.6em;">✅ Key Metrics by Date</h2>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #e5e7eb;">
+                        <th style="text-align: left; padding: 12px; color: #1a202c; font-weight: 700;">Date</th>
+                        <th style="text-align: left; padding: 12px; color: #1a202c; font-weight: 700;">B2B Track</th>
+                        <th style="text-align: left; padding: 12px; color: #1a202c; font-weight: 700;">B2C Track</th>
+                        <th style="text-align: left; padding: 12px; color: #1a202c; font-weight: 700;">Combined</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #e5e7eb;">
+                        <td style="padding: 12px; color: #666;"><strong>Jun 5</strong></td>
+                        <td style="padding: 12px; color: #666;">Negotiating</td>
+                        <td style="padding: 12px; color: #666;">50+ signups</td>
+                        <td style="padding: 12px; color: #666;"><strong>50+</strong></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e5e7eb;">
+                        <td style="padding: 12px; color: #666;"><strong>Jun 15</strong></td>
+                        <td style="padding: 12px; color: #666;">2000 students</td>
+                        <td style="padding: 12px; color: #666;">200+ signups</td>
+                        <td style="padding: 12px; color: #666;"><strong>2200+</strong></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e5e7eb;">
+                        <td style="padding: 12px; color: #666;"><strong>Jun 30</strong></td>
+                        <td style="padding: 12px; color: #666;">2000+ active</td>
+                        <td style="padding: 12px; color: #666;">500+ signups</td>
+                        <td style="padding: 12px; color: #666;"><strong>2500+</strong></td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #e5e7eb;">
+                        <td style="padding: 12px; color: #666;"><strong>Aug 15</strong></td>
+                        <td style="padding: 12px; color: #666;">5000+, ₹100L ARR</td>
+                        <td style="padding: 12px; color: #666;">2000+, ₹15K MRR</td>
+                        <td style="padding: 12px; color: #10b981; font-weight: 700;"><strong>Series A Ready ✓</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; color: white; padding: 40px 20px;">
+            <p style="font-size: 1.1em; margin-bottom: 15px;">🚀 Ready to execute your dual-track strategy?</p>
+            <a href="index.html" class="cta-button">View Full Documentation →</a>
+            <p style="margin-top: 30px; opacity: 0.8; font-size: 0.95em;">
+                All documentation is interactive. Click links to navigate between dashboards.<br>
+                Print the Quick Reference card and keep it on your desk during execution.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
