@@ -67,6 +67,7 @@ model Student {
   accountType          AccountType              @default(SCHOOL)
   gender               Gender?
   parentEmail          String?
+  hasSeenOnboarding    Boolean                  @default(false)
   createdAt            DateTime                 @default(now())
   badges               Badge[]
   certificates         Certificate[]

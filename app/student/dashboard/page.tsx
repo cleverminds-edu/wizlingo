@@ -6,6 +6,7 @@ import { LogOut } from "lucide-react";
 import Image from "next/image";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { BadgeCelebration } from "@/components/badges/BadgeCelebration";
+import OnboardingCarousel from "@/components/OnboardingCarousel";
 import { BadgeType } from "@/app/generated/prisma/client";
 import DesktopDashboard from "@/components/dashboard/DesktopDashboard";
 
@@ -91,12 +92,18 @@ export default function StudentDashboard() {
   const [student, setStudent] = useState<StudentData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [earnedBadge, setEarnedBadge] = useState<BadgeType | null>(null);
 
   useEffect(() => {
     fetch("/api/auth/me", { credentials: "include" })
       .then(r => r.ok ? r.json() : Promise.reject())
-      .then(me => fetch(`/api/progress/${me.id}`, { credentials: "include" }))
+      .then(me => {
+        if (!me.hasSeenOnboarding) {
+          setShowOnboarding(true);
+        }
+        return fetch(`/api/progress/${me.id}`, { credentials: "include" });
+      })
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => { setStudent(data); setTimeout(() => setShowWelcome(false), 2500); })
       .catch(() => router.push("/login"))
@@ -115,6 +122,18 @@ export default function StudentDashboard() {
     setEarnedBadge(null);
     // Clear the URL param
     window.history.replaceState({}, '', '/student/dashboard');
+  };
+
+  const handleOnboardingComplete = async () => {
+    if (student) {
+      await fetch("/api/onboarding/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ studentId: student.id }),
+      });
+    }
+    setShowOnboarding(false);
   };
 
   async function logout() {
@@ -143,6 +162,12 @@ export default function StudentDashboard() {
   if (!isMobile) {
     return (
       <>
+        {showOnboarding && student && (
+          <OnboardingCarousel
+            studentName={student.name}
+            onComplete={handleOnboardingComplete}
+          />
+        )}
         <DesktopDashboard student={student} onLogout={logout} />
         {earnedBadge && (
           <BadgeCelebration
@@ -170,6 +195,14 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen flex flex-col"
       style={{ background: "linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%)" }}>
+
+      {/* Onboarding Carousel */}
+      {showOnboarding && student && (
+        <OnboardingCarousel
+          studentName={student.name}
+          onComplete={handleOnboardingComplete}
+        />
+      )}
 
       {/* Badge Celebration Modal */}
       {earnedBadge && (
