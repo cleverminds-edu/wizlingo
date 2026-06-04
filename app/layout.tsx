@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Fredoka } from "next/font/google";
+import PWAInstall from "@/components/PWAInstall";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,6 +22,24 @@ const fredoka = Fredoka({
 export const metadata: Metadata = {
   title: "WizLingo – Reading & Speaking Skills Platform",
   description: "AI-powered reading and speaking practice for Grade I–X by Edvanta",
+  manifest: "/manifest.json",
+  themeColor: "#F97316",
+  viewport: "width=device-width, initial-scale=1, viewport-fit=cover",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "WizLingo",
+  },
+  icons: {
+    icon: [
+      { url: "/wiziingo-logo.svg", type: "image/svg+xml" },
+      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icons/icon-192x192.png", sizes: "192x192" },
+      { url: "/icons/icon-512x512.png", sizes: "512x512" },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -33,7 +52,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${fredoka.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <PWAInstall />
+      </body>
     </html>
   );
 }
