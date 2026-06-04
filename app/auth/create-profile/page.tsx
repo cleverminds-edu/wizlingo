@@ -79,33 +79,40 @@ export default function CreateProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-purple-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-block mb-4">
-            <div className="text-4xl font-bold">
-              <span className="text-orange-500">Wiz</span>
-              <span className="text-purple-600">Lingo</span>
+    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #ffffff 0%, #f8f9ff 30%, #f0f4ff 60%, #e0e7ff 100%)" }}>
+      {/* Animated background shapes */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400/15 rounded-full blur-3xl -z-10 animate-pulse"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-400/15 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+      <div className="absolute top-1/2 left-1/3 w-80 h-80 bg-cyan-400/15 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDelay: '2s' }}></div>
+
+      <div className="w-full max-w-md relative z-10">
+        {/* Logo Section */}
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center gap-2 mb-6 p-3 bg-gradient-to-r from-orange-100 to-purple-100 rounded-full">
+            <span className="text-3xl">🎉</span>
+            <div className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent">
+              WizLingo
             </div>
           </div>
-          <p className="text-gray-600 text-sm">Complete Your Profile</p>
+          <p className="text-gray-600 text-sm font-medium">One more step to start learning</p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-8">
-          <h1 className="text-2xl font-bold text-center mb-2 text-gray-900">
-            Almost there!
-          </h1>
-          <p className="text-center text-gray-600 mb-6">
-            Tell us a bit about yourself
-          </p>
+        <div className="bg-gradient-to-br from-white via-blue-50/80 to-white rounded-3xl shadow-2xl p-8 border-2 border-blue-100/60 backdrop-blur-sm">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-center mb-3 bg-gradient-to-r from-orange-600 to-purple-600 bg-clip-text text-transparent">
+              Welcome!
+            </h1>
+            <p className="text-center text-gray-600 text-sm">
+              Tell us a bit about yourself to personalize your learning
+            </p>
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Your Name
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                📝 Your Name
               </label>
               <input
                 type="text"
@@ -114,21 +121,21 @@ export default function CreateProfilePage() {
                 value={formData.name}
                 onChange={handleChange}
                 disabled={loading}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
               />
             </div>
 
             {/* Grade */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Grade
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                📚 Grade
               </label>
               <select
                 name="grade"
                 value={formData.grade}
                 onChange={handleChange}
                 disabled={loading}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white"
               >
                 <option value="1">Grade 1</option>
                 <option value="2">Grade 2</option>
@@ -147,8 +154,8 @@ export default function CreateProfilePage() {
 
             {/* Date of Birth */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Date of Birth
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
+                🎂 Date of Birth
               </label>
               <input
                 type="date"
@@ -156,14 +163,14 @@ export default function CreateProfilePage() {
                 value={formData.dateOfBirth}
                 onChange={handleChange}
                 disabled={loading}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
               />
             </div>
 
             {/* Error */}
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-700 text-sm">{error}</p>
+              <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl">
+                <p className="text-red-700 text-sm font-medium">⚠️ {error}</p>
               </div>
             )}
 
@@ -171,7 +178,7 @@ export default function CreateProfilePage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-lg hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 duration-200 mt-2"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -185,10 +192,10 @@ export default function CreateProfilePage() {
           </form>
 
           {/* Already have account */}
-          <p className="text-center text-sm text-gray-600 mt-6">
+          <p className="text-center text-sm text-gray-600 mt-8 pt-6 border-t border-gray-200">
             Already have an account?{' '}
-            <a href="/auth/login" className="text-orange-500 hover:underline font-medium">
-              Log in
+            <a href="/login" className="text-orange-600 hover:underline font-semibold">
+              Sign in here
             </a>
           </p>
         </div>
