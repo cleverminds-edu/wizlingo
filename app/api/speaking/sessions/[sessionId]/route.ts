@@ -59,8 +59,15 @@ export async function PATCH(
   const prevPassed = student.speakingProgress?.passedSessions ?? 0;
   const newPassed = score.passed ? prevPassed + 1 : prevPassed;
 
-  const leveledUp = score.passed && newPassed >= PASSES_TO_LEVEL_UP && level < 3;
-  const nextLevel = leveledUp ? level + 1 : level;
+  // 🎯 ADAPTIVE: Check if should level up/down based on recent performance
+  const adaptiveAdjustment = await adjustSpeakingDifficulty(
+    student.id,
+    level,
+    score.fluencyScore
+  );
+
+  const leveledUp = adaptiveAdjustment.leveledUp || (score.passed && newPassed >= PASSES_TO_LEVEL_UP && level < 3);
+  const nextLevel = adaptiveAdjustment.newLevel || (leveledUp ? level + 1 : level);
   const nextPassed = leveledUp ? 0 : newPassed;
 
   const prevAvgWpm = student.speakingProgress?.avgWpm ?? 0;
@@ -169,4 +176,58 @@ export async function PATCH(
     badgeEarned: badgeEarnedInfo,
     aiFeedback,
   });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Helper: Adjust speaking difficulty based on recent performance
+// ═══════════════════════════════════════════════════════════════
+
+async function adjustSpeakingDifficulty(
+  studentId: string,
+  currentLevel: number,
+  currentFluency: number
+) {
+  try {
+    // Get last 5 sessions
+    const recentSessions = await prisma.speakingSession.findMany({
+      where: { studentId },
+      orderBy: { completedAt: "desc" },
+      take: 5,
+      select: { fluencyScore: true, completedAt: true },
+    });
+
+    if (recentSessions.length === 0) {
+      return { leveledUp: false, newLevel: currentLevel };
+    }
+
+    let newLevel = currentLevel;
+
+    // LEVEL UP: 5 consecutive sessions with >75% fluency
+    if (recentSessions.length >= 5) {
+      const last5AllStrong = recentSessions.every(
+        (s) => (s.fluencyScore || 0) >= 75
+      );
+      if (last5AllStrong && currentLevel < 3) {
+        newLevel = currentLevel + 1;
+      }
+    }
+
+    // LEVEL DOWN: 3 consecutive sessions with <50% fluency
+    if (recentSessions.length >= 3) {
+      const last3AllWeak = recentSessions
+        .slice(0, 3)
+        .every((s) => (s.fluencyScore || 0) < 50);
+      if (last3AllWeak && currentLevel > 1) {
+        newLevel = currentLevel - 1;
+      }
+    }
+
+    return {
+      leveledUp: newLevel > currentLevel,
+      newLevel,
+    };
+  } catch (error) {
+    console.error("Adjust speaking difficulty error:", error);
+    return { leveledUp: false, newLevel: currentLevel };
+  }
 }

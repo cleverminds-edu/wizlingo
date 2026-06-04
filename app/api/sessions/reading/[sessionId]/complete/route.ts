@@ -82,6 +82,9 @@ export async function POST(
       accuracy,
     });
 
+    // 🎯 ADAPTIVE: Adjust difficulty level based on performance
+    const levelAdjustment = await adjustDifficulty(session.studentId);
+
     return NextResponse.json(
       {
         message: 'Session completed',
@@ -92,6 +95,7 @@ export async function POST(
           completedAt: updatedSession.completedAt,
         },
         badgesEarned: badges,
+        levelAdjustment,
       },
       { status: 200 }
     );
@@ -170,4 +174,71 @@ async function checkAndAwardBadges(
   }
 
   return badgesEarned;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Helper: Adjust difficulty level based on recent performance
+// ═══════════════════════════════════════════════════════════════
+
+async function adjustDifficulty(studentId: string) {
+  try {
+    const progress = await prisma.studentProgress.findUnique({
+      where: { studentId },
+    });
+
+    if (!progress) return null;
+
+    // Get last 5 sessions
+    const recentSessions = await prisma.readingSession.findMany({
+      where: { studentId },
+      orderBy: { completedAt: 'desc' },
+      take: 5,
+      select: { accuracy: true, completedAt: true },
+    });
+
+    // Need at least 1 session to evaluate
+    if (recentSessions.length === 0) return null;
+
+    let newLevel = progress.currentLevel;
+    let reason = '';
+
+    // LEVEL UP: 5 consecutive sessions with >80% accuracy
+    if (recentSessions.length >= 5) {
+      const last5AllPassing = recentSessions.every(s => (s.accuracy || 0) >= 80);
+      if (last5AllPassing && progress.currentLevel < 3) {
+        newLevel = progress.currentLevel + 1;
+        reason = 'Leveled up: 5 sessions with 80%+ accuracy';
+      }
+    }
+
+    // LEVEL DOWN: 3 consecutive sessions with <60% accuracy
+    if (recentSessions.length >= 3) {
+      const last3AllFailing = recentSessions
+        .slice(0, 3)
+        .every(s => (s.accuracy || 0) < 60);
+      if (last3AllFailing && progress.currentLevel > 1) {
+        newLevel = progress.currentLevel - 1;
+        reason = 'Leveled down: 3 sessions below 60% accuracy';
+      }
+    }
+
+    // Update if level changed
+    if (newLevel !== progress.currentLevel) {
+      await prisma.studentProgress.update({
+        where: { studentId },
+        data: { currentLevel: newLevel },
+      });
+
+      return {
+        oldLevel: progress.currentLevel,
+        newLevel,
+        reason,
+      };
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Adjust difficulty error:', error);
+    return null;
+  }
 }
