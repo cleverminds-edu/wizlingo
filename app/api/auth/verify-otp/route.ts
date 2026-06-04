@@ -1,24 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { validateBody, verifyOtpSchema } from '@/lib/validation';
 import { getStoredOTP, clearOTP } from '../send-otp/route';
 
 export async function POST(request: NextRequest) {
   try {
-    const { phone, otp } = await request.json();
+    // Rate limit: 10 failed attempts per 15 minutes per IP
+    const clientIp = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+    const rateLimitKey = `otp-verify:${clientIp}`;
+    const rateLimitResult = rateLimit(rateLimitKey, RATE_LIMITS.LOGIN.limit, RATE_LIMITS.LOGIN.windowMs);
 
-    // Validate inputs
-    if (!phone || !/^\d{10}$/.test(phone)) {
+    if (!rateLimitResult.success) {
       return NextResponse.json(
-        { error: 'Invalid phone number' },
+        { error: 'Too many verification attempts. Please try again later.' },
+        { status: 429, headers: { 'Retry-After': Math.ceil((rateLimitResult.resetAt.getTime() - Date.now()) / 1000).toString() } }
+      );
+    }
+
+    // Validate request body
+    const validation = await validateBody(request, verifyOtpSchema);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.error },
         { status: 400 }
       );
     }
 
-    if (!otp || !/^\d{6}$/.test(otp)) {
-      return NextResponse.json(
-        { error: 'Invalid OTP format' },
-        { status: 400 }
-      );
-    }
+    const { phone, otp } = validation.data;
 
     // Get stored OTP
     const storedData = getStoredOTP(phone);

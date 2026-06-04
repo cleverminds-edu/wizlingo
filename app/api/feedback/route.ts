@@ -1,30 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { validateBody, feedbackSchema } from '@/lib/validation';
 
 export async function POST(req: NextRequest) {
   try {
-    const { studentId, sessionType, rating, selectedIssues, comment } = await req.json();
+    // Rate limit: 50 requests per hour per IP
+    const clientIp = req.headers.get('x-forwarded-for') || req.ip || 'unknown';
+    const rateLimitKey = `feedback:${clientIp}`;
+    const rateLimitResult = rateLimit(rateLimitKey, RATE_LIMITS.FEEDBACK.limit, RATE_LIMITS.FEEDBACK.windowMs);
 
-    if (!studentId || !sessionType || !rating) {
+    if (!rateLimitResult.success) {
       return NextResponse.json(
-        { error: 'Missing required fields: studentId, sessionType, rating' },
+        { error: 'Too many feedback submissions. Please try again later.' },
+        { status: 429, headers: { 'Retry-After': Math.ceil((rateLimitResult.resetAt.getTime() - Date.now()) / 1000).toString() } }
+      );
+    }
+
+    // Validate request body
+    const validation = await validateBody(req, feedbackSchema);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.error },
         { status: 400 }
       );
     }
 
-    if (![1, 2, 3, 4, 5].includes(rating)) {
-      return NextResponse.json(
-        { error: 'Rating must be between 1 and 5' },
-        { status: 400 }
-      );
-    }
-
-    if (!['reading', 'speaking'].includes(sessionType)) {
-      return NextResponse.json(
-        { error: 'sessionType must be "reading" or "speaking"' },
-        { status: 400 }
-      );
-    }
+    const { studentId, sessionType, rating, selectedIssues, comment } = validation.data;
 
     // Verify student exists
     const student = await prisma.student.findUnique({

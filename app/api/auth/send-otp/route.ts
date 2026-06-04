@@ -1,38 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-// In production, use Twilio or another SMS service
-// For now, this is a mock implementation
-// Install: npm install twilio
-// Then uncomment the Twilio code below
-
-/*
-import twilio from 'twilio';
-
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
-const client = twilio(accountSid, authToken);
-*/
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
+import { validateBody, sendOtpSchema } from '@/lib/validation';
 
 // In-memory storage for OTPs (use Redis in production)
 const otpStore: Record<string, { code: string; expiresAt: number; attempts: number }> = {};
 
-// Generate random 6-digit OTP
+// Generate random 4-digit OTP (matching frontend validation)
 function generateOTP(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { phone } = await request.json();
+    // Rate limit: 5 requests per 15 minutes per phone number
+    const clientIp = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+    const rateLimitKey = `otp:${clientIp}`;
+    const rateLimitResult = rateLimit(rateLimitKey, RATE_LIMITS.OTP.limit, RATE_LIMITS.OTP.windowMs);
 
-    // Validate phone
-    if (!phone || !/^\d{10}$/.test(phone)) {
+    if (!rateLimitResult.success) {
       return NextResponse.json(
-        { error: 'Invalid phone number' },
+        { error: 'Too many OTP requests. Please try again later.' },
+        { status: 429, headers: { 'Retry-After': Math.ceil((rateLimitResult.resetAt.getTime() - Date.now()) / 1000).toString() } }
+      );
+    }
+
+    // Validate request body
+    const validation = await validateBody(request, sendOtpSchema);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: validation.error },
         { status: 400 }
       );
     }
+
+    const { phone } = validation.data;
 
     // Generate OTP
     const otp = generateOTP();
@@ -45,17 +46,10 @@ export async function POST(request: NextRequest) {
       attempts: 0,
     };
 
-    // In production, send via Twilio:
-    /*
-    await client.messages.create({
-      body: `Your WizLingo verification code is: ${otp}. Valid for 10 minutes.`,
-      from: twilioPhone,
-      to: `+91${phone}`,
-    });
-    */
-
     // For development, log the OTP (remove in production)
-    console.log(`[DEV] OTP for ${phone}: ${otp}`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[DEV] OTP for ${phone}: ${otp}`);
+    }
 
     return NextResponse.json(
       { message: 'OTP sent successfully', otp: process.env.NODE_ENV === 'development' ? otp : undefined },
