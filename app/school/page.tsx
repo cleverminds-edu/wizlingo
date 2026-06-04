@@ -231,20 +231,20 @@ export default function SchoolPage() {
 
               <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl p-8 space-y-6">
                 <div className="border-b-2 border-purple-300 pb-4">
-                  <p className="text-gray-600 text-sm">Annual Cost</p>
-                  <p className="text-4xl font-bold text-purple-600">₹20,000</p>
-                  <p className="text-xs text-gray-600">100 students × ₹200/year</p>
+                  <p className="text-gray-600 text-sm">Annual Investment</p>
+                  <p className="text-4xl font-bold text-purple-600">Custom Quote</p>
+                  <p className="text-xs text-gray-600">Based on 100+ students • Request demo for pricing</p>
                 </div>
 
                 <div className="border-b-2 border-purple-300 pb-4">
-                  <p className="text-gray-600 text-sm">Estimated Benefit (Per Year)</p>
+                  <p className="text-gray-600 text-sm">Estimated Annual Benefit</p>
                   <p className="text-4xl font-bold text-green-600">₹1,50,000+</p>
-                  <p className="text-xs text-gray-600">40 students improve exam scores<br/>(Increased admissions, reputation, better rankings)</p>
+                  <p className="text-xs text-gray-600">40% students improve exam scores<br/>(Better rankings, higher admissions, student reputation)</p>
                 </div>
 
                 <div className="bg-white rounded-lg p-4">
-                  <p className="text-gray-700 font-bold">ROI: <span className="text-3xl text-green-600">650%+</span></p>
-                  <p className="text-xs text-gray-600 mt-1">(₹1,50,000 benefit ÷ ₹20,000 cost)<br/>Plus: happier parents, better board exam scores, school reputation</p>
+                  <p className="text-gray-700 font-bold">Proven Results: <span className="text-2xl text-green-600">40% improvement</span></p>
+                  <p className="text-xs text-gray-600 mt-1">in reading comprehension & speaking within 90 days</p>
                 </div>
               </div>
             </div>
@@ -263,9 +263,9 @@ export default function SchoolPage() {
           <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl border-2 border-yellow-300 p-8 md:p-12 text-center">
             <p className="text-sm text-yellow-700 font-semibold uppercase tracking-widest mb-4">School Plan</p>
             <p className="text-6xl font-bold text-gray-900 mb-2">
-              ₹200<span className="text-2xl text-gray-600">/student/year</span>
+              Custom<span className="text-2xl text-gray-600"> Pricing</span>
             </p>
-            <p className="text-gray-600 mb-8">Minimum 100 students • Pricing negotiable for larger implementations</p>
+            <p className="text-gray-600 mb-8">Minimum 100 students • Negotiated rates based on school size</p>
 
             <div className="grid md:grid-cols-2 gap-6 mb-8 text-left">
               <div className="space-y-3">
@@ -291,12 +291,12 @@ export default function SchoolPage() {
               </div>
 
               <div className="space-y-3">
-                <h3 className="font-bold text-gray-900">Volume Pricing</h3>
+                <h3 className="font-bold text-gray-900">Pricing by Volume</h3>
                 <ul className="space-y-2 text-gray-700">
-                  <li><strong>100–250 students:</strong> ₹180/student/yr (10% discount)</li>
-                  <li><strong>251–500 students:</strong> ₹160/student/yr (20% discount)</li>
-                  <li><strong>500+ students:</strong> Custom pricing (30%+ discount)</li>
-                  <li><strong>Multi-school districts:</strong> Contact sales for negotiated rates</li>
+                  <li><strong>100–250 students:</strong> Special pricing (contact sales)</li>
+                  <li><strong>251–500 students:</strong> Discounted rates (contact sales)</li>
+                  <li><strong>500+ students:</strong> Enterprise pricing (contact sales)</li>
+                  <li><strong>Multi-school districts:</strong> Custom contracts available</li>
                 </ul>
               </div>
             </div>

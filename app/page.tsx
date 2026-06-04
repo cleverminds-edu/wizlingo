@@ -293,10 +293,14 @@ export default function HomePage() {
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Student Plan</h3>
               <p className="text-gray-600 mb-6">Perfect for individual learners</p>
               <div className="mb-6">
-                <p className="text-5xl font-bold text-gray-900">
-                  ₹199<span className="text-lg text-gray-600">/month</span>
-                </p>
-                <p className="text-sm text-gray-600 mt-2">or ₹1,990/year (save 16%)</p>
+                <div className="flex items-baseline gap-3 mb-2">
+                  <p className="text-5xl font-bold text-gray-900">₹200</p>
+                  <p className="text-xl line-through text-gray-400">/month ₹500</p>
+                </div>
+                <div className="inline-block bg-red-100 border border-red-300 text-red-700 text-sm font-bold px-3 py-1 rounded-full mb-4">
+                  60% OFF
+                </div>
+                <p className="text-sm text-gray-600 mt-2">or ₹2,000/year (annual subscription)</p>
               </div>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-start gap-3">
@@ -334,9 +338,9 @@ export default function HomePage() {
               <p className="text-gray-600 mb-6">For schools & bulk students</p>
               <div className="mb-6">
                 <p className="text-5xl font-bold text-gray-900">
-                  ₹200<span className="text-lg text-gray-600">/student/year</span>
+                  Custom<span className="text-lg text-gray-600"> Pricing</span>
                 </p>
-                <p className="text-sm text-gray-600 mt-2">Minimum 100 students • Custom pricing available</p>
+                <p className="text-sm text-gray-600 mt-2">Minimum 100 students • Volume discounts available</p>
               </div>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-start gap-3">
