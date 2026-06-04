@@ -8,25 +8,32 @@ datasource db {
 }
 
 model School {
-  id        String    @id @default(cuid())
-  name      String
-  code      String    @unique
-  logoUrl   String?
-  createdAt DateTime  @default(now())
-  admins    Admin[]
-  classes   Class[]
-  teachers  Teacher[]
+  id                      String                       @id @default(cuid())
+  name                    String
+  code                    String                       @unique
+  logoUrl                 String?
+  createdAt               DateTime                     @default(now())
+  updatedAt               DateTime                     @updatedAt
+  admins                  Admin[]
+  classes                 Class[]
+  teachers                Teacher[]
+  schoolSubscription      SchoolSubscription?
+  schoolAdmins            SchoolAdmin[]
+  schoolInvites           SchoolInvite[]
+  leaderboardSnapshots    SchoolLeaderboardSnapshot[]
 }
 
 model Admin {
-  id        String    @id @default(cuid())
-  name      String
-  empCode   String    @unique
-  pin       String
-  role      AdminRole
-  schoolId  String
-  createdAt DateTime  @default(now())
-  school    School    @relation(fields: [schoolId], references: [id])
+  id          String        @id @default(cuid())
+  name        String
+  empCode     String        @unique
+  pin         String
+  role        AdminRole
+  schoolId    String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  school      School        @relation(fields: [schoolId], references: [id])
+  schoolAdmin SchoolAdmin[]
 }
 
 model Teacher {
@@ -70,6 +77,9 @@ model Student {
   progress             StudentProgress?
   notificationPrefs    NotificationPreference?
   sentEmails           SentEmail[]
+  referralsCreated     Referral[]              @relation("ReferrerRelation")
+  referralsReceived    Referral[]              @relation("ReferredRelation")
+  referralReward       ReferralReward?
 }
 
 model StudentProgress {
@@ -178,6 +188,36 @@ model Certificate {
   student    Student   @relation(fields: [studentId], references: [id])
 
   @@unique([studentId, badgeType])
+}
+
+model BadgeVariantLog {
+  id        String   @id @default(cuid())
+  studentId String
+  badgeType BadgeType
+  variant   String   // 'current', 'style_a', 'style_b'
+  action    String   // 'viewed', 'shared'
+  platform  String?  // 'whatsapp', 'clipboard', 'native'
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([studentId])
+  @@index([badgeType])
+  @@index([variant])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model BadgeColorVariant {
+  id                String    @id @default(cuid())
+  studentId         String
+  badgeType         BadgeType
+  colorVariant      String    // 'gold', 'rainbow', 'glow', etc.
+  unlockedAt        DateTime  @default(now())
+  unlockedBy        String    // 'shares:3', 'referral:2', etc.
+
+  @@unique([studentId, badgeType, colorVariant])
+  @@index([studentId])
+  @@index([badgeType])
 }
 
 enum AccountType {
@@ -291,4 +331,225 @@ model SentEmail {
 
   @@index([studentId])
   @@index([sentAt])
+}
+
+model Referral {
+  id            String    @id @default(cuid())
+  referrerId    String
+  referredId    String?
+  referralCode  String    @unique
+  status        String    @default("pending") // pending, completed, expired
+  createdAt     DateTime  @default(now())
+  completedAt   DateTime?
+  referrer      Student   @relation("ReferrerRelation", fields: [referrerId], references: [id], onDelete: Cascade)
+  referred      Student?  @relation("ReferredRelation", fields: [referredId], references: [id], onDelete: SetNull)
+
+  @@index([referralCode])
+  @@index([referrerId])
+  @@index([status])
+}
+
+model ReferralReward {
+  id                      String    @id @default(cuid())
+  studentId               String    @unique
+  referralCount           Int       @default(0)
+  badgeColorVariantsUnlocked String[] @default([])
+  bonusStreakDays         Int       @default(0)
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  student                 Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+}
+
+model ConversionFunnel {
+  id              String    @id @default(cuid())
+  step            String    // share, landing_click, landing_view, signup_start, signup_complete
+  sourceStudentId String?
+  newStudentEmail String?
+  referralCode    String?
+  badgeType       String?
+  schoolId        String?
+  timestamp       DateTime  @default(now())
+
+  @@index([sourceStudentId])
+  @@index([referralCode])
+  @@index([timestamp])
+  @@index([schoolId])
+}
+
+enum SchoolTierType {
+  FREE
+  STARTER
+  GROWTH
+  ENTERPRISE
+}
+
+model SchoolSubscription {
+  id                String         @id @default(cuid())
+  schoolId          String         @unique
+  tier              SchoolTierType @default(FREE)
+  studentsIncluded  Int            @default(50) // DEFAULT varies by tier
+  activeStudents    Int            @default(0)
+  startDate         DateTime       @default(now())
+  renewalDate       DateTime
+  price             Float?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  school            School         @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  @@index([schoolId])
+  @@index([tier])
+  @@index([renewalDate])
+}
+
+model SchoolAdmin {
+  id          String   @id @default(cuid())
+  schoolId    String
+  adminId     String
+  role        String   // admin, manager, principal
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  admin       Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@unique([schoolId, adminId])
+  @@index([schoolId])
+  @@index([adminId])
+}
+
+model SchoolInvite {
+  id        String    @id @default(cuid())
+  schoolId  String
+  code      String    @unique
+  email     String
+  usedBy    String?
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+  school    School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  @@index([schoolId])
+  @@index([code])
+  @@index([expiresAt])
+}
+
+model SchoolLeaderboardSnapshot {
+  id                 String    @id @default(cuid())
+  schoolId           String
+  rank               Int
+  totalStudents      Int
+  totalBadgesEarned  Int
+  grandWizardCount   Int
+  avgAccuracy        Float
+  avgSessionsPerStudent Float
+  monthlyGrowth      Int
+  takenAt            DateTime  @default(now())
+  school             School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  @@unique([schoolId, takenAt])
+  @@index([schoolId])
+  @@index([takenAt])
+  @@index([rank])
+}
+
+// ════════════════════════════════════════════════════════════════
+// PARENT EMAIL SYSTEM
+// ════════════════════════════════════════════════════════════════
+
+model ParentEmailPreference {
+  id                  String   @id @default(cuid())
+  parentEmail         String   @unique
+  frequency           String   @default("immediate") // immediate, daily, weekly
+  badgeEarned         Boolean  @default(true)
+  weeklyProgress      Boolean  @default(true)
+  monthlyMilestone    Boolean  @default(true)
+  schoolRanking       Boolean  @default(true)
+  sendTime            String?  // "6pm", "8pm", etc
+  timezone            String   @default("Asia/Kolkata")
+  unsubscribeToken    String   @unique @default(cuid())
+  unsubscribedAt      DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([parentEmail])
+  @@index([unsubscribeToken])
+}
+
+model EmailLog {
+  id                String       @id @default(cuid())
+  studentId         String
+  parentEmail       String
+  type              String       // badge_earned, weekly_summary, monthly_achievement, milestone, school_ranking
+  subject           String
+  body              String       @db.Text
+  referralCode      String?
+  sentAt            DateTime     @default(now())
+  status            String       @default("sent") // sent, failed, bounced, unsubscribed
+  opens             Int          @default(0)
+  clicks            Int          @default(0)
+  lastOpenedAt      DateTime?
+  lastClickedAt     DateTime?
+  variant           String?      // A/B test variant
+  createdAt         DateTime     @default(now())
+  emailClicks       EmailClick[]
+
+  @@index([studentId])
+  @@index([parentEmail])
+  @@index([sentAt])
+  @@index([type])
+  @@index([status])
+}
+
+model EmailClick {
+  id          String    @id @default(cuid())
+  emailId     String
+  eventType   String    // open, click
+  linkType    String?   // view_cert, share_whatsapp, view_dashboard, signup, pixel
+  timestamp   DateTime  @default(now())
+  userAgent   String?
+  ipAddress   String?
+  createdAt   DateTime  @default(now())
+  emailLog    EmailLog  @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@index([emailId])
+  @@index([eventType])
+  @@index([linkType])
+  @@index([timestamp])
+}
+
+model EmailSchedule {
+  id            String    @id @default(cuid())
+  studentId     String
+  parentEmail   String
+  type          String
+  subject       String
+  html          String    @db.Text
+  scheduledFor  DateTime
+  sent          Boolean   @default(false)
+  sentAt        DateTime?
+  error         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([parentEmail])
+  @@index([scheduledFor])
+  @@index([sent])
+  @@index([createdAt])
+}
+
+model EmailVariantTest {
+  id          String       @id @default(cuid())
+  type        String       // badge_earned, weekly_summary, etc
+  variant     String       // A, B, C, etc
+  subject     String?
+  ctaText     String?
+  layoutType  String?
+  conversions Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  emailLogs   EmailLog[]
+
+  @@unique([type, variant])
+  @@index([type])
+  @@index([createdAt])
 }

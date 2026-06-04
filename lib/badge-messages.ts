@@ -40,13 +40,21 @@ It's just 5-10 minutes. You've got this! 💪`;
       }
       return `Almost there! Complete your first session to earn SPARK! 🔥`;
     },
-    shareTemplate: `🔥 I just earned the SPARK badge on WizLingo!
-I've started my reading adventure. 📚
+    shareTemplate: `🔥 First step taken!
 
-Who wants to join me on this wizard journey? ✨
+{studentName} just earned the ✨ SPARK badge on WizLingo — the AI-powered English learning platform!
 
-Join WizLingo: [LINK]
-#WizLingo #Learning #ReadingChallenges`,
+🏫 School: {schoolName}
+📚 Class: {grade}-{section}
+
+This is their first reading session — completed and AI-assessed. The Wizard's Academy journey has begun!
+
+🎯 Next goal: WORD WIZARD (80%+ reading accuracy)
+
+Start your child's journey too:
+{appUrl}/join
+
+#WizLingo #ReadingChallenge #IndianSchools`,
   },
 
   WORD_WIZARD: {
@@ -97,14 +105,20 @@ You've almost got it! 💪`;
 Just ${needed.toFixed(1)}% more! One more session! 🎯`;
       }
     },
-    shareTemplate: `📚 I just unlocked WORD WIZARD on WizLingo!
-80%+ reading comprehension achieved! 🎉
+    shareTemplate: `📚 Reading mastery unlocked!
 
-I'm not just reading—I'm mastering every word.
-Who's ready to join the wizard academy? ✨
+{studentName} is now a WORD WIZARD on WizLingo! 🧙‍♂️
 
-Join WizLingo: [LINK]
-#WordWizard #ReadingComprehension #WizLingo`,
+✅ Reading Accuracy: {stat}%
+🏫 {schoolName} | {grade}-{section}
+🤖 AI-assessed & verified
+
+At {stat}% accuracy, {studentName} doesn't just read — they UNDERSTAND. This is comprehension mastery, not just decoding.
+
+Who's next in your class?
+{appUrl}/join
+
+#WordWizard #WizLingo #EnglishMastery`,
   },
 
   VOICE_WIZARD: {
@@ -155,14 +169,20 @@ You're almost there! 💪`;
 Just ${needed.toFixed(1)}% more! One more session! 🎯`;
       }
     },
-    shareTemplate: `🎤 I just unlocked VOICE WIZARD on WizLingo!
-75%+ speaking fluency achieved! 🎉
+    shareTemplate: `🎤 Speaking confidence achieved!
 
-I found my voice. I'm speaking with confidence now.
-Who's ready to speak up? 🌟
+{studentName} just became a VOICE WIZARD on WizLingo!
 
-Join WizLingo: [LINK]
-#VoiceWizard #SpeakingConfidence #WizLingo`,
+✅ Speaking Fluency: {stat}%
+🏫 {schoolName} | {grade}-{section}
+🤖 AI pronunciation & fluency check
+
+English speaking confidence at school age is everything. {studentName} has it — certified by AI, earned through practice.
+
+Join the challenge:
+{appUrl}/join
+
+#VoiceWizard #WizLingo #SpeakingConfidence`,
   },
 
   LANGUAGE_WIZARD: {
@@ -208,15 +228,19 @@ Don't stop now! 💪`;
 Just ${needed} more session(s) to become LEGENDARY! 👑`;
       }
     },
-    shareTemplate: `🧙 I just unlocked LANGUAGE WIZARD on WizLingo!
-10+ sessions completed! 📚🎤
+    shareTemplate: `🧙 Hall of Dedication!
 
-I'm not just learning—I'm building a habit.
-Consistency is my superpower. 💪
+{studentName} has completed {stat} sessions on WizLingo and earned the LANGUAGE WIZARD badge! 💪
 
-Who's ready to join the commitment?
-Join WizLingo: [LINK]
-#LanguageWizard #Consistency #WizLingo`,
+📊 Sessions completed: {stat}
+🏫 {schoolName} | {grade}-{section}
+
+Consistency is the real superpower. While others quit after 1-2 tries, {studentName} kept showing up. That's a habit that will last a lifetime.
+
+Build the habit today:
+{appUrl}/join
+
+#LanguageWizard #WizLingo #Consistency`,
   },
 
   GRAND_WIZARD: {
@@ -270,24 +294,23 @@ Remaining: ${remaining} badge(s)
 
 Keep going! You're almost at legend status! 👑`;
     },
-    shareTemplate: `👑 I JUST BECAME A GRAND WIZARD ON WIZLINGO! 👑
+    shareTemplate: `👑 LEGENDARY — GRAND WIZARD STATUS!
 
-LEGENDARY STATUS UNLOCKED! 🌟
+{studentName} from {schoolName} has achieved the HIGHEST title on WizLingo — GRAND WIZARD! 🌟
 
-I mastered:
-✅ Reading Comprehension (80%+)
-✅ Speaking Fluency (75%+)
-✅ Dedication (10+ sessions)
-✅ ALL 4 BADGES
+✅ Reading Accuracy: 80%+ ✓
+✅ Speaking Fluency: 75%+ ✓
+✅ {stat} Sessions of Dedication ✓
+✅ ALL FOUR BADGES EARNED ✓
 
-From SPARK to GRAND WIZARD—the journey is complete!
+🏫 {schoolName} | {grade}-{section}
 
-Now I'm ready to take on ANY language challenge. 💪
+This is the rarest achievement in the Wizard's Academy. Only students who master BOTH reading AND speaking AND show consistent practice reach this level.
 
-Who's next? Join me on WizLingo!
-[LINK]
+Is your child next?
+{appUrl}/join
 
-#GrandWizard #LanguageMastery #WizLingo #LegendaryAchievement`,
+#GrandWizard #WizLingo #LanguageMastery #IndianSchools`,
   },
 };
 

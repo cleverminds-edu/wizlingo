@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 280" width="280" height="280">
+  <defs>
+    <filter id="langMinShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.15" />
+    </filter>
+  </defs>
+
+  <!-- Clean background circle -->
+  <circle cx="140" cy="140" r="125" fill="#7C3AED" filter="url(#langMinShadow)"/>
+
+  <!-- Accent ring -->
+  <circle cx="140" cy="140" r="125" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.3"/>
+
+  <!-- Minimalist wizard staff icon (centered, bold) -->
+  <!-- Staff shaft (vertical line) -->
+  <line x1="140" y1="100" x2="140" y2="170" stroke="#FFFFFF" stroke-width="8" opacity="0.95" stroke-linecap="round"/>
+
+  <!-- Staff orb at top -->
+  <circle cx="140" cy="90" r="18" fill="#FFFFFF" opacity="0.9"/>
+
+  <!-- Orb accent (inner circle) -->
+  <circle cx="140" cy="90" r="14" fill="#A78BFA" opacity="0.7"/>
+
+  <!-- Bright core -->
+  <circle cx="140" cy="90" r="8" fill="#E9D5FF" opacity="0.9"/>
+
+  <!-- Mystical stars around staff -->
+  <!-- Left star -->
+  <polygon points="115,120 118,127 125,127 120,132 122,139 115,135 108,139 110,132 105,127 112,127"
+           fill="#FFFFFF" opacity="0.75"/>
+
+  <!-- Right star -->
+  <polygon points="165,120 168,127 175,127 170,132 172,139 165,135 158,139 160,132 155,127 162,127"
+           fill="#A78BFA" opacity="0.7"/>
+
+  <!-- Bottom sparkles -->
+  <circle cx="125" cy="160" r="3" fill="#FFFFFF" opacity="0.7"/>
+  <circle cx="155" cy="160" r="3" fill="#A78BFA" opacity="0.6"/>
+
+  <!-- Badge label -->
+  <text x="140" y="220" font-family="Fredoka, Arial" font-size="16" font-weight="700" text-anchor="middle" fill="#FFFFFF">LANGUAGE WIZARD</text>
+
+  <!-- Subtle outer ring -->
+  <circle cx="140" cy="140" r="130" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.15"/>
+</svg>

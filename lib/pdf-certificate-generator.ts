@@ -41,7 +41,8 @@ export async function generateCertificatePDFAsHTML(
     schoolName
   );
 
-  const verifyUrl = `https://wizlingo.app/certificate/${verifyCode}`;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const verifyUrl = `${appUrl}/certificate/${verifyCode}`;
   const qrCodeImage = await QRCode.toDataURL(verifyUrl, {
     errorCorrectionLevel: 'H',
     type: 'image/png',

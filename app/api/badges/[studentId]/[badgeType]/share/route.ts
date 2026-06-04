@@ -79,9 +79,10 @@ export async function POST(
     const badgeConfig = getBadgeConfig(badgeType as any);
 
     // Generate share URLs
+    const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const shareText = badgeConfig.shareText.replace(
       '[LINK]',
-      `https://wiziingo.app/join?ref=${studentId}`
+      `${APP_URL}/join?ref=${studentId}`
     );
 
     // WhatsApp share URL
@@ -103,13 +104,13 @@ export async function POST(
           whatsapp: whatsappUrl,
           certificateUrl,
           badgeUrl,
-          verifyUrl: `https://wiziingo.app/verify/${certificate.verifyCode}`,
+          verifyUrl: `${APP_URL}/verify/${certificate.verifyCode}`,
         },
         shareText,
         nativeShare: {
           title: `I earned the ${badgeConfig.name} badge!`,
           text: shareText,
-          url: `https://wiziingo.app/join?ref=${studentId}`,
+          url: `${APP_URL}/join?ref=${studentId}`,
           files: [
             {
               name: `${badgeConfig.name}-certificate.png`,

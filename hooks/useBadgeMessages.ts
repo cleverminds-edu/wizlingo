@@ -18,24 +18,60 @@ export interface UseBadgeMessagesReturn {
 
 /**
  * Replaces template variables in message strings
- * Supported variables: {StudentName}, {Accuracy}, {Fluency}, {SessionCount}, {BadgeCount}
+ * Supported variables: {StudentName}, {Accuracy}, {Fluency}, {SessionCount}, {BadgeCount}, {SchoolName}, {Grade}, {Section}, {Stat}, {appUrl}
  */
-function substituteMessageVariables(
-  message: string,
-  studentName?: string,
+interface SubstitutionContext {
+  studentName?: string;
+  schoolName?: string;
+  grade?: number;
+  section?: string;
+  stat?: string;
+  appUrl?: string;
   stats?: {
     accuracy?: number;
     fluency?: number;
     sessionCount?: number;
     badgeCount?: number;
-  }
+  };
+}
+
+function substituteMessageVariables(
+  message: string,
+  context: SubstitutionContext
 ): string {
   let result = message;
 
-  if (studentName) {
-    result = result.replace(/{StudentName}/g, studentName);
+  if (context.studentName) {
+    result = result.replace(/{StudentName}/g, context.studentName);
+    result = result.replace(/{studentName}/g, context.studentName);
   }
 
+  if (context.schoolName) {
+    result = result.replace(/{SchoolName}/g, context.schoolName);
+    result = result.replace(/{schoolName}/g, context.schoolName);
+  }
+
+  if (context.grade !== undefined) {
+    result = result.replace(/{Grade}/g, context.grade.toString());
+    result = result.replace(/{grade}/g, context.grade.toString());
+  }
+
+  if (context.section) {
+    result = result.replace(/{Section}/g, context.section);
+    result = result.replace(/{section}/g, context.section);
+  }
+
+  if (context.stat) {
+    result = result.replace(/{Stat}/g, context.stat);
+    result = result.replace(/{stat}/g, context.stat);
+  }
+
+  if (context.appUrl) {
+    result = result.replace(/{appUrl}/g, context.appUrl);
+    result = result.replace(/\[LINK\]/g, context.appUrl);
+  }
+
+  const stats = context.stats;
   if (stats?.accuracy !== undefined) {
     result = result.replace(/{Accuracy}/g, Math.round(stats.accuracy).toString());
   }
@@ -63,30 +99,42 @@ export function useBadgeMessages(
     fluency?: number;
     sessionCount?: number;
     badgeCount?: number;
+  },
+  extras?: {
+    schoolName?: string;
+    grade?: number;
+    section?: string;
+    appUrl?: string;
   }
 ): UseBadgeMessagesReturn {
   return useMemo(() => {
     const messages = BADGE_MESSAGES[badgeType];
 
+    const context: SubstitutionContext = {
+      studentName,
+      schoolName: extras?.schoolName,
+      grade: extras?.grade,
+      section: extras?.section,
+      appUrl: extras?.appUrl,
+      stats,
+    };
+
     return {
       congratulations: substituteMessageVariables(
         messages.congratulations,
-        studentName,
-        stats
+        context
       ),
       narrative: substituteMessageVariables(
         messages.narrative,
-        studentName,
-        stats
+        context
       ),
       shareTemplate: substituteMessageVariables(
         messages.shareTemplate,
-        studentName,
-        stats
+        context
       ),
-      locked: substituteMessageVariables(messages.locked, studentName, stats),
+      locked: substituteMessageVariables(messages.locked, context),
       progress: (current: number) =>
-        substituteMessageVariables(messages.inProgress(current), studentName, stats),
+        substituteMessageVariables(messages.inProgress(current), context),
     };
-  }, [badgeType, studentName, stats]);
+  }, [badgeType, studentName, stats, extras?.schoolName, extras?.grade, extras?.section, extras?.appUrl]);
 }

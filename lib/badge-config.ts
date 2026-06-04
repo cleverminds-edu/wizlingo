@@ -3,6 +3,18 @@
 // Badge types - duplicated here to avoid importing from prisma
 export type BadgeType = 'SPARK' | 'WORD_WIZARD' | 'VOICE_WIZARD' | 'LANGUAGE_WIZARD' | 'GRAND_WIZARD';
 
+// Share context type
+export interface ShareContext {
+  referralCode?: string;
+  schoolId?: string;
+  studentName?: string;
+  stat?: string | number;
+  grade?: number;
+  section?: string;
+  schoolName?: string;
+  appUrl?: string;
+}
+
 interface BadgeDefinition {
   type: BadgeType;
   name: string;
@@ -39,9 +51,10 @@ export const BADGE_CONFIG: Record<BadgeType, BadgeDefinition> = {
     description: 'Your first step into the world of reading!',
     requirement: 'Complete 1 reading session',
     message: 'You earned the SPARK badge! 🎉 Join WizLingo and earn more badges.',
-    shareText: `I just earned the ✨ SPARK badge on WizLingo!
-I'm starting my reading journey with AI-powered sessions.
-Join me → [LINK]`,
+    shareText: `✨ {studentName} just earned the SPARK badge on WizLingo! 🔥
+First step into AI-powered English reading — and they nailed it!
+🏫 {schoolName} | {grade}-{section}
+Join the Wizard's Academy 👉 {appUrl}`,
     order: 1,
   },
   WORD_WIZARD: {
@@ -49,14 +62,15 @@ Join me → [LINK]`,
     name: 'Word Wizard',
     emoji: '📚',
     badgeImage: '/badges/word-wizard-badge.svg',
-    color: '#4F46E5',
+    color: '#9333EA',
     bgColor: '#EEF2FF',
     description: 'Master of reading comprehension',
     requirement: 'Achieve 80%+ accuracy in reading',
     message: 'Incredible! You\'re a Word Wizard! 📚 Your reading precision is outstanding.',
-    shareText: `I just became a 📚 WORD WIZARD on WizLingo!
-80%+ reading accuracy unlocked. Can you beat my score?
-Join the challenge → [LINK]`,
+    shareText: `📚 WORD WIZARD unlocked! 🧙‍♂️
+{studentName} scored {stat}% reading accuracy on WizLingo — that's TOP TIER! 🎯
+🏫 {schoolName} | {grade}-{section}
+Can YOUR child beat this? 👉 {appUrl}`,
     order: 2,
   },
   VOICE_WIZARD: {
@@ -64,14 +78,15 @@ Join the challenge → [LINK]`,
     name: 'Voice Wizard',
     emoji: '🎤',
     badgeImage: '/badges/voice-wizard-badge.svg',
-    color: '#9333EA',
+    color: '#F43F88',
     bgColor: '#FAF5FF',
     description: 'Master of spoken fluency',
     requirement: 'Achieve 75%+ fluency in speaking',
     message: 'Amazing! You\'re a Voice Wizard! 🎤 Your pronunciation is excellent.',
-    shareText: `I just became a 🎤 VOICE WIZARD on WizLingo!
-My speaking fluency reached 75%+. Try the speaking challenge!
-Join → [LINK]`,
+    shareText: `🎤 {studentName} is now a VOICE WIZARD on WizLingo!
+{stat}% speaking fluency — AI-certified confidence! 🌟
+🏫 {schoolName} | {grade}-{section}
+Try the speaking challenge 👉 {appUrl}`,
     order: 3,
   },
   LANGUAGE_WIZARD: {
@@ -79,14 +94,15 @@ Join → [LINK]`,
     name: 'Language Wizard',
     emoji: '🧙',
     badgeImage: '/badges/language-wizard-badge.svg',
-    color: '#059669',
+    color: '#7C3AED',
     bgColor: '#ECFDF5',
     description: 'Committed learner with 10+ sessions',
     requirement: 'Complete 10 reading or speaking sessions',
     message: 'Incredible dedication! You\'re a Language Wizard! 🧙 Keep the momentum going!',
-    shareText: `I just became a 🧙 LANGUAGE WIZARD on WizLingo!
-10+ sessions completed and my skills are improving daily.
-Join me on this journey → [LINK]`,
+    shareText: `🧙 LANGUAGE WIZARD achieved!
+{studentName} completed {stat} sessions on WizLingo — pure dedication! 💪
+🏫 {schoolName} | {grade}-{section}
+Start your child's journey 👉 {appUrl}`,
     order: 4,
   },
   GRAND_WIZARD: {
@@ -99,9 +115,11 @@ Join me on this journey → [LINK]`,
     description: 'Ultimate master of reading & speaking',
     requirement: 'Earn all 4 badges above',
     message: 'LEGENDARY! You\'re a Grand Wizard! 👑 You\'ve mastered WizLingo!',
-    shareText: `I just became a 👑 GRAND WIZARD on WizLingo!
-All badges unlocked! I\'ve mastered reading & speaking fluency.
-Can you become a Grand Wizard too? → [LINK]`,
+    shareText: `👑 GRAND WIZARD — the highest WizLingo title!
+{studentName} from {schoolName} mastered reading + speaking. ALL badges earned! 🏆✨
+Only the most dedicated students reach this level.
+Join the Wizard's Academy 👉 {appUrl}
+#WizLingo #GrandWizard`,
     order: 5,
   },
 };
@@ -115,9 +133,10 @@ export const STREAK_BADGES: Record<string, StreakedBadgeDefinition> = {
     bgColor: '#FEE2E2',
     description: '7-day learning streak',
     requirement: 'Use WizLingo for 7 consecutive days',
-    shareText: `I have a 🔥 7-DAY STREAK on WizLingo!
-Learning every day to improve my English skills.
-Start your streak → [LINK]`,
+    shareText: `🔥 {studentName} has a 7-DAY STREAK on WizLingo!
+Learning every day to improve English skills.
+🏫 {schoolName} | {grade}-{section}
+Start your streak 👉 {appUrl}`,
   },
   STREAK_14: {
     id: 'STREAK_14',
@@ -127,9 +146,10 @@ Start your streak → [LINK]`,
     bgColor: '#FEF3C7',
     description: '14-day learning streak',
     requirement: 'Use WizLingo for 14 consecutive days',
-    shareText: `I have a ⚡ 14-DAY STREAK on WizLingo!
-Two weeks of consistent learning. Feeling awesome!
-Join the challenge → [LINK]`,
+    shareText: `⚡ {studentName} has a 14-DAY STREAK on WizLingo!
+Two weeks of consistent learning. Building the habit! 💪
+🏫 {schoolName} | {grade}-{section}
+Join the challenge 👉 {appUrl}`,
   },
   STREAK_30: {
     id: 'STREAK_30',
@@ -139,9 +159,10 @@ Join the challenge → [LINK]`,
     bgColor: '#DBEAFE',
     description: '30-day learning streak',
     requirement: 'Use WizLingo for 30 consecutive days',
-    shareText: `I have a 💎 30-DAY STREAK on WizLingo!
-A month of dedicated learning. I'm a learning champion!
-Join me → [LINK]`,
+    shareText: `💎 {studentName} has a 30-DAY STREAK on WizLingo!
+A month of dedicated learning. That's a habit! 🎯
+🏫 {schoolName} | {grade}-{section}
+Join the challenge 👉 {appUrl}`,
   },
 };
 
@@ -151,4 +172,36 @@ export function getBadgeConfig(badgeType: BadgeType) {
 
 export function getStreakBadgeConfig(streakId: string) {
   return STREAK_BADGES[streakId];
+}
+
+/**
+ * Format share text with context variables
+ */
+export function formatShareText(
+  shareText: string,
+  context: ShareContext
+): string {
+  let result = shareText;
+
+  // Replace placeholders
+  result = result.replace('{studentName}', context.studentName || 'A student');
+  result = result.replace('{schoolName}', context.schoolName || 'their school');
+  result = result.replace('{grade}', String(context.grade || 'X'));
+  result = result.replace('{section}', String(context.section || 'A'));
+  result = result.replace('{stat}', String(context.stat || 'impressive'));
+
+  // Add referral link if available
+  const appUrl = context.appUrl || 'https://wizlingo.app';
+  let linkUrl = appUrl;
+
+  if (context.referralCode && context.schoolId) {
+    linkUrl = `${appUrl}/r/${context.referralCode}?school=${context.schoolId}`;
+  } else if (context.referralCode) {
+    linkUrl = `${appUrl}/r/${context.referralCode}`;
+  }
+
+  // Replace appUrl placeholder with referral link
+  result = result.replace('{appUrl}', linkUrl);
+
+  return result;
 }

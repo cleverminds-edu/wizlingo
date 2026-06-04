@@ -108,3 +108,18 @@ export async function trackProgressMilestone(
     progress: milestone,
   });
 }
+
+/**
+ * Track color variant unlock
+ */
+export async function trackColorVariantUnlock(
+  badgeType: BadgeType,
+  variant: string,
+  studentId?: string
+): Promise<void> {
+  return trackBadgeEvent('color_variant_unlocked', {
+    badgeType,
+    studentId,
+    metadata: { variant },
+  });
+}

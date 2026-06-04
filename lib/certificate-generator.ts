@@ -89,8 +89,9 @@ export async function generateCertificateImage(
   ctx.fillText(`Issued: ${dateStr}`, width / 2, 900);
 
   // QR Code (for verification)
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   const qrDataUrl = await QRCode.toDataURL(
-    `https://wiziingo.app/verify/${verifyCode}`
+    `${appUrl}/verify/${verifyCode}`
   );
   const qrImage = await loadImage(qrDataUrl);
   const qrSize = 150;

@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 280" width="280" height="280">
+  <defs>
+    <radialGradient id="grandWizBg" cx="50%" cy="40%">
+      <stop offset="0%" style="stop-color:#FFFBEB;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FCD34D;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#D97706;stop-opacity:1" />
+    </radialGradient>
+    <radialGradient id="grandWizRainbow" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#D97706;stop-opacity:0" />
+    </radialGradient>
+    <filter id="grandWizGlowFilter">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="grandWizShadow">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#92400E" flood-opacity="0.5" />
+    </filter>
+  </defs>
+
+  <!-- Rainbow power aura (multiple circles) -->
+  <circle cx="140" cy="140" r="150" fill="none" stroke="#EC4899" stroke-width="2" opacity="0.3" filter="url(#grandWizGlowFilter)"/>
+  <circle cx="140" cy="140" r="145" fill="none" stroke="#F97316" stroke-width="2" opacity="0.3"/>
+  <circle cx="140" cy="140" r="140" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.3"/>
+
+  <!-- Background gradient -->
+  <circle cx="140" cy="140" r="130" fill="url(#grandWizBg)" filter="url(#grandWizGlowFilter)"/>
+
+  <!-- Rainbow glow aura -->
+  <circle cx="140" cy="140" r="140" fill="url(#grandWizRainbow)" opacity="0.6"/>
+
+  <!-- Grand wizard body -->
+  <ellipse cx="140" cy="135" rx="38" ry="44" fill="#F3F4F6" filter="url(#grandWizShadow)"/>
+
+  <!-- Grand wizard hat with crown-like design -->
+  <polygon points="140,55 100,120 180,120" fill="#D97706"/>
+  <path d="M 100 120 Q 140 85 180 120" fill="#B45309"/>
+  <ellipse cx="140" cy="123" rx="45" ry="12" fill="#92400E"/>
+
+  <!-- Crown points on hat (5 points) -->
+  <g fill="#FFD700" filter="url(#grandWizShadow)">
+    <!-- Center point -->
+    <polygon points="140,50 135,65 145,65"/>
+
+    <!-- Left point -->
+    <polygon points="110,105 105,115 115,115"/>
+
+    <!-- Right point -->
+    <polygon points="170,105 165,115 175,115"/>
+
+    <!-- Lower left point -->
+    <polygon points="105,120 98,128 112,128"/>
+
+    <!-- Lower right point -->
+    <polygon points="175,120 168,128 182,128"/>
+  </g>
+
+  <!-- Grand crown/halo above head -->
+  <circle cx="140" cy="95" r="28" fill="none" stroke="#FFD700" stroke-width="3" opacity="0.8" filter="url(#grandWizGlowFilter)"/>
+  <circle cx="140" cy="95" r="32" fill="none" stroke="#FCD34D" stroke-width="1" opacity="0.5"/>
+
+  <!-- Head -->
+  <circle cx="140" cy="112" r="24" fill="#FECACA"/>
+
+  <!-- Majestic long beard -->
+  <path d="M 118 128 Q 125 150 140 158 Q 155 150 162 128" fill="#E5E7EB" filter="url(#grandWizShadow)"/>
+
+  <!-- Eyes (wise, powerful gaze) -->
+  <circle cx="128" cy="105" r="4" fill="#1F2937"/>
+  <circle cx="152" cy="105" r="4" fill="#1F2937"/>
+
+  <!-- Eyes have rainbow sparkles (all colors) -->
+  <circle cx="130" cy="102" r="2" fill="#F97316"/>
+  <circle cx="154" cy="102" r="2" fill="#9333EA"/>
+
+  <!-- Secondary eye sparkles -->
+  <circle cx="130" cy="105" r="1" fill="#FFD700"/>
+  <circle cx="154" cy="105" r="1" fill="#3B82F6"/>
+
+  <!-- Grand staff with rainbow energy -->
+  <g filter="url(#grandWizShadow)">
+    <!-- Main staff shaft -->
+    <rect x="155" y="120" width="6" height="65" fill="#8B4513" rx="3"/>
+
+    <!-- Staff orb with rainbow colors -->
+    <circle cx="158" cy="110" r="14" fill="#F97316"/>
+    <circle cx="158" cy="110" r="12" fill="url(#gradRainbow)"/>
+
+    <!-- Rainbow gradient in orb -->
+    <defs>
+      <linearGradient id="gradRainbow" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#F97316;stop-opacity:1" />
+        <stop offset="25%" style="stop-color:#9333EA;stop-opacity:1" />
+        <stop offset="50%" style="stop-color:#3B82F6;stop-opacity:1" />
+        <stop offset="75%" style="stop-color:#FFD700;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#EC4899;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+
+    <!-- Mystical core -->
+    <circle cx="158" cy="110" r="8" fill="#FFFFFF" opacity="0.6" filter="url(#grandWizGlowFilter)"/>
+    <circle cx="158" cy="110" r="5" fill="#FFD700" opacity="0.9"/>
+  </g>
+
+  <!-- Radiating power lines in all colors -->
+  <g stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7">
+    <!-- Orange rays -->
+    <line x1="140" y1="50" x2="140" y2="25" stroke="#F97316"/>
+    <line x1="170" y1="70" x2="190" y2="50" stroke="#F97316"/>
+    <line x1="190" y1="140" x2="220" y2="140" stroke="#F97316"/>
+
+    <!-- Purple rays -->
+    <line x1="110" y1="70" x2="90" y2="50" stroke="#9333EA"/>
+    <line x1="70" y1="110" x2="45" y2="110" stroke="#9333EA"/>
+    <line x1="110" y1="190" x2="85" y2="210" stroke="#9333EA"/>
+
+    <!-- Blue rays -->
+    <line x1="170" y1="190" x2="195" y2="215" stroke="#3B82F6"/>
+    <line x1="215" y1="170" x2="240" y2="190" stroke="#3B82F6"/>
+
+    <!-- Gold rays -->
+    <line x1="140" y1="210" x2="140" y2="240" stroke="#FFD700"/>
+    <line x1="70" y1="170" x2="50" y2="200" stroke="#FFD700"/>
+  </g>
+
+  <!-- Supreme star particles around wizard -->
+  <!-- Top corners -->
+  <g transform="translate(85, 70)">
+    <polygon points="0,-6 2,-2 6,-2 3,1 4,6 0,3 -4,6 -3,1 -6,-2 -2,-2" fill="#FFD700" opacity="0.95"/>
+  </g>
+
+  <g transform="translate(195, 70)">
+    <polygon points="0,-6 2,-2 6,-2 3,1 4,6 0,3 -4,6 -3,1 -6,-2 -2,-2" fill="#FFD700" opacity="0.95"/>
+  </g>
+
+  <!-- Side sparkles -->
+  <g transform="translate(70, 140)">
+    <polygon points="0,-5 1.5,-1 5,-1 2.5,1.5 3.5,5.5 0,3 -3.5,5.5 -2.5,1.5 -5,-1 -1.5,-1" fill="#9333EA" opacity="0.9"/>
+  </g>
+
+  <g transform="translate(210, 140)">
+    <polygon points="0,-5 1.5,-1 5,-1 2.5,1.5 3.5,5.5 0,3 -3.5,5.5 -2.5,1.5 -5,-1 -1.5,-1" fill="#EC4899" opacity="0.9"/>
+  </g>
+
+  <!-- Bottom sparkles -->
+  <g transform="translate(100, 195)">
+    <polygon points="0,-4 1,-1 4,-1 2,1 2.5,4 0,2 -2.5,4 -2,1 -4,-1 -1,-1" fill="#3B82F6" opacity="0.85"/>
+  </g>
+
+  <g transform="translate(180, 195)">
+    <polygon points="0,-4 1,-1 4,-1 2,1 2.5,4 0,2 -2.5,4 -2,1 -4,-1 -1,-1" fill="#F97316" opacity="0.85"/>
+  </g>
+
+  <!-- Badge label -->
+  <text x="140" y="245" font-family="Fredoka, Arial" font-size="22" font-weight="900" text-anchor="middle" fill="#D97706">GRAND WIZARD</text>
+
+  <!-- Legendary collectible card border -->
+  <rect x="15" y="15" width="250" height="250" rx="22" fill="none" stroke="#FFD700" stroke-width="4" opacity="0.7" filter="url(#grandWizGlowFilter)"/>
+  <rect x="18" y="18" width="244" height="244" rx="20" fill="none" stroke="#FCD34D" stroke-width="1" opacity="0.4"/>
+
+  <!-- Supreme corner accents -->
+  <circle cx="25" cy="25" r="5" fill="#FFD700" opacity="0.95"/>
+  <circle cx="255" cy="25" r="5" fill="#FFD700" opacity="0.95"/>
+  <circle cx="25" cy="255" r="5" fill="#FFD700" opacity="0.95"/>
+  <circle cx="255" cy="255" r="5" fill="#FFD700" opacity="0.95"/>
+
+  <!-- Extra corner sparkle frames -->
+  <circle cx="25" cy="25" r="8" fill="none" stroke="#FFD700" stroke-width="0.5" opacity="0.5"/>
+  <circle cx="255" cy="25" r="8" fill="none" stroke="#FFD700" stroke-width="0.5" opacity="0.5"/>
+  <circle cx="25" cy="255" r="8" fill="none" stroke="#FFD700" stroke-width="0.5" opacity="0.5"/>
+  <circle cx="255" cy="255" r="8" fill="none" stroke="#FFD700" stroke-width="0.5" opacity="0.5"/>
+</svg>

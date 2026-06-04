@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 280" width="280" height="280">
+  <defs>
+    <radialGradient id="wordWizBg" cx="50%" cy="40%">
+      <stop offset="0%" style="stop-color:#E9D5FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9333EA;stop-opacity:1" />
+    </radialGradient>
+    <radialGradient id="wordWizGlow" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#C084FC;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#9333EA;stop-opacity:0" />
+    </radialGradient>
+    <filter id="wordWizGlowFilter">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="wordWizShadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#6B21A8" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Background gradient -->
+  <circle cx="140" cy="140" r="130" fill="url(#wordWizBg)" filter="url(#wordWizGlowFilter)"/>
+
+  <!-- Glow aura -->
+  <circle cx="140" cy="140" r="140" fill="url(#wordWizGlow)" opacity="0.5"/>
+
+  <!-- Wizard character body -->
+  <ellipse cx="140" cy="130" rx="35" ry="40" fill="#F3F4F6" filter="url(#wordWizShadow)"/>
+
+  <!-- Wizard hat (purple) -->
+  <polygon points="140,70 110,110 170,110" fill="#9333EA"/>
+  <ellipse cx="140" cy="112" rx="35" ry="8" fill="#7E22CE"/>
+
+  <!-- Hat star -->
+  <polygon points="140,85 142,92 150,92 144,97 146,104 140,100 134,104 136,97 130,92 138,92" fill="#FFD700"/>
+
+  <!-- Face -->
+  <circle cx="140" cy="120" r="18" fill="#FECACA"/>
+
+  <!-- Eyes (magical glow) -->
+  <circle cx="130" cy="115" r="4" fill="#1F2937"/>
+  <circle cx="150" cy="115" r="4" fill="#1F2937"/>
+
+  <!-- Magical eye sparkles -->
+  <circle cx="132" cy="113" r="2" fill="#FFD700"/>
+  <circle cx="152" cy="113" r="2" fill="#FFD700"/>
+
+  <!-- Smile -->
+  <path d="M 132 125 Q 140 130 148 125" stroke="#1F2937" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+  <!-- Open book beneath wizard -->
+  <g filter="url(#wordWizShadow)">
+    <!-- Book pages -->
+    <path d="M 110 145 L 115 150 L 115 175 L 110 170 Z" fill="#F3F4F6" stroke="#9333EA" stroke-width="1"/>
+    <path d="M 170 145 L 165 150 L 165 175 L 170 170 Z" fill="#F3F4F6" stroke="#9333EA" stroke-width="1"/>
+
+    <!-- Book spine -->
+    <rect x="125" y="150" width="30" height="25" fill="#9333EA" rx="2"/>
+
+    <!-- Words on page (abstract) -->
+    <line x1="128" y1="157" x2="145" y2="157" stroke="#A78BFA" stroke-width="1.5"/>
+    <line x1="128" y1="162" x2="150" y2="162" stroke="#A78BFA" stroke-width="1.5"/>
+    <line x1="128" y1="167" x2="142" y2="167" stroke="#A78BFA" stroke-width="1.5"/>
+  </g>
+
+  <!-- Magical aura particles around wizard -->
+  <!-- Top left -->
+  <g transform="translate(100, 95)">
+    <polygon points="0,-4 1,-1 4,-1 2,1 2.5,4 0,2 -2.5,4 -2,1 -4,-1 -1,-1" fill="#C084FC" opacity="0.9"/>
+  </g>
+
+  <!-- Top right -->
+  <g transform="translate(180, 95)">
+    <polygon points="0,-4 1,-1 4,-1 2,1 2.5,4 0,2 -2.5,4 -2,1 -4,-1 -1,-1" fill="#C084FC" opacity="0.9"/>
+  </g>
+
+  <!-- Bottom particles -->
+  <g transform="translate(105, 175)">
+    <polygon points="0,-3 0.8,-0.5 3,-0.5 1.5,0.8 2,3 0,1.5 -2,3 -1.5,0.8 -3,-0.5 -0.8,-0.5" fill="#C084FC" opacity="0.8"/>
+  </g>
+
+  <g transform="translate(175, 175)">
+    <polygon points="0,-3 0.8,-0.5 3,-0.5 1.5,0.8 2,3 0,1.5 -2,3 -1.5,0.8 -3,-0.5 -0.8,-0.5" fill="#C084FC" opacity="0.8"/>
+  </g>
+
+  <!-- Badge label -->
+  <text x="140" y="245" font-family="Fredoka, Arial" font-size="20" font-weight="900" text-anchor="middle" fill="#9333EA">WORD WIZARD</text>
+
+  <!-- Collectible card border -->
+  <rect x="20" y="20" width="240" height="240" rx="20" fill="none" stroke="#C084FC" stroke-width="3" opacity="0.6"/>
+
+  <!-- Corner accents -->
+  <circle cx="30" cy="30" r="4" fill="#9333EA" opacity="0.8"/>
+  <circle cx="250" cy="30" r="4" fill="#9333EA" opacity="0.8"/>
+  <circle cx="30" cy="250" r="4" fill="#9333EA" opacity="0.8"/>
+  <circle cx="250" cy="250" r="4" fill="#9333EA" opacity="0.8"/>
+</svg>

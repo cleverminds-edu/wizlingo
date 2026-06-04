@@ -8,10 +8,20 @@ import { trackBadgeEvent } from '@/lib/badge-analytics';
 import { useCelebrationEffects } from '@/hooks/useCelebrationEffects';
 import { ParticleType } from '@/lib/particles';
 import { playBadgeEarnedSound } from '@/lib/sound-effects';
+import {
+  getBadgeImagePath,
+  getUserBadgeVariant,
+  type BadgeVariant,
+} from '@/lib/badge-variant-config';
+import { logBadgeVariantViewed, logBadgeVariantShared } from '@/lib/badge-variants-service';
 
 interface BadgeCelebrationProps {
   badgeType: BadgeType;
   studentName: string;
+  studentId?: string;
+  schoolName?: string;
+  grade?: number;
+  section?: string;
   isVisible: boolean;
   onClose: () => void;
   stats?: {
@@ -25,14 +35,25 @@ interface BadgeCelebrationProps {
 export const BadgeCelebration = ({
   badgeType,
   studentName,
+  studentId,
+  schoolName,
+  grade,
+  section,
   isVisible,
   onClose,
   stats,
 }: BadgeCelebrationProps) => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [shareSuccess, setShareSuccess] = useState(false);
+  const [badgeVariant, setBadgeVariant] = useState<BadgeVariant>('current');
   const config = getBadgeConfig(badgeType);
-  const messages = useBadgeMessages(badgeType, studentName, stats);
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const messages = useBadgeMessages(badgeType, studentName, stats, {
+    schoolName,
+    grade,
+    section,
+    appUrl,
+  });
 
   // Map badge type to particle type
   const getParticleType = (badge: BadgeType): ParticleType => {
@@ -68,17 +89,26 @@ export const BadgeCelebration = ({
       setShowConfetti(true);
       setShareSuccess(false);
 
+      // Get user's badge variant and track view
+      const variant = getUserBadgeVariant(studentId);
+      setBadgeVariant(variant);
+
       // Track badge earned event
       trackBadgeEvent('badge_earned', {
         badgeType,
         studentName,
       });
 
+      // Log variant view
+      if (studentId) {
+        logBadgeVariantViewed(studentId, badgeType, variant);
+      }
+
       // Auto-close after 15 seconds (longer celebration)
       const timer = setTimeout(onClose, 15000);
       return () => clearTimeout(timer);
     }
-  }, [isVisible, onClose, badgeType, studentName]);
+  }, [isVisible, onClose, badgeType, studentName, studentId]);
 
   const handleWhatsAppShare = (shareMsg: string) => {
     try {
@@ -90,6 +120,11 @@ export const BadgeCelebration = ({
         badgeType,
         platform: 'whatsapp',
       });
+
+      // Log variant share
+      if (studentId) {
+        logBadgeVariantShared(studentId, badgeType, badgeVariant, 'whatsapp');
+      }
 
       setShareSuccess(false);
     } catch (error) {
@@ -106,6 +141,11 @@ export const BadgeCelebration = ({
         badgeType,
         platform: 'clipboard',
       });
+
+      // Log variant share
+      if (studentId) {
+        logBadgeVariantShared(studentId, badgeType, badgeVariant, 'clipboard');
+      }
 
       setShareSuccess(false);
       // Show temporary success message
@@ -129,6 +169,11 @@ export const BadgeCelebration = ({
           badgeType,
           platform: 'native',
         });
+
+        // Log variant share
+        if (studentId) {
+          logBadgeVariantShared(studentId, badgeType, badgeVariant, 'native');
+        }
 
         setShareSuccess(false);
       } else {
@@ -166,7 +211,7 @@ export const BadgeCelebration = ({
         >
           <div className="w-32 h-32 relative">
             <img
-              src={config.badgeImage}
+              src={getBadgeImagePath(badgeType, badgeVariant)}
               alt={config.name}
               className="w-full h-full object-contain drop-shadow-2xl"
               style={{
