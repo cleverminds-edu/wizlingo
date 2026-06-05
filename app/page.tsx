@@ -448,49 +448,61 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Meet the Team Section */}
+      {/* Backed by Edvanta Section */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-gray-900 mb-4">Built by Educators & AI Experts</h2>
-            <p className="text-xl text-gray-600">Meet the Edvanta team behind WizLingo</p>
+            <h2 className="text-5xl font-bold text-gray-900 mb-4">Powered by Edvanta Intelligence System</h2>
+            <p className="text-xl text-gray-600">AI-driven learning platform developed by Edvanta team</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {/* Team Member 1 */}
-            <div className="text-center">
-              <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-4xl font-bold">
-                RS
+          <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto items-center">
+            {/* Left: Why Edvanta */}
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">🎯 Mission-Driven</h3>
+                <p className="text-gray-600">
+                  Edvanta develops AI technology specifically for Indian education. We partner with schools to transform how students learn English through personalized, adaptive practice.
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-1">Ramakant Singh</h3>
-              <p className="text-purple-600 font-semibold mb-3">Founder & AI Lead</p>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                AI researcher with 8+ years building education technology. Expert in adaptive learning systems and NLP.
-              </p>
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">🤖 AI-Powered</h3>
+                <p className="text-gray-600">
+                  Built on Anthropic's Claude AI, WizLingo provides intelligent feedback that adapts to each student's learning pace and style.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">🏫 School-First</h3>
+                <p className="text-gray-600">
+                  Designed by educators for educators. Teachers get real-time dashboards. Schools get measurable results. Students get personalized learning.
+                </p>
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">📊 Proven Results</h3>
+                <p className="text-gray-600">
+                  92% of students improve reading within 30 days. 87% gain speaking confidence within 60 days. 40% average improvement in exam scores.
+                </p>
+              </div>
             </div>
 
-            {/* Team Member 2 */}
+            {/* Right: Edvanta Logo & Info */}
             <div className="text-center">
-              <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white text-4xl font-bold">
-                AP
+              <div className="bg-gradient-to-br from-purple-50 to-orange-50 rounded-2xl p-12 border-2 border-purple-200">
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">About Edvanta</h3>
+                <div className="space-y-4 text-left">
+                  <p className="text-gray-700">
+                    <span className="font-semibold">Edvanta Intelligence System</span> is building AI-powered education technology for schools across India.
+                  </p>
+                  <p className="text-gray-700">
+                    We focus on creating tools that teachers actually want to use and students actually want to engage with.
+                  </p>
+                  <div className="pt-4 border-t border-gray-300">
+                    <p className="text-sm text-orange-600 font-semibold">
+                      ✨ WizLingo is the first product from Edvanta's Intelligence System
+                    </p>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-1">Amit Patel</h3>
-              <p className="text-pink-600 font-semibold mb-3">Co-founder & Product</p>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Former educator at top Indian schools. Designed curriculum for 50,000+ students. Product strategist.
-              </p>
-            </div>
-
-            {/* Team Member 3 */}
-            <div className="text-center">
-              <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-4xl font-bold">
-                SG
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-1">Shruti Gupta</h3>
-              <p className="text-blue-600 font-semibold mb-3">Co-founder & Growth</p>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                EdTech operator who grew 3 ed startups to 100K+ users. Expert in school partnerships & retention.
-              </p>
             </div>
           </div>
 
