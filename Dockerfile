@@ -1,10 +1,12 @@
 # Build stage
-FROM node:20.19.0-alpine AS builder
+FROM node:20.19.0-slim AS builder
 
 WORKDIR /app
 
 # Install build dependencies for native modules (canvas, etc.)
-RUN apk add --no-cache python3 make g++ cairo-dev jpeg-dev pixman-dev
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 make g++ libcairo2-dev libjpeg-dev libpixman-1-dev pkg-config \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package*.json ./
@@ -22,24 +24,25 @@ RUN npx prisma generate
 RUN npm run build
 
 # Production stage
-FROM node:20.19.0-alpine
+FROM node:20.19.0-slim
 
 WORKDIR /app
 
 # Install dumb-init and build dependencies for native modules
-RUN apk add --no-cache dumb-init python3 make g++ cairo-dev jpeg-dev pixman-dev
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    dumb-init python3 make g++ libcairo2-dev libjpeg-dev libpixman-1-dev pkg-config \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001
+RUN groupadd -g 1001 nodejs && \
+    useradd -m -u 1001 -g nodejs nextjs
 
 # Copy package files
 COPY package*.json ./
 
 # Install production dependencies only
 RUN npm ci --only=production && \
-    npm cache clean --force && \
-    apk del python3 make g++ cairo-dev jpeg-dev pixman-dev
+    npm cache clean --force
 
 # Copy Prisma schema and migrations
 COPY --chown=nextjs:nodejs prisma ./prisma/
