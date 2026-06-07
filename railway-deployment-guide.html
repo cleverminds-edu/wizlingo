@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WizLingo Railway Deployment Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #0066cc 0%, #00cc99 100%);
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        .timer {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            display: inline-block;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        .content {
+            padding: 40px;
+        }
+        .step {
+            background: white;
+            border-left: 5px solid #0066cc;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .step-number {
+            display: inline-block;
+            background: #0066cc;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        .step h2 {
+            color: #0066cc;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .step h3 {
+            color: #333;
+            font-size: 1.1em;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+        .instruction {
+            background: #f0f7ff;
+            border-left: 3px solid #0066cc;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .instruction strong {
+            color: #0066cc;
+        }
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+        .env-var {
+            background: #fff3cd;
+            border-left: 3px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .env-var strong {
+            color: #856404;
+        }
+        .checklist {
+            background: #e8f5e9;
+            border-left: 3px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .checklist li {
+            margin: 10px 0;
+            list-style: none;
+            padding-left: 30px;
+            position: relative;
+        }
+        .checklist li:before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            font-size: 1.3em;
+            color: #4caf50;
+        }
+        .success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .success h4 {
+            color: #155724;
+            margin-bottom: 10px;
+        }
+        .success p {
+            color: #155724;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .warning h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        .warning p {
+            color: #856404;
+        }
+        .danger {
+            background: #f8d7da;
+            border: 2px solid #f5c6cb;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .danger h4 {
+            color: #721c24;
+            margin-bottom: 10px;
+        }
+        .danger p {
+            color: #721c24;
+        }
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(to right, #0066cc, transparent);
+            margin: 40px 0;
+        }
+        ol, ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .screenshot-note {
+            background: #e3f2fd;
+            border-left: 3px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-style: italic;
+        }
+        .url-box {
+            background: #f5f5f5;
+            border: 1px dashed #999;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        .time-estimate {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+        .footer {
+            background: #333;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            margin-top: 40px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #0066cc, #00cc99);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin: 10px 5px;
+            cursor: pointer;
+            border: none;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,102,204,0.3);
+        }
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Railway Deployment Guide</h1>
+            <p>WizLingo Beta Launch</p>
+            <div class="timer">⏱️ Total Time: 30 Minutes</div>
+        </div>
+
+        <div class="content">
+            <!-- OVERVIEW -->
+            <div class="step">
+                <h2>📋 Before You Start</h2>
+                <p style="margin-bottom: 15px;"><strong>Make sure you have:</strong></p>
+                <ul>
+                    <li>✅ GitHub account (code is there)</li>
+                    <li>✅ <strong>.env.local file</strong> with these variables ready to copy:</li>
+                </ul>
+                <div class="env-var">
+                    <strong>Your .env.local file must have:</strong>
+                    <div class="code-block">
+NEXT_PUBLIC_APP_URL="https://wizlingo.edvanta.co.in"
+JWT_SECRET=[your value from .env.local]
+ANTHROPIC_API_KEY=[your value from .env.local]
+WIZADMIN_SECRET=[your value from .env.local]
+NODE_ENV=production
+                    </div>
+                </div>
+                <p style="margin-top: 15px;"><strong>Find your values:</strong></p>
+                <div class="code-block">
+cat .env.local | grep -E "JWT_SECRET|ANTHROPIC_API_KEY|WIZADMIN_SECRET"
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- STEP 1 -->
+            <div class="step">
+                <div class="step-number">1</div>
+                <h2>🌐 Create Railway Account</h2>
+                <span class="time-estimate">2 minutes</span>
+
+                <h3>Action:</h3>
+                <ol>
+                    <li>Go to <strong>https://railway.app</strong></li>
+                    <li>Click <strong>"Start Free"</strong> (top right)</li>
+                    <li>Click <strong>"Sign up with GitHub"</strong></li>
+                    <li>Authorize Railway to access your GitHub</li>
+                    <li>You're done with this step ✅</li>
+                </ol>
+
+                <div class="success">
+                    <h4>✅ You now have a Railway account</h4>
+                    <p>Next: Create your project</p>
+                </div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="step">
+                <div class="step-number">2</div>
+                <h2>📁 Create New Project</h2>
+                <span class="time-estimate">2 minutes</span>
+
+                <h3>What to do:</h3>
+                <ol>
+                    <li>In Railway dashboard, click <strong>"New Project"</strong> (big button)</li>
+                    <li>Select <strong>"Deploy from GitHub repo"</strong></li>
+                    <li>Click <strong>"Configure GitHub App"</strong></li>
+                    <li>Select your GitHub user/organization</li>
+                    <li>Search for <strong>"reading-app"</strong> repository</li>
+                    <li>Click <strong>"Create"</strong></li>
+                </ol>
+
+                <div class="screenshot-note">
+                    💡 You should now see your project in Railway with a blank canvas saying "Add Service"
+                </div>
+
+                <div class="success">
+                    <h4>✅ GitHub repository connected</h4>
+                    <p>Next: Add PostgreSQL database</p>
+                </div>
+            </div>
+
+            <!-- STEP 3 -->
+            <div class="step">
+                <div class="step-number">3</div>
+                <h2>🗄️ Add PostgreSQL Database</h2>
+                <span class="time-estimate">2 minutes</span>
+
+                <h3>What to do:</h3>
+                <ol>
+                    <li>In your Railway project, click <strong>"+ Add Service"</strong></li>
+                    <li>Select <strong>"Database"</strong></li>
+                    <li>Choose <strong>"PostgreSQL"</strong></li>
+                    <li>Click <strong>"Create"</strong></li>
+                </ol>
+
+                <div class="warning">
+                    <h4>⚠️ Important: Don't worry about configuration</h4>
+                    <p>Railway automatically creates DATABASE_URL environment variable. You don't need to do anything else!</p>
+                </div>
+
+                <div class="success">
+                    <h4>✅ PostgreSQL database created</h4>
+                    <p>Next: Set environment variables</p>
+                </div>
+            </div>
+
+            <!-- STEP 4 -->
+            <div class="step">
+                <div class="step-number">4</div>
+                <h2>⚙️ Set Environment Variables</h2>
+                <span class="time-estimate">5 minutes</span>
+
+                <h3>What to do:</h3>
+                <ol>
+                    <li>Click the <strong>"app"</strong> service (the Node.js one, NOT PostgreSQL)</li>
+                    <li>Go to <strong>"Variables"</strong> tab (left sidebar)</li>
+                    <li>You'll see DATABASE_URL already set ✅ (don't touch it)</li>
+                    <li>Click <strong>"+ Add Variable"</strong></li>
+                </ol>
+
+                <h3>Add These 5 Variables:</h3>
+
+                <div class="env-var">
+                    <strong>Variable 1:</strong><br>
+                    Name: <code>NEXT_PUBLIC_APP_URL</code><br>
+                    Value: <code>https://wizlingo.edvanta.co.in</code>
+                </div>
+
+                <div class="env-var">
+                    <strong>Variable 2:</strong><br>
+                    Name: <code>JWT_SECRET</code><br>
+                    Value: <span style="color: red;">[Copy from your .env.local]</span>
+                </div>
+
+                <div class="env-var">
+                    <strong>Variable 3:</strong><br>
+                    Name: <code>ANTHROPIC_API_KEY</code><br>
+                    Value: <span style="color: red;">[Copy from your .env.local]</span>
+                </div>
+
+                <div class="env-var">
+                    <strong>Variable 4:</strong><br>
+                    Name: <code>WIZADMIN_SECRET</code><br>
+                    Value: <span style="color: red;">[Copy from your .env.local]</span>
+                </div>
+
+                <div class="env-var">
+                    <strong>Variable 5:</strong><br>
+                    Name: <code>NODE_ENV</code><br>
+                    Value: <code>production</code>
+                </div>
+
+                <h3>How to add each variable:</h3>
+                <div class="instruction">
+                    <strong>For each variable above:</strong>
+                    <ol>
+                        <li>Click "Add Variable"</li>
+                        <li>Enter Name (e.g., "NEXT_PUBLIC_APP_URL")</li>
+                        <li>Enter Value (e.g., "https://wizlingo.edvanta.co.in")</li>
+                        <li>Press Enter or click outside the box</li>
+                        <li>Repeat for next variable</li>
+                    </ol>
+                </div>
+
+                <div class="success">
+                    <h4>✅ All 5 environment variables set</h4>
+                    <p>Next: Configure build settings</p>
+                </div>
+            </div>
+
+            <!-- STEP 5 -->
+            <div class="step">
+                <div class="step-number">5</div>
+                <h2>🔨 Configure Build Settings</h2>
+                <span class="time-estimate">2 minutes</span>
+
+                <h3>What to do:</h3>
+                <ol>
+                    <li>Still in the <strong>"app"</strong> service, go to <strong>"Settings"</strong> tab</li>
+                    <li>Scroll to <strong>"Build"</strong> section</li>
+                    <li>Set these values:</li>
+                </ol>
+
+                <div class="instruction">
+                    <strong>Build Command:</strong>
+                    <div class="code-block">npm run build</div>
+                </div>
+
+                <div class="instruction">
+                    <strong>Start Command:</strong>
+                    <div class="code-block">npm start</div>
+                </div>
+
+                <div class="instruction">
+                    <strong>Node Version:</strong>
+                    <div class="code-block">18</div>
+                </div>
+
+                <div class="success">
+                    <h4>✅ Build settings configured</h4>
+                    <p>Next: Deploy!</p>
+                </div>
+            </div>
+
+            <!-- STEP 6 -->
+            <div class="step">
+                <div class="step-number">6</div>
+                <h2>🚀 Deploy Your App</h2>
+                <span class="time-estimate">10 minutes (deployment runs automatically)</span>
+
+                <h3>Option A: Automatic Deploy (Recommended)</h3>
+                <div class="instruction">
+                    <strong>Just push to GitHub:</strong>
+                    <div class="code-block">
+git push origin main
+                    </div>
+                    <p style="margin-top: 15px;">Railway automatically deploys every push to main! ✅</p>
+                </div>
+
+                <h3>Option B: Manual Deploy</h3>
+                <div class="instruction">
+                    <strong>In Railway dashboard:</strong>
+                    <ol>
+                        <li>Click <strong>"Deployments"</strong> tab</li>
+                        <li>Click <strong>"New Deployment"</strong></li>
+                        <li>Select <strong>"main"</strong> branch</li>
+                        <li>Click <strong>"Deploy"</strong></li>
+                    </ol>
+                </div>
+
+                <div class="warning">
+                    <h4>⏳ Deployment in progress</h4>
+                    <p>Watch the "Deployments" tab. You'll see:</p>
+                    <ul>
+                        <li>Building... (2-3 min)</li>
+                        <li>Deploying... (1-2 min)</li>
+                        <li>Live ✅ (you're done!)</li>
+                    </ul>
+                </div>
+
+                <div class="success">
+                    <h4>✅ Deployment complete!</h4>
+                    <p>Next: Test your live app</p>
+                </div>
+            </div>
+
+            <!-- STEP 7 -->
+            <div class="step">
+                <div class="step-number">7</div>
+                <h2>✅ Verify It Works</h2>
+                <span class="time-estimate">5 minutes</span>
+
+                <h3>Get Your Railway URL:</h3>
+                <ol>
+                    <li>In Railway dashboard, click <strong>"app"</strong> service</li>
+                    <li>Look at the <strong>top right corner</strong></li>
+                    <li>Copy the URL (looks like: <code>https://wizlingo-xxxxx.railway.app</code>)</li>
+                </ol>
+
+                <h3>Test These 4 URLs:</h3>
+
+                <div class="instruction">
+                    <strong>1. Health Check (Most Important)</strong><br>
+                    Go to: <code>[your-url]/api/health</code>
+                    <p style="margin-top: 10px;">✅ Should show: <code>{"status":"healthy"}</code></p>
+                </div>
+
+                <div class="instruction">
+                    <strong>2. Homepage</strong><br>
+                    Go to: <code>[your-url]</code>
+                    <p style="margin-top: 10px;">✅ Should show: WizLingo homepage with logo</p>
+                </div>
+
+                <div class="instruction">
+                    <strong>3. Student Signup</strong><br>
+                    Go to: <code>[your-url]/auth/phone-signup</code>
+                    <p style="margin-top: 10px;">✅ Should show: Phone number input form</p>
+                </div>
+
+                <div class="instruction">
+                    <strong>4. Admin Dashboard</strong><br>
+                    Go to: <code>[your-url]/admin/beta-dashboard</code>
+                    <p style="margin-top: 10px;">✅ Should show: Admin stats (0 students initially)</p>
+                </div>
+
+                <div class="success">
+                    <h4>✅ All 4 tests pass? You're LIVE! 🎉</h4>
+                    <p>Next: Save your Railway URL for schools</p>
+                </div>
+            </div>
+
+            <!-- STEP 8 -->
+            <div class="step">
+                <div class="step-number">8</div>
+                <h2>🔗 Share Your Live URLs</h2>
+                <span class="time-estimate">1 minute</span>
+
+                <h3>Your Live URLs (Replace [ID] with your actual ID):</h3>
+
+                <div class="url-box">
+                    <strong>📱 Student Signup:</strong><br>
+                    https://wizlingo-[ID].railway.app/auth/phone-signup
+                </div>
+
+                <div class="url-box">
+                    <strong>👨‍🏫 Teacher Dashboard:</strong><br>
+                    https://wizlingo-[ID].railway.app/teacher/dashboard
+                </div>
+
+                <div class="url-box">
+                    <strong>📊 Admin Dashboard:</strong><br>
+                    https://wizlingo-[ID].railway.app/admin/beta-dashboard
+                </div>
+
+                <div class="url-box">
+                    <strong>💚 Health Check:</strong><br>
+                    https://wizlingo-[ID].railway.app/api/health
+                </div>
+
+                <h3>Save these somewhere! You'll need them to:</h3>
+                <ul>
+                    <li>Share with schools on June 15</li>
+                    <li>Create QR codes</li>
+                    <li>Monitor app status</li>
+                </ul>
+
+                <div class="success">
+                    <h4>✅ All URLs tested and documented</h4>
+                    <p>Your app is now LIVE on Railway! 🚀</p>
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- TROUBLESHOOTING -->
+            <div class="step">
+                <h2>❓ Troubleshooting</h2>
+
+                <h3>❌ "Build Failed"</h3>
+                <div class="instruction">
+                    <strong>Check the logs:</strong>
+                    <ol>
+                        <li>Click "Deployments" tab</li>
+                        <li>Look for red "Failed" status</li>
+                        <li>Click it to see error message</li>
+                        <li><strong>Common fix:</strong> Missing environment variable</li>
+                    </ol>
+                </div>
+
+                <h3>❌ "Database Connection Error"</h3>
+                <div class="instruction">
+                    <strong>Verify DATABASE_URL:</strong>
+                    <ol>
+                        <li>Check "Variables" tab in app service</li>
+                        <li>DATABASE_URL should exist (Railway creates it)</li>
+                        <li>If missing, delete PostgreSQL service and add it again</li>
+                    </ol>
+                </div>
+
+                <h3>❌ "Can't Access App"</h3>
+                <div class="instruction">
+                    <strong>Wait and refresh:</strong>
+                    <ol>
+                        <li>First deployment takes 10-15 minutes</li>
+                        <li>Wait for green "Live" status in Deployments</li>
+                        <li>Hard refresh: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)</li>
+                    </ol>
+                </div>
+
+                <h3>❌ "500 Error on Pages"</h3>
+                <div class="instruction">
+                    <strong>Check app logs:</strong>
+                    <ol>
+                        <li>In app service, click "Logs" tab</li>
+                        <li>Look for red error messages</li>
+                        <li><strong>Most common:</strong> Missing env variable</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- DEPLOYMENT CHECKLIST -->
+            <div class="step">
+                <h2>✓ Deployment Checklist</h2>
+
+                <div class="checklist">
+                    <ul>
+                        <li>GitHub account created</li>
+                        <li>Reading-app repository pushed to GitHub</li>
+                        <li>.env.local file has all 4 values (JWT, API key, admin secret, app URL)</li>
+                        <li>Railway account created (free tier)</li>
+                        <li>Project created from GitHub repo</li>
+                        <li>PostgreSQL database added</li>
+                        <li>5 environment variables set (NEXT_PUBLIC_APP_URL, JWT_SECRET, ANTHROPIC_API_KEY, WIZADMIN_SECRET, NODE_ENV)</li>
+                        <li>Build command set to "npm run build"</li>
+                        <li>Start command set to "npm start"</li>
+                        <li>Deployment triggered (automatic on push or manual)</li>
+                        <li>Deployment status is "Live" (green)</li>
+                        <li>/api/health returns {"status":"healthy"}</li>
+                        <li>Homepage loads with logo</li>
+                        <li>/auth/phone-signup shows form</li>
+                        <li>/admin/beta-dashboard shows stats</li>
+                        <li>Live URLs saved and ready to share</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- CUSTOM DOMAIN SETUP -->
+            <div class="step">
+                <h2>🔗 Optional: Custom Domain Setup</h2>
+                <p style="margin-bottom: 15px;">Want <strong>wizlingo.edvanta.co.in</strong> instead of the long Railway URL?</p>
+
+                <h3>Do this AFTER verification (not required to launch):</h3>
+                <ol>
+                    <li>In app service, go <strong>"Settings"</strong></li>
+                    <li>Find <strong>"Domains"</strong> section</li>
+                    <li>Click <strong>"Add Custom Domain"</strong></li>
+                    <li>Enter: <code>wizlingo.edvanta.co.in</code></li>
+                    <li>Railway shows you a CNAME record to add</li>
+                    <li>Go to your DNS provider (wherever you manage edvanta.co.in)</li>
+                    <li>Add the CNAME record Railway provided</li>
+                    <li>Wait 5-15 minutes for DNS to propagate</li>
+                </ol>
+
+                <div class="warning">
+                    <h4>⚠️ Not urgent for beta launch</h4>
+                    <p>You can skip this initially and use the Railway URL. Set up custom domain later when schools are onboarded.</p>
+                </div>
+            </div>
+
+            <!-- FINAL SUMMARY -->
+            <div class="step" style="background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border-left-color: #28a745;">
+                <h2 style="color: #155724;">🎉 YOU'RE LIVE!</h2>
+                <p style="color: #155724; font-size: 1.1em; margin-bottom: 20px;"><strong>WizLingo is now running on Railway.</strong></p>
+
+                <h3 style="color: #155724;">What's next:</h3>
+                <ul style="color: #155724;">
+                    <li>✅ Save your Railway URL: <code>https://wizlingo-[ID].railway.app</code></li>
+                    <li>✅ Test all 4 URLs work correctly</li>
+                    <li>✅ Monitor the app for errors in the first few hours</li>
+                    <li>✅ Share with schools on June 15 launch day</li>
+                    <li>⏳ (Optional) Set up custom domain <code>wizlingo.edvanta.co.in</code> later</li>
+                </ul>
+
+                <p style="color: #155724; margin-top: 20px;"><strong>Total time: 30 minutes from start to live.</strong> You did it! 🚀</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>WizLingo Railway Deployment Guide</strong></p>
+            <p>Beta Launch Ready | Generated June 7, 2026</p>
+            <p style="margin-top: 20px; color: #aaa;">Powered by Edvanta Intelligence System (AI)</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -2,6 +2,10 @@
   "name": "reading-app",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  },
   "scripts": {
     "dev": "NODE_OPTIONS='--max-old-space-size=1024' next dev --webpack",
     "build": "next build",
