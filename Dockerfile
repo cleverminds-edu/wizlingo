@@ -26,8 +26,8 @@ FROM node:20.19.0-alpine
 
 WORKDIR /app
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# Install dumb-init and build dependencies for native modules
+RUN apk add --no-cache dumb-init python3 make g++ cairo-dev jpeg-dev pixman-dev
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
@@ -38,7 +38,8 @@ COPY package*.json ./
 
 # Install production dependencies only
 RUN npm ci --only=production && \
-    npm cache clean --force
+    npm cache clean --force && \
+    apk del python3 make g++ cairo-dev jpeg-dev pixman-dev
 
 # Copy Prisma schema and migrations
 COPY --chown=nextjs:nodejs prisma ./prisma/
