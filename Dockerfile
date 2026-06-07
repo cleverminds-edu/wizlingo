@@ -3,6 +3,9 @@ FROM node:20.19.0-alpine AS builder
 
 WORKDIR /app
 
+# Install build dependencies for native modules (canvas, etc.)
+RUN apk add --no-cache python3 make g++ cairo-dev jpeg-dev pixman-dev
+
 # Copy package files
 COPY package*.json ./
 
