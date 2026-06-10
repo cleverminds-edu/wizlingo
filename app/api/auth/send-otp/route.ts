@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { validateBody, sendOtpSchema } from '@/lib/validation';
+import { SNSClient, PublishCommand } from '@aws-sdk/client-sns';
 
 // In-memory storage for OTPs (use Redis in production)
 const otpStore: Record<string, { code: string; expiresAt: number; attempts: number }> = {};
+
+// Initialize AWS SNS client
+const snsClient = new SNSClient({
+  region: process.env.AWS_SNS_REGION || 'ap-south-1',
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+  },
+});
 
 // Generate random 4-digit OTP (matching frontend validation)
 function generateOTP(): string {
@@ -46,9 +56,25 @@ export async function POST(request: NextRequest) {
       attempts: 0,
     };
 
-    // For development, log the OTP (remove in production)
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[DEV] OTP for ${phone}: ${otp}`);
+    // Send OTP via SMS
+    try {
+      // Format phone number for AWS SNS (must include country code)
+      const phoneNumber = phone.startsWith('+') ? phone : `+91${phone}`;
+
+      const command = new PublishCommand({
+        Message: `Your WizLingo OTP is: ${otp}. Valid for 10 minutes. Powered by Edvanta Intelligence System.`,
+        PhoneNumber: phoneNumber,
+      });
+
+      await snsClient.send(command);
+      console.log(`[SMS] OTP sent to ${phoneNumber}`);
+    } catch (smsError) {
+      // Log SMS error but don't fail the request
+      console.error('[SMS Error]', smsError);
+      // For development, log to console
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[DEV Fallback] OTP for ${phone}: ${otp}`);
+      }
     }
 
     return NextResponse.json(
