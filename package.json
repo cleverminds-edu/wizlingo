@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "NODE_OPTIONS='--max-old-space-size=1024' next dev --webpack",
     "build": "next build",
-    "start": "next start",
+    "start": "npx prisma migrate deploy && next start",
     "lint": "eslint",
     "test": "jest",
     "test:watch": "jest --watch",
