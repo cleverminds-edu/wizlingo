@@ -60,10 +60,12 @@ model Class {
 
 model Student {
   id                   String                   @id @default(cuid())
-  name                 String
-  admissionNumber      String                   @unique
-  pin                  String
-  classId              String
+  name                 String?
+  admissionNumber      String?                  @unique
+  pin                  String?
+  phone                String?                  @unique
+  passwordHash         String?
+  classId              String?
   accountType          AccountType              @default(SCHOOL)
   gender               Gender?
   parentEmail          String?
@@ -74,7 +76,7 @@ model Student {
   sessions             ReadingSession[]
   speakingProgress     SpeakingProgress?
   speakingSessions     SpeakingSession[]
-  class                Class                    @relation(fields: [classId], references: [id])
+  class                Class?                   @relation(fields: [classId], references: [id])
   progress             StudentProgress?
   notificationPrefs    NotificationPreference?
   sentEmails           SentEmail[]
