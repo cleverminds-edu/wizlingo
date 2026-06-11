@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { compare } from 'bcryptjs';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { validateBody } from '@/lib/validation';
 import { z } from 'zod';
 import jwt from 'jsonwebtoken';

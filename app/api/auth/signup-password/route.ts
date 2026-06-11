@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { hash } from 'bcryptjs';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { validateBody } from '@/lib/validation';
 import { z } from 'zod';
 
