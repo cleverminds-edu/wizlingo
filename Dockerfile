@@ -47,6 +47,9 @@ RUN npm ci --only=production && \
 # Copy Prisma schema and migrations
 COPY --chown=nextjs:nodejs prisma ./prisma/
 
+# Run database migrations
+RUN npx prisma migrate deploy
+
 # Copy .next from builder
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 
