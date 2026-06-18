@@ -140,19 +140,6 @@ export default function SignupPage() {
                 Join thousands of students mastering English in 5 minutes daily
               </p>
 
-              {/* Password Formula Info */}
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl mb-6">
-                <p className="text-xs text-blue-800 leading-relaxed">
-                  <span className="font-semibold">🔑 Your Password Formula:</span><br/>
-                  Your unique password will be generated automatically using:
-                  <br/>• First 3 letters of your name<br/>• Year of birth<br/>• Last 3 digits of phone
-                  <br/>
-                  <span className="text-blue-700 mt-1 block">
-                    {getPasswordPreview() ? `Preview: ${getPasswordPreview()}` : '(Fill form to see preview)'}
-                  </span>
-                </p>
-              </div>
-
               <form onSubmit={handleSignup} className="space-y-5">
                 {/* Name */}
                 <div>
@@ -251,6 +238,29 @@ export default function SignupPage() {
                   )}
                 </button>
               </form>
+
+              {/* Password Formula - After Form */}
+              <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-100 rounded-xl">
+                <p className="text-xs text-gray-700 font-semibold mb-2 text-center">🔑 Your Password Formula</p>
+                {getPasswordPreview() ? (
+                  <div className="text-center">
+                    <div className="bg-white rounded-lg p-3 border border-blue-200 inline-block">
+                      <p className="font-mono text-sm font-bold text-orange-600">
+                        <span className="text-blue-600">{name.slice(0, 3).toUpperCase()}</span>
+                        <span className="text-purple-600">[{new Date(dateOfBirth).getFullYear()}]</span>
+                        <span className="text-green-600">{phone.slice(-3)}</span>
+                      </p>
+                    </div>
+                    <p className="text-xs text-gray-600 mt-2">
+                      <span className="text-blue-600">●</span> First 3 letters &nbsp;
+                      <span className="text-purple-600">●</span> Birth year &nbsp;
+                      <span className="text-green-600">●</span> Last 3 digits
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-500 text-center italic">Fill form to see your password preview</p>
+                )}
+              </div>
 
               {/* Footer */}
               <p className="text-center text-xs text-gray-600 mt-6">
