@@ -85,6 +85,7 @@ model Student {
   referralsReceived    Referral[]              @relation("ReferredRelation")
   referralReward       ReferralReward?
   betaFeedback         BetaFeedback[]
+  speakingPreference   SpeakingPreference?     // NEW: Character gender preference
 }
 
 model StudentProgress {
@@ -115,16 +116,18 @@ model ReadingPassage {
 }
 
 model ConversationTopic {
-  id          String            @id @default(cuid())
-  title       String
-  gradeBand   GradeBand
-  level       Int
-  character   String
-  openingLine String
-  mode        TopicMode         @default(SCRIPTED)
-  script      Json?
-  createdAt   DateTime          @default(now())
-  sessions    SpeakingSession[]
+  id              String            @id @default(cuid())
+  title           String
+  gradeBand       GradeBand
+  level           Int
+  character       String
+  characterGender Gender?           // NEW: M/F/OTHER/NEUTRAL
+  characterRole   String?           // NEW: Teacher, Shopkeeper, Friend, etc.
+  openingLine     String
+  mode            TopicMode         @default(SCRIPTED)
+  script          Json?
+  createdAt       DateTime          @default(now())
+  sessions        SpeakingSession[]
 }
 
 model SpeakingSession {
@@ -578,4 +581,24 @@ model BetaFeedback {
   @@index([sessionType])
   @@index([createdAt])
   @@index([rating])
+}
+
+// ════════════════════════════════════════════════════════════════
+// SPEAKING PREFERENCES (Gender-aware character selection)
+// ════════════════════════════════════════════════════════════════
+
+model SpeakingPreference {
+  id                    String    @id @default(cuid())
+  studentId             String    @unique
+  characterGenderPref   String    @default("ANY")  // ANY, SAME, DIFFERENT, MALE, FEMALE, NEUTRAL
+  pronouns              String?   // he/him, she/her, they/them, custom
+  startedAt             DateTime  @default(now())
+  progressionWeek       Int       @default(1)      // Week 1: choice, Week 2+: varied
+  updatedAt             DateTime  @updatedAt
+
+  student               Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([characterGenderPref])
+  @@index([progressionWeek])
 }

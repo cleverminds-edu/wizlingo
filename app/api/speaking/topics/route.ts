@@ -1,8 +1,14 @@
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { gradeToBand } from "@/lib/scoring";
 import { ageBandToGradeBand } from "@/lib/age-band-mapping";
 import { selectSpeakingTopic } from "@/lib/content-selection";
+import {
+  getSpeakingPreference,
+  getAvailableCharacterGenders,
+  calculateProgressionWeek,
+  getTargetDiversityPercentage,
+  selectCharacterGender,
+} from "@/lib/speaking-preference";
 
 export async function GET() {
   const session = await getSession();
@@ -16,27 +22,72 @@ export async function GET() {
   });
   if (!student) return Response.json({ error: "Student not found" }, { status: 404 });
 
-  // Get grade band from age band in student progress
+  // Get grade band from age band
   const ageBand = student.progress?.ageBand ?? "9-11";
   const gradeBand = ageBandToGradeBand(ageBand as any);
   const level = student.speakingProgress?.currentLevel ?? 2;
 
-  // Use content selection service with age band filtering
-  try {
-    const { topic, metadata } = await selectSpeakingTopic({
-      studentId: student.id,
-      ageBand: ageBand as any,
-      performanceLevel: level,
-    });
+  // PHASE A+B: Get speaking preference and apply character selection
+  const preference = await getSpeakingPreference(student.id);
+  const progressionWeek = calculateProgressionWeek(preference.startedAt);
+  const diversity = getTargetDiversityPercentage(progressionWeek);
+  const preferredGenders = getAvailableCharacterGenders(
+    student.gender,
+    preference.characterGenderPref as any
+  );
 
-    return Response.json({
-      topic,
-      metadata,
-      gradeBand,
-      level,
-    });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to select topic";
-    return Response.json({ error: message }, { status: 404 });
+  // Get topics for this level
+  const allTopics = await prisma.conversationTopic.findMany({
+    where: { gradeBand, level },
+    select: {
+      id: true,
+      title: true,
+      character: true,
+      characterGender: true,
+      characterRole: true,
+      openingLine: true,
+      script: true,
+      level: true,
+      gradeBand: true,
+    },
+  });
+
+  if (allTopics.length === 0) {
+    return Response.json({ error: "No topics available" }, { status: 404 });
   }
+
+  // Intelligent character selection based on progression
+  const allAvailableGenders = [...new Set(allTopics.map((t) => t.characterGender).filter(Boolean))];
+  const selectedGender = selectCharacterGender(
+    allAvailableGenders as string[],
+    preferredGenders,
+    diversity
+  );
+
+  // Filter topics by selected character gender
+  let filteredTopics = allTopics.filter((t) => t.characterGender === selectedGender);
+
+  // If no topics for selected gender, fall back to any available
+  if (filteredTopics.length === 0) {
+    filteredTopics = allTopics;
+  }
+
+  // Random selection
+  const selectedTopic = filteredTopics[Math.floor(Math.random() * filteredTopics.length)];
+
+  return Response.json({
+    topic: selectedTopic,
+    preference: {
+      characterGenderPref: preference.characterGenderPref,
+      pronouns: preference.pronouns,
+      progressionWeek,
+      selectedCharacterGender: selectedGender,
+      diversityTarget: diversity,
+    },
+    context: {
+      ageBand,
+      level,
+      studentGender: student.gender,
+    },
+  });
 }
