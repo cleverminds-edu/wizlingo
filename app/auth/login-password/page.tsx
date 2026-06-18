@@ -141,14 +141,6 @@ export default function LoginPasswordPage() {
             Welcome back to WizLingo
           </p>
 
-          {/* Password Info */}
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mb-6 fade-in-up fade-in-up-delay-2">
-            <p className="text-xs text-blue-800 leading-relaxed">
-              <span className="font-semibold">🔑 Password Reminder:</span><br/>
-              Your password is: First 3 letters of name + birth year + last 3 phone digits
-            </p>
-          </div>
-
           <form onSubmit={handleLogin} className="space-y-6 fade-in-up fade-in-up-delay-3">
             {/* Phone Input */}
             <div>
@@ -212,6 +204,14 @@ export default function LoginPasswordPage() {
               )}
             </button>
           </form>
+
+          {/* Password Info - After Form */}
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mt-6 mb-6 fade-in-up fade-in-up-delay-3">
+            <p className="text-xs text-blue-800 leading-relaxed">
+              <span className="font-semibold">🔑 Password Reminder:</span><br/>
+              Your password is: First 3 letters of name + birth year + last 3 phone digits
+            </p>
+          </div>
 
           {/* Divider */}
           <div className="flex items-center gap-2 my-6">
