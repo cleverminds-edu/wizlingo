@@ -1,17 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-interface Class {
-  id: string;
-  name: string;
-}
-
 export default function SignupPage() {
   const router = useRouter();
-  const [classes, setClasses] = useState<Class[]>([]);
   const [name, setName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [classId, setClassId] = useState('');
@@ -20,23 +14,6 @@ export default function SignupPage() {
   const [error, setError] = useState('');
   const [generatedPassword, setGeneratedPassword] = useState('');
   const [studentData, setStudentData] = useState<any>(null);
-
-  // Load classes on mount
-  useEffect(() => {
-    const loadClasses = async () => {
-      try {
-        const response = await fetch('/api/classes');
-        if (response.ok) {
-          const data = await response.json();
-          setClasses(data.classes || []);
-        }
-      } catch (err) {
-        console.error('Failed to load classes:', err);
-      }
-    };
-
-    loadClasses();
-  }, []);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '').slice(0, 10);
@@ -212,27 +189,20 @@ export default function SignupPage() {
                   )}
                 </div>
 
-                {/* Class */}
+                {/* Class - Made simple with direct input */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Class <span className="text-gray-500 font-normal">(Optional)</span>
+                    Class <span className="text-gray-500 font-normal">(e.g., VI, VII, VIII)</span>
                   </label>
-                  <select
+                  <input
+                    type="text"
+                    placeholder="e.g., Class V"
                     value={classId}
                     onChange={(e) => setClassId(e.target.value)}
-                    disabled={loading || classes.length === 0}
+                    disabled={loading}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
-                  >
-                    <option value="">Select your class...</option>
-                    {classes.map((cls) => (
-                      <option key={cls.id} value={cls.id}>
-                        {cls.name}
-                      </option>
-                    ))}
-                  </select>
-                  {classes.length === 0 && (
-                    <p className="text-xs text-orange-600 mt-1">Loading classes...</p>
-                  )}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Enter your class (or school name)</p>
                 </div>
 
                 {/* Phone */}
