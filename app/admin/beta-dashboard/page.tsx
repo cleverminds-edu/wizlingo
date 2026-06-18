@@ -97,7 +97,7 @@ export default function BetaDashboard() {
               📊 WizLingo Beta Dashboard
             </h1>
             <div className="text-sm text-purple-300 bg-white/10 px-4 py-2 rounded-full border border-white/20">
-              ⚡ Powered by <span className="font-bold text-orange-400">Edvanta Intelligence System (AI)</span>
+              ⚡ Powered by <span className="font-bold text-orange-400">Edvanta Intelligence System</span>
             </div>
           </div>
           <p className="text-purple-200 text-lg">Real-time monitoring for 100-150 students</p>
@@ -303,7 +303,7 @@ export default function BetaDashboard() {
 
         {/* Footer */}
         <div className="mt-12 text-center text-purple-300 text-sm border-t border-white/10 pt-8">
-          <p>Powered by <span className="font-bold text-orange-400">Edvanta Intelligence System (AI)</span></p>
+          <p>Powered by <span className="font-bold text-orange-400">Edvanta Intelligence System</span></p>
           <p className="text-xs mt-2">Last updated: {new Date().toLocaleString()}</p>
         </div>
       </div>

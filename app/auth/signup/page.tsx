@@ -392,7 +392,7 @@ export default function SignupPage() {
 
           {/* Legal */}
           <p className="text-center text-xs text-gray-500 mt-6">
-            Powered by <span className="font-semibold">Edvanta Intelligence System (AI)</span>
+            Powered by <span className="font-semibold">Edvanta Intelligence System</span>
           </p>
         </div>
       </div>
