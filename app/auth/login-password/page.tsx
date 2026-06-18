@@ -69,47 +69,91 @@ export default function LoginPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #1a1a2e 50%, #16213e 75%, #0f172a 100%)" }}>
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+        }
+        @keyframes glow {
+          0%, 100% {
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+          }
+          50% {
+            box-shadow: 0 0 40px rgba(249, 115, 22, 0.6);
+          }
+        }
+        .fade-in-up {
+          animation: fadeInUp 0.6s ease-out forwards;
+        }
+        .fade-in-up-delay-1 { animation-delay: 0.1s; }
+        .fade-in-up-delay-2 { animation-delay: 0.2s; }
+        .fade-in-up-delay-3 { animation-delay: 0.3s; }
+        .fade-in-up-delay-4 { animation-delay: 0.4s; }
+        .float {
+          animation: float 3s ease-in-out infinite;
+        }
+        .glow-effect {
+          animation: glow 2s ease-in-out infinite;
+        }
+      `}</style>
+
       {/* Animated background shapes */}
       <div className="absolute -top-20 -right-20 w-80 h-80 bg-yellow-400/20 rounded-full blur-3xl -z-10 animate-pulse"></div>
       <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
 
       <div className="w-full max-w-md relative z-10">
         {/* Logo Section */}
-        <div className="text-center mb-6">
+        <div className="text-center mb-6 fade-in-up">
           <div className="flex justify-center mb-3">
-            <Image
-              src="/wiziingo-logo.svg"
-              alt="WizLingo"
-              width={100}
-              height={50}
-              className="h-12 w-auto drop-shadow-lg"
-            />
+            <div className="float">
+              <Image
+                src="/wiziingo-logo.svg"
+                alt="WizLingo"
+                width={100}
+                height={50}
+                className="h-12 w-auto drop-shadow-lg"
+              />
+            </div>
           </div>
           <p className="text-white text-xs font-semibold uppercase tracking-widest">AI English Learning Platform</p>
         </div>
 
         {/* Card */}
-        <div className="bg-gradient-to-br from-white/95 to-blue-50/95 rounded-3xl shadow-2xl p-8 border-2 border-white/30 backdrop-blur-xl">
-          <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-orange-600 to-purple-600 bg-clip-text text-transparent mb-2">
+        <div className="bg-gradient-to-br from-white/95 to-blue-50/95 rounded-3xl shadow-2xl p-8 border-2 border-white/30 backdrop-blur-xl fade-in-up fade-in-up-delay-1 glow-effect">
+          <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-orange-600 to-purple-600 bg-clip-text text-transparent mb-2 fade-in-up fade-in-up-delay-2">
             Sign In
           </h1>
-          <p className="text-center text-gray-600 text-sm mb-6">
+          <p className="text-center text-gray-600 text-sm mb-6 fade-in-up fade-in-up-delay-2">
             Welcome back to WizLingo
           </p>
 
           {/* Password Info */}
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mb-6">
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mb-6 fade-in-up fade-in-up-delay-2">
             <p className="text-xs text-blue-800 leading-relaxed">
               <span className="font-semibold">🔑 Password Reminder:</span><br/>
               Your password is: First 3 letters of name + birth year + last 3 phone digits
             </p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-6 fade-in-up fade-in-up-delay-3">
             {/* Phone Input */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-3">
-                Phone Number
+                📱 Phone Number
               </label>
               <div className="relative">
                 <div className="absolute left-4 top-4 text-gray-700 font-semibold text-lg">
@@ -130,7 +174,7 @@ export default function LoginPasswordPage() {
             {/* Password Input */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-3">
-                Password
+                🔐 Password
               </label>
               <input
                 type="password"
@@ -185,11 +229,11 @@ export default function LoginPasswordPage() {
           </button>
 
           {/* Legal */}
-          <p className="text-center text-xs text-gray-500 mt-4">
+          <p className="text-center text-xs text-gray-500 mt-4 fade-in-up fade-in-up-delay-4">
             By signing in, you agree to our <a href="/terms" className="text-orange-600 hover:underline">Terms</a>
           </p>
-          <p className="text-center text-xs text-gray-500 mt-2">
-            Powered by <span className="font-semibold">Edvanta Intelligence System (AI)</span>
+          <p className="text-center text-xs text-gray-500 mt-2 fade-in-up fade-in-up-delay-4">
+            Powered by <span className="font-semibold">Edvanta Intelligence System</span>
           </p>
         </div>
       </div>
