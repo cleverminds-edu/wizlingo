@@ -9,7 +9,7 @@ const SCREENS = [
     emoji: '👋',
     title: 'Welcome to WizLingo!',
     description: 'Master English in just 5 minutes a day with AI-powered reading and speaking practice.',
-    highlights: ['📖 Reading & Speaking', '🤖 Powered by Edvanta Intelligence System (AI)', '⭐ Earn badges as you progress'],
+    highlights: ['📖 Reading & Speaking', '🤖 Powered by Edvanta Intelligence System (EIS)', '⭐ Earn badges as you progress'],
     color: 'from-blue-500 to-indigo-600',
   },
   {

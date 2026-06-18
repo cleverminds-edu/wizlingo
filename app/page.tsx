@@ -66,7 +66,7 @@ export default function HomePage() {
             </div>
             <div>
               <p className="text-xs font-bold text-yellow-300 uppercase tracking-widest">AI Learning</p>
-              <p className="text-xs text-orange-400 font-semibold">Powered by Edvanta Intelligence System (AI)</p>
+              <p className="text-xs text-orange-400 font-semibold">Powered by Edvanta Intelligence System (EIS)</p>
             </div>
           </div>
 
@@ -511,7 +511,7 @@ export default function HomePage() {
               <span className="font-bold text-gray-900">"We built WizLingo because every child deserves personalized English tutoring, regardless of wealth or geography."</span>
             </p>
             <p className="text-gray-600">— The Edvanta Team</p>
-            <p className="text-sm text-orange-600 font-semibold mt-4">Powered by Edvanta Intelligence System (AI)</p>
+            <p className="text-sm text-orange-600 font-semibold mt-4">Powered by Edvanta Intelligence System (EIS)</p>
           </div>
         </div>
       </section>
@@ -720,7 +720,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <p className="text-purple-200 text-xs text-center mb-2">Powered by Edvanta Intelligence System (AI)</p>
+          <p className="text-purple-200 text-xs text-center mb-2">Powered by Edvanta Intelligence System (EIS)</p>
           <p className="text-purple-300 text-xs text-center">Questions? Email us at support@edvanta.co.in</p>
         </div>
       </section>
@@ -795,7 +795,7 @@ export default function HomePage() {
           <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
             <div className="text-center md:text-left">
               <p className="text-sm">© 2026 WizLingo. All rights reserved. Made with ❤️ by Edvanta.</p>
-              <p className="text-xs text-orange-500 font-semibold mt-2">Powered by Edvanta Intelligence System (AI)</p>
+              <p className="text-xs text-orange-500 font-semibold mt-2">Powered by Edvanta Intelligence System (EIS)</p>
             </div>
             <div className="flex gap-4 mt-4 md:mt-0">
               <a href="#" className="text-gray-400 hover:text-white transition">

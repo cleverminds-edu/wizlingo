@@ -113,7 +113,7 @@ export default function FeedbackModal({
               Help us improve 👇
             </h2>
             <p className="text-xs text-orange-500 font-bold mt-1">
-              Powered by Edvanta Intelligence System (AI)
+              Powered by Edvanta Intelligence System (EIS)
             </p>
           </div>
           <button
