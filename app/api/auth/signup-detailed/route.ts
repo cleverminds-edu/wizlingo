@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { hash } from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { validateBody } from '@/lib/validation';
+import { calculateAgeBand } from '@/lib/age-band';
 import { z } from 'zod';
 
 const signupDetailedSchema = z.object({
@@ -59,10 +60,11 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await hash(autoPassword, 10);
 
     // Create student
+    const dob = new Date(dateOfBirth);
     const student = await prisma.student.create({
       data: {
         name,
-        dateOfBirth: new Date(dateOfBirth),
+        dateOfBirth: dob,
         phone,
         classId: classId || null,
         passwordHash: hashedPassword,
@@ -70,6 +72,17 @@ export async function POST(request: NextRequest) {
       },
       include: {
         class: true,
+      },
+    });
+
+    // Calculate age band and create progress record
+    const ageBand = calculateAgeBand(dob);
+    await prisma.studentProgress.create({
+      data: {
+        studentId: student.id,
+        currentLevel: 2,
+        ageBand,
+        gradeBand: 'GRADE_III_V',
       },
     });
 

@@ -90,7 +90,8 @@ model Student {
 model StudentProgress {
   id             String    @id @default(cuid())
   studentId      String    @unique
-  currentLevel   Int       @default(1)
+  currentLevel   Int       @default(2)
+  ageBand        String    @default("9-11")     // 6-8, 9-11, 12-14, 15+
   gradeBand      GradeBand
   totalSessions  Int       @default(0)
   passedSessions Int       @default(0)
