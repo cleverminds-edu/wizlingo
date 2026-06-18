@@ -1,0 +1,1 @@
+-- This migration is a placeholder as the columns already exist in the database

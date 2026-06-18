@@ -1,6 +1,9 @@
 -- Add avgFluency to StudentProgress
 ALTER TABLE "StudentProgress" ADD COLUMN "avgFluency" DOUBLE PRECISION NOT NULL DEFAULT 0;
 
+-- Create BadgeType enum
+CREATE TYPE "BadgeType" AS ENUM ('SPARK', 'WORD_WIZARD', 'VOICE_WIZARD', 'LANGUAGE_WIZARD', 'GRAND_WIZARD');
+
 -- Create LeaderboardType enum
 CREATE TYPE "LeaderboardType" AS ENUM ('BADGE_COUNT', 'SPEED', 'CONSISTENCY', 'ACCURACY', 'FLUENCY');
 

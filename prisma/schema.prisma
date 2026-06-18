@@ -61,6 +61,7 @@ model Class {
 model Student {
   id                   String                   @id @default(cuid())
   name                 String?
+  dateOfBirth          DateTime?
   admissionNumber      String?                  @unique
   pin                  String?
   phone                String?                  @unique
@@ -227,6 +228,7 @@ model BadgeColorVariant {
 enum AccountType {
   SCHOOL
   PUBLIC
+  B2C
 }
 
 enum Gender {
