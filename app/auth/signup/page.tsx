@@ -252,9 +252,9 @@ export default function SignupPage() {
                       </p>
                     </div>
                     <p className="text-xs text-gray-600 mt-2">
-                      <span className="text-blue-600">●</span> First 3 letters &nbsp;
+                      <span className="text-blue-600">●</span> First 3 letters of name &nbsp;
                       <span className="text-purple-600">●</span> Birth year &nbsp;
-                      <span className="text-green-600">●</span> Last 3 digits
+                      <span className="text-green-600">●</span> Last 3 digits of phone
                     </p>
                   </div>
                 ) : (
