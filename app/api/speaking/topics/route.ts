@@ -1,6 +1,8 @@
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { gradeToBand } from "@/lib/scoring";
+import { ageBandToGradeBand } from "@/lib/age-band-mapping";
+import { selectSpeakingTopic } from "@/lib/content-selection";
 
 export async function GET() {
   const session = await getSession();
@@ -10,17 +12,31 @@ export async function GET() {
 
   const student = await prisma.student.findUnique({
     where: { id: session.id },
-    include: { class: true, speakingProgress: true },
+    include: { class: true, progress: true, speakingProgress: true },
   });
   if (!student) return Response.json({ error: "Student not found" }, { status: 404 });
 
-  const gradeBand = gradeToBand(student.class.grade);
-  const level = student.speakingProgress?.currentLevel ?? 1;
+  // Get grade band from age band in student progress
+  const ageBand = student.progress?.ageBand ?? "9-11";
+  const gradeBand = ageBandToGradeBand(ageBand as any);
+  const level = student.speakingProgress?.currentLevel ?? 2;
 
-  const topics = await prisma.conversationTopic.findMany({
-    where: { gradeBand, level },
-    select: { id: true, title: true, character: true, openingLine: true, script: true, level: true, gradeBand: true },
-  });
+  // Use content selection service with age band filtering
+  try {
+    const { topic, metadata } = await selectSpeakingTopic({
+      studentId: student.id,
+      ageBand: ageBand as any,
+      performanceLevel: level,
+    });
 
-  return Response.json({ topics, gradeBand, level });
+    return Response.json({
+      topic,
+      metadata,
+      gradeBand,
+      level,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to select topic";
+    return Response.json({ error: message }, { status: 404 });
+  }
 }
