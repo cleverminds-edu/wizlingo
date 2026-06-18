@@ -88,7 +88,6 @@ export async function POST(request: NextRequest) {
       data: {
         studentId: student.id,
         currentLevel: 2,
-        ageBand,
         gradeBand: gradeBandMap[ageBand] || 'BAND_3_5',
       },
     });
