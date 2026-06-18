@@ -97,6 +97,14 @@ export default function LoginPasswordPage() {
             Welcome back to WizLingo
           </p>
 
+          {/* Password Info */}
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mb-6">
+            <p className="text-xs text-blue-800 leading-relaxed">
+              <span className="font-semibold">🔑 Password Reminder:</span><br/>
+              Your password is: First 3 letters of name + birth year + last 3 phone digits
+            </p>
+          </div>
+
           <form onSubmit={handleLogin} className="space-y-6">
             {/* Phone Input */}
             <div>
@@ -170,7 +178,7 @@ export default function LoginPasswordPage() {
 
           {/* Sign Up Link */}
           <button
-            onClick={() => router.push('/auth/phone-signup')}
+            onClick={() => router.push('/auth/signup')}
             className="w-full py-3 border-2 border-purple-200 text-purple-700 font-semibold rounded-xl hover:bg-purple-50 text-sm transition-all"
           >
             ✨ Create Account
@@ -179,6 +187,9 @@ export default function LoginPasswordPage() {
           {/* Legal */}
           <p className="text-center text-xs text-gray-500 mt-4">
             By signing in, you agree to our <a href="/terms" className="text-orange-600 hover:underline">Terms</a>
+          </p>
+          <p className="text-center text-xs text-gray-500 mt-2">
+            Powered by <span className="font-semibold">Edvanta Intelligence System (AI)</span>
           </p>
         </div>
       </div>
