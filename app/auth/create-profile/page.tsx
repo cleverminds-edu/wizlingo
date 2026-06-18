@@ -18,7 +18,7 @@ export default function CreateProfilePage() {
   useEffect(() => {
     const verifiedPhone = sessionStorage.getItem('verifiedPhone');
     if (!verifiedPhone) {
-      router.push('/auth/phone-signup');
+      router.push('/auth/signup');
       return;
     }
     setPhone(verifiedPhone);

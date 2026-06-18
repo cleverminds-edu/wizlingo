@@ -17,7 +17,7 @@ export default function VerifyOTPPage() {
     // Get phone from session storage
     const savedPhone = sessionStorage.getItem('signupPhone');
     if (!savedPhone) {
-      router.push('/auth/phone-signup');
+      router.push('/auth/signup');
       return;
     }
     setPhone(savedPhone);
@@ -211,7 +211,7 @@ export default function VerifyOTPPage() {
           {/* Change Phone */}
           <div className="text-center pt-6">
             <button
-              onClick={() => router.push('/auth/phone-signup')}
+              onClick={() => router.push('/auth/signup')}
               className="text-sm text-gray-600 hover:text-orange-600 font-medium transition-colors"
             >
               ↩️ Wrong number? Change phone

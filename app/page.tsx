@@ -40,7 +40,7 @@ export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleCTAClick = () => {
-    router.push('/auth/phone-signup');
+    router.push('/auth/signup');
   };
 
   return (
