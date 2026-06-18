@@ -8,15 +8,15 @@ import { AgeBand } from './age-band';
 export function ageBandToGradeBand(ageBand: AgeBand): GradeBand {
   switch (ageBand) {
     case '6-8':
-      return 'GRADE_I_II';
+      return 'BAND_1_2';
     case '9-11':
-      return 'GRADE_III_V';
+      return 'BAND_3_5';
     case '12-14':
-      return 'GRADE_VI_VIII';
+      return 'BAND_6_8';
     case '15+':
-      return 'GRADE_IX_PLUS';
+      return 'BAND_9_10';
     default:
-      return 'GRADE_III_V'; // fallback
+      return 'BAND_3_5'; // fallback
   }
 }
 
@@ -39,10 +39,10 @@ export function getAgeBandDescription(ageBand: AgeBand): string {
  */
 export function isValidGradeBandForAgeBand(ageBand: AgeBand, gradeBand: GradeBand): boolean {
   const validBands = {
-    '6-8': ['GRADE_I_II'],
-    '9-11': ['GRADE_III_V'],
-    '12-14': ['GRADE_VI_VIII'],
-    '15+': ['GRADE_IX_PLUS'],
+    '6-8': ['BAND_1_2'],
+    '9-11': ['BAND_3_5'],
+    '12-14': ['BAND_6_8'],
+    '15+': ['BAND_9_10'],
   };
 
   return validBands[ageBand]?.includes(gradeBand) ?? false;

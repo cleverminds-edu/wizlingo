@@ -77,12 +77,19 @@ export async function POST(request: NextRequest) {
 
     // Calculate age band and create progress record
     const ageBand = calculateAgeBand(dob);
+    // Map age band to grade band
+    const gradeBandMap: Record<string, any> = {
+      '6-8': 'BAND_1_2',
+      '9-11': 'BAND_3_5',
+      '12-14': 'BAND_6_8',
+      '15+': 'BAND_9_10',
+    };
     await prisma.studentProgress.create({
       data: {
         studentId: student.id,
         currentLevel: 2,
         ageBand,
-        gradeBand: 'GRADE_III_V',
+        gradeBand: gradeBandMap[ageBand] || 'BAND_3_5',
       },
     });
 
