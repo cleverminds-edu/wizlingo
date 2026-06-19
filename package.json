@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "NODE_OPTIONS='--max-old-space-size=1024' next dev --webpack",
     "build": "next build",
+    "postbuild": "prisma migrate deploy",
     "start": "next start",
     "lint": "eslint",
     "test": "jest",
