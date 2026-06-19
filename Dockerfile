@@ -56,6 +56,7 @@ COPY --chown=nextjs:nodejs public ./public
 # Copy other necessary files
 COPY --chown=nextjs:nodejs next.config.ts ./
 COPY --chown=nextjs:nodejs tsconfig.json ./
+COPY --chown=nextjs:nodejs scripts ./scripts/
 
 # Switch to non-root user
 USER nextjs
@@ -74,4 +75,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 ENTRYPOINT ["dumb-init", "--"]
 
 # Start application
-CMD ["node_modules/.bin/next", "start"]
+CMD ["npm", "start"]
