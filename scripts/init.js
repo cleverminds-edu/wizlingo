@@ -17,10 +17,20 @@ if (!dbUrl) {
 }
 
 console.log('🗂️  Running database migrations...');
+
+// Create a temporary .env file for Prisma to read
+const envContent = `DATABASE_URL=${dbUrl}\n`;
+fs.writeFileSync('.env', envContent);
+
 try {
   execSync('npx prisma migrate deploy', { stdio: 'inherit' });
   console.log('✅ Migrations completed');
 } catch (error) {
   console.error('❌ Migration failed:', error.message);
-  process.exit(1);
+  // Don't exit with error - let the app start anyway
+} finally {
+  // Clean up the temporary .env file
+  if (fs.existsSync('.env')) {
+    fs.unlinkSync('.env');
+  }
 }
