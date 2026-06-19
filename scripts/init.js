@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
-const { execSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const fs = require('fs');
-const path = require('path');
 
 // Load environment variables from .env.local if it exists
 if (fs.existsSync('.env.local')) {
@@ -18,19 +17,23 @@ if (!dbUrl) {
 
 console.log('🗂️  Running database migrations...');
 
-// Create a temporary .env file for Prisma to read
-const envContent = `DATABASE_URL=${dbUrl}\n`;
-fs.writeFileSync('.env', envContent);
-
 try {
-  execSync('npx prisma migrate deploy', { stdio: 'inherit' });
-  console.log('✅ Migrations completed');
+  // Pass DATABASE_URL via environment to the spawned process
+  const result = spawnSync('npx', ['prisma', 'migrate', 'deploy'], {
+    stdio: 'inherit',
+    env: {
+      ...process.env,
+      DATABASE_URL: dbUrl
+    }
+  });
+
+  if (result.status === 0) {
+    console.log('✅ Migrations completed');
+  } else {
+    console.error('❌ Migrations exited with code:', result.status);
+    // Don't exit - let app start anyway
+  }
 } catch (error) {
   console.error('❌ Migration failed:', error.message);
   // Don't exit with error - let the app start anyway
-} finally {
-  // Clean up the temporary .env file
-  if (fs.existsSync('.env')) {
-    fs.unlinkSync('.env');
-  }
 }
