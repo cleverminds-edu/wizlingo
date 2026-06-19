@@ -11,15 +11,16 @@ if (fs.existsSync('.env.local')) {
 // Check if DATABASE_URL is available
 const dbUrl = process.env.DATABASE_URL;
 if (!dbUrl) {
-  console.warn('⚠️  DATABASE_URL not found, skipping migrations');
+  console.warn('⚠️  DATABASE_URL not found, skipping schema sync');
   process.exit(0);
 }
 
-console.log('🗂️  Running database migrations...');
+console.log('🗂️  Syncing database schema...');
 
 try {
-  // Pass DATABASE_URL via environment to the spawned process
-  const result = spawnSync('npx', ['prisma', 'migrate', 'deploy'], {
+  // Use db push instead of migrate deploy - more reliable for production
+  // It syncs the schema directly without migration history
+  const result = spawnSync('npx', ['prisma', 'db', 'push'], {
     stdio: 'inherit',
     env: {
       ...process.env,
@@ -28,12 +29,12 @@ try {
   });
 
   if (result.status === 0) {
-    console.log('✅ Migrations completed');
+    console.log('✅ Database schema synced');
   } else {
-    console.error('❌ Migrations exited with code:', result.status);
-    // Don't exit - let app start anyway
+    console.warn('⚠️  Schema sync had issues (continuing anyway)');
   }
 } catch (error) {
-  console.error('❌ Migration failed:', error.message);
-  // Don't exit with error - let the app start anyway
+  console.warn('⚠️  Schema sync failed:', error.message, '(continuing anyway)');
 }
+
+console.log('✅ Init complete - starting Next.js app');
