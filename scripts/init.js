@@ -15,6 +15,22 @@ if (!dbUrl) {
   process.exit(0);
 }
 
+// First regenerate Prisma client to ensure it matches current schema
+console.log('🔄 Regenerating Prisma client...');
+try {
+  const genResult = spawnSync('npx', ['prisma', 'generate'], {
+    stdio: 'pipe',
+    env: { ...process.env, DATABASE_URL: dbUrl }
+  });
+  if (genResult.status === 0) {
+    console.log('✅ Prisma client regenerated');
+  } else {
+    console.warn('⚠️  Prisma generate had issues');
+  }
+} catch (e) {
+  console.warn('⚠️  Prisma generate failed:', e.message);
+}
+
 console.log('🗂️  Syncing database schema...');
 
 try {
