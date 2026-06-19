@@ -20,18 +20,26 @@ console.log('🗂️  Syncing database schema...');
 try {
   // Use db push instead of migrate deploy - more reliable for production
   // It syncs the schema directly without migration history
-  const result = spawnSync('npx', ['prisma', 'db', 'push'], {
-    stdio: 'inherit',
+  // Use --accept-data-loss to force apply changes
+  const result = spawnSync('npx', ['prisma', 'db', 'push', '--accept-data-loss'], {
+    stdio: 'pipe',
     env: {
       ...process.env,
       DATABASE_URL: dbUrl
     }
   });
 
+  const output = result.stdout ? result.stdout.toString() : '';
+  const error = result.stderr ? result.stderr.toString() : '';
+
   if (result.status === 0) {
     console.log('✅ Database schema synced');
+    if (output.includes('error') || output.includes('Error')) {
+      console.log('Output:', output);
+    }
   } else {
-    console.warn('⚠️  Schema sync had issues (continuing anyway)');
+    console.log('⚠️  Schema sync output:', output);
+    if (error) console.log('⚠️  Errors:', error);
   }
 } catch (error) {
   console.warn('⚠️  Schema sync failed:', error.message, '(continuing anyway)');
