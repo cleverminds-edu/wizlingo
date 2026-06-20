@@ -8,60 +8,78 @@ if (fs.existsSync('.env.local')) {
   require('dotenv').config({ path: '.env.local' });
 }
 
-// Check if DATABASE_URL is available
 const dbUrl = process.env.DATABASE_URL;
+
+console.log('\n═══════════════════════════════════════════════════════════');
+console.log('🚀 WizLingo Database Initialization');
+console.log('═══════════════════════════════════════════════════════════\n');
+
 if (!dbUrl) {
-  console.warn('⚠️  DATABASE_URL not found, skipping schema sync');
+  console.log('⚠️  DATABASE_URL not set, skipping initialization\n');
   process.exit(0);
 }
 
-console.log('🗂️  Syncing database schema...');
-console.log('📍 DATABASE_URL:', dbUrl.replace(/:[^@]*@/, ':***@')); // Log URL without password
+const dbDisplay = dbUrl.replace(/:[^@]*@/, ':***@');
+console.log(`Database: ${dbDisplay}\n`);
 
 let success = false;
 
-// Try prisma db push first (simpler, works better for new databases)
+// Step 1: Generate Prisma Client
+console.log('1️⃣  Generating Prisma Client...');
 try {
-  console.log('📌 Attempting: prisma db push --accept-data-loss');
-  const result = spawnSync('npx', ['prisma', 'db', 'push', '--accept-data-loss'], {
-    stdio: 'inherit',
-    env: {
-      ...process.env,
-      DATABASE_URL: dbUrl
-    }
+  const genResult = spawnSync('npx', ['prisma', 'generate'], {
+    stdio: 'pipe',
+    env: { ...process.env, DATABASE_URL: dbUrl }
   });
 
-  if (result.status === 0) {
-    console.log('✅ Database schema synced with db push');
+  if (genResult.status === 0) {
+    console.log('   ✅ Prisma Client generated\n');
+  } else {
+    console.log('   ⚠️  Prisma generate had issues\n');
+  }
+} catch (e) {
+  console.log('   ⚠️  Prisma generate error:', e.message, '\n');
+}
+
+// Step 2: Sync database with db push (primary method)
+console.log('2️⃣  Syncing database schema...');
+console.log('   Attempting: prisma db push --accept-data-loss\n');
+try {
+  const dbPushResult = spawnSync('npx', ['prisma', 'db', 'push', '--accept-data-loss'], {
+    stdio: 'inherit',
+    env: { ...process.env, DATABASE_URL: dbUrl }
+  });
+
+  if (dbPushResult.status === 0) {
+    console.log('\n   ✅ Database synced with db push\n');
     success = true;
   }
-} catch (error) {
-  console.log('⚠️  db push failed:', error.message);
+} catch (e) {
+  console.log('\n   ⚠️  db push error:', e.message);
 }
 
-// If db push didn't work, try migrate deploy (handles migration history)
+// Step 3: Fallback to migrate deploy if db push failed
 if (!success) {
+  console.log('3️⃣  Fallback: Using prisma migrate deploy...\n');
   try {
-    console.log('📌 Falling back to: prisma migrate deploy');
-    const result = spawnSync('npx', ['prisma', 'migrate', 'deploy'], {
+    const migrateResult = spawnSync('npx', ['prisma', 'migrate', 'deploy'], {
       stdio: 'inherit',
-      env: {
-        ...process.env,
-        DATABASE_URL: dbUrl
-      }
+      env: { ...process.env, DATABASE_URL: dbUrl }
     });
 
-    if (result.status === 0) {
-      console.log('✅ Database schema synced with migrate deploy');
+    if (migrateResult.status === 0) {
+      console.log('\n   ✅ Database synced with migrate deploy\n');
       success = true;
     }
-  } catch (error) {
-    console.log('⚠️  migrate deploy failed:', error.message);
+  } catch (e) {
+    console.log('\n   ⚠️  migrate deploy error:', e.message);
   }
 }
 
 if (!success) {
-  console.warn('⚠️  Schema sync incomplete (app may still work if tables exist)');
+  console.log('⚠️  WARNING: Database sync may have failed');
+  console.log('   The app may not work if tables are missing\n');
 }
 
-console.log('✅ Init complete - starting Next.js app');
+console.log('═══════════════════════════════════════════════════════════');
+console.log('✅ Initialization complete - starting Next.js\n');
