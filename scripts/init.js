@@ -3,83 +3,72 @@
 const { spawnSync } = require('child_process');
 const fs = require('fs');
 
-// Load environment variables from .env.local if it exists
 if (fs.existsSync('.env.local')) {
   require('dotenv').config({ path: '.env.local' });
 }
 
 const dbUrl = process.env.DATABASE_URL;
 
-console.log('\n═══════════════════════════════════════════════════════════');
-console.log('🚀 WizLingo Database Initialization');
-console.log('═══════════════════════════════════════════════════════════\n');
+console.log('\n════════════════════════════════════════════════════════════');
+console.log('🚀 WizLingo Database & App Initialization');
+console.log('════════════════════════════════════════════════════════════\n');
 
 if (!dbUrl) {
-  console.log('⚠️  DATABASE_URL not set, skipping initialization\n');
+  console.log('⚠️  DATABASE_URL not configured');
+  console.log('✅ Starting app (may fail if database is not set up)\n');
   process.exit(0);
 }
 
 const dbDisplay = dbUrl.replace(/:[^@]*@/, ':***@');
-console.log(`Database: ${dbDisplay}\n`);
+console.log(`📍 Database URL: ${dbDisplay}\n`);
 
-let success = false;
+// PRIMARY: Use raw SQL sync (most reliable)
+console.log('Step 1️⃣  - Synchronizing database schema with raw SQL');
+console.log('         (using direct database connection)\n');
 
-// Step 1: Generate Prisma Client
-console.log('1️⃣  Generating Prisma Client...');
-try {
-  const genResult = spawnSync('npx', ['prisma', 'generate'], {
-    stdio: 'pipe',
-    env: { ...process.env, DATABASE_URL: dbUrl }
-  });
+const syncResult = spawnSync('node', ['scripts/sync-db.js'], {
+  stdio: 'inherit',
+  env: { ...process.env, DATABASE_URL: dbUrl }
+});
 
-  if (genResult.status === 0) {
-    console.log('   ✅ Prisma Client generated\n');
-  } else {
-    console.log('   ⚠️  Prisma generate had issues\n');
-  }
-} catch (e) {
-  console.log('   ⚠️  Prisma generate error:', e.message, '\n');
-}
+let dbReady = syncResult.status === 0;
 
-// Step 2: Sync database with db push (primary method)
-console.log('2️⃣  Syncing database schema...');
-console.log('   Attempting: prisma db push --accept-data-loss\n');
-try {
+// FALLBACK: If raw SQL fails, try Prisma
+if (!dbReady) {
+  console.log('\n⚠️  Raw SQL sync had issues, trying Prisma...\n');
+  console.log('Step 2️⃣  - Attempting Prisma schema sync');
+  console.log('         prisma db push --accept-data-loss\n');
+
   const dbPushResult = spawnSync('npx', ['prisma', 'db', 'push', '--accept-data-loss'], {
     stdio: 'inherit',
     env: { ...process.env, DATABASE_URL: dbUrl }
   });
 
-  if (dbPushResult.status === 0) {
-    console.log('\n   ✅ Database synced with db push\n');
-    success = true;
-  }
-} catch (e) {
-  console.log('\n   ⚠️  db push error:', e.message);
-}
+  dbReady = dbPushResult.status === 0;
 
-// Step 3: Fallback to migrate deploy if db push failed
-if (!success) {
-  console.log('3️⃣  Fallback: Using prisma migrate deploy...\n');
-  try {
+  if (!dbReady) {
+    console.log('\n⚠️  Prisma also failed, trying migrations...\n');
+    console.log('Step 3️⃣  - Attempting Prisma migrations');
+    console.log('         prisma migrate deploy\n');
+
     const migrateResult = spawnSync('npx', ['prisma', 'migrate', 'deploy'], {
       stdio: 'inherit',
       env: { ...process.env, DATABASE_URL: dbUrl }
     });
 
-    if (migrateResult.status === 0) {
-      console.log('\n   ✅ Database synced with migrate deploy\n');
-      success = true;
-    }
-  } catch (e) {
-    console.log('\n   ⚠️  migrate deploy error:', e.message);
+    dbReady = migrateResult.status === 0;
   }
 }
 
-if (!success) {
-  console.log('⚠️  WARNING: Database sync may have failed');
-  console.log('   The app may not work if tables are missing\n');
+console.log('\n════════════════════════════════════════════════════════════');
+
+if (!dbReady) {
+  console.log('⚠️  WARNING: Database synchronization may have failed');
+  console.log('    The app may not work properly if Student table is missing');
+  console.log('    Check logs above for specific database errors');
+} else {
+  console.log('✅ Database synchronized successfully');
 }
 
-console.log('═══════════════════════════════════════════════════════════');
-console.log('✅ Initialization complete - starting Next.js\n');
+console.log('✅ Initialization complete - starting Next.js app');
+console.log('════════════════════════════════════════════════════════════\n');
