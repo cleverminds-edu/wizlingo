@@ -22,9 +22,15 @@ async function main() {
   const client = new Client({ connectionString: dbUrl });
 
   try {
-    console.log('🔗 Verifying database schema...');
+    console.log('🔗 Connecting to database...');
     await client.connect();
-    console.log('✅ Database connection OK\n');
+    console.log('✅ Connected\n');
+
+    // First, create enums if they don't exist
+    console.log('📋 Creating enums if missing...');
+    const enumSql = fs.readFileSync('./scripts/create-enums.sql', 'utf-8');
+    await client.query(enumSql);
+    console.log('✅ Enums ready\n');
 
     // Verify enums exist
     console.log('Checking enums...');
