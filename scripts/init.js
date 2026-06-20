@@ -15,50 +15,53 @@ if (!dbUrl) {
   process.exit(0);
 }
 
-// First regenerate Prisma client to ensure it matches current schema
-console.log('🔄 Regenerating Prisma client...');
-try {
-  const genResult = spawnSync('npx', ['prisma', 'generate'], {
-    stdio: 'pipe',
-    env: { ...process.env, DATABASE_URL: dbUrl }
-  });
-  if (genResult.status === 0) {
-    console.log('✅ Prisma client regenerated');
-  } else {
-    console.warn('⚠️  Prisma generate had issues');
-  }
-} catch (e) {
-  console.warn('⚠️  Prisma generate failed:', e.message);
-}
-
 console.log('🗂️  Syncing database schema...');
+console.log('📍 DATABASE_URL:', dbUrl.replace(/:[^@]*@/, ':***@')); // Log URL without password
 
+let success = false;
+
+// Try prisma db push first (simpler, works better for new databases)
 try {
-  // Use db push instead of migrate deploy - more reliable for production
-  // It syncs the schema directly without migration history
-  // Use --accept-data-loss to force apply changes
+  console.log('📌 Attempting: prisma db push --accept-data-loss');
   const result = spawnSync('npx', ['prisma', 'db', 'push', '--accept-data-loss'], {
-    stdio: 'pipe',
+    stdio: 'inherit',
     env: {
       ...process.env,
       DATABASE_URL: dbUrl
     }
   });
 
-  const output = result.stdout ? result.stdout.toString() : '';
-  const error = result.stderr ? result.stderr.toString() : '';
-
   if (result.status === 0) {
-    console.log('✅ Database schema synced');
-    if (output.includes('error') || output.includes('Error')) {
-      console.log('Output:', output);
-    }
-  } else {
-    console.log('⚠️  Schema sync output:', output);
-    if (error) console.log('⚠️  Errors:', error);
+    console.log('✅ Database schema synced with db push');
+    success = true;
   }
 } catch (error) {
-  console.warn('⚠️  Schema sync failed:', error.message, '(continuing anyway)');
+  console.log('⚠️  db push failed:', error.message);
+}
+
+// If db push didn't work, try migrate deploy (handles migration history)
+if (!success) {
+  try {
+    console.log('📌 Falling back to: prisma migrate deploy');
+    const result = spawnSync('npx', ['prisma', 'migrate', 'deploy'], {
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        DATABASE_URL: dbUrl
+      }
+    });
+
+    if (result.status === 0) {
+      console.log('✅ Database schema synced with migrate deploy');
+      success = true;
+    }
+  } catch (error) {
+    console.log('⚠️  migrate deploy failed:', error.message);
+  }
+}
+
+if (!success) {
+  console.warn('⚠️  Schema sync incomplete (app may still work if tables exist)');
 }
 
 console.log('✅ Init complete - starting Next.js app');
