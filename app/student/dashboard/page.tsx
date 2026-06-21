@@ -13,7 +13,7 @@ import DesktopDashboard from "@/components/dashboard/DesktopDashboard";
 interface StudentData {
   id: string;
   name: string;
-  class: { grade: number; section: string; school: { name: string } };
+  class: { grade: number; section: string; school: { name: string } } | null;
   progress: {
     currentLevel: number;
     avgWpm: number;
@@ -192,9 +192,9 @@ export default function StudentDashboard() {
             badgeType={earnedBadge}
             studentName={student.name}
             studentId={student.id}
-            schoolName={student.class.school.name}
-            grade={student.class.grade}
-            section={student.class.section}
+            schoolName={student.class?.school.name}
+            grade={student.class?.grade}
+            section={student.class?.section}
             isVisible={!!earnedBadge}
             onClose={handleBadgeCelebrationClose}
           />
@@ -228,9 +228,9 @@ export default function StudentDashboard() {
           badgeType={earnedBadge}
           studentName={student.name}
           studentId={student.id}
-          schoolName={student.class.school.name}
-          grade={student.class.grade}
-          section={student.class.section}
+          schoolName={student.class?.school.name}
+          grade={student.class?.grade}
+          section={student.class?.section}
           isVisible={!!earnedBadge}
           onClose={handleBadgeCelebrationClose}
         />
