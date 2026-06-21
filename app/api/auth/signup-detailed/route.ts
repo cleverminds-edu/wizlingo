@@ -92,7 +92,6 @@ export async function POST(request: NextRequest) {
         studentData: {
           name: student.name,
           phone: student.phone,
-          class: student.class?.name || 'Not assigned',
         },
       },
       { status: 201 }
