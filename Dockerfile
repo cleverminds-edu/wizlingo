@@ -47,6 +47,9 @@ RUN npm ci --only=production && \
 # Copy Prisma schema and migrations
 COPY --chown=nextjs:nodejs prisma ./prisma/
 
+# Copy prisma files BEFORE building next so we can run migrations
+COPY --chown=nextjs:nodejs prisma ./prisma/
+
 # Copy .next from builder
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 
@@ -71,8 +74,12 @@ ENV NODE_ENV=production
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
 
+# Copy entrypoint script
+COPY --chown=nextjs:nodejs docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
+
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
 
-# Start application
-CMD ["npm", "start"]
+# Start application with entrypoint script that runs migrations first
+CMD ["/app/docker-entrypoint.sh"]
