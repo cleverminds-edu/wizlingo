@@ -39,19 +39,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate class exists if provided
-    if (classId) {
-      const classExists = await prisma.class.findUnique({
-        where: { id: classId },
-      });
-
-      if (!classExists) {
-        return NextResponse.json(
-          { error: 'Invalid class selection' },
-          { status: 400 }
-        );
-      }
-    }
+    // For B2C signups, classId is optional and we don't validate it
+    // B2C students don't need to be assigned to a class
 
     // Generate password: first 3 letters of name + YYYY + last 3 digits of phone
     const namePrefix = name.slice(0, 3).toUpperCase();
