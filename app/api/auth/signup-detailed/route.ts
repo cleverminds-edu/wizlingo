@@ -3,6 +3,7 @@ import { hash } from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { validateBody } from '@/lib/validation';
 import { calculateAgeBand } from '@/lib/age-band';
+import { ensureSchema } from '../ensure-schema';
 import { z } from 'zod';
 
 const signupDetailedSchema = z.object({
@@ -14,6 +15,8 @@ const signupDetailedSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Ensure database schema exists
+    await ensureSchema();
     const validation = await validateBody(request, signupDetailedSchema);
     if (!validation.success) {
       return NextResponse.json(
