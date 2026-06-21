@@ -140,9 +140,13 @@ export default function StudentDashboard() {
 
   const handleOnboardingComplete = async () => {
     if (student) {
+      const token = localStorage.getItem("token");
       await fetch("/api/onboarding/complete", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
         credentials: "include",
         body: JSON.stringify({ studentId: student.id }),
       });

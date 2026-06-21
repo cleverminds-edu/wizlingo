@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { validateBody, onboardingCompleteSchema } from '@/lib/validation';
+import jwt from 'jsonwebtoken';
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,6 +16,37 @@ export async function POST(req: NextRequest) {
     }
 
     const { studentId } = validation.data;
+
+    // Authenticate: try session first, then JWT bearer token
+    let authUserId: string | null = null;
+    let session = await getSession();
+
+    if (session) {
+      authUserId = session.id;
+    } else {
+      // Try JWT token
+      const authHeader = req.headers.get("Authorization");
+      if (authHeader?.startsWith("Bearer ")) {
+        const token = authHeader.slice(7);
+        try {
+          const secret = process.env.JWT_SECRET || "secret";
+          const verified = jwt.verify(token, secret) as any;
+          authUserId = verified.studentId;
+        } catch (error) {
+          console.error('JWT verification failed:', error instanceof Error ? error.message : error);
+          return NextResponse.json({ error: "Token verification failed" }, { status: 401 });
+        }
+      }
+    }
+
+    if (!authUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Authorization: only allow updating own onboarding status
+    if (authUserId !== studentId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     const student = await prisma.student.update({
       where: { id: studentId },
