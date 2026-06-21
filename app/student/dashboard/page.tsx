@@ -96,17 +96,31 @@ export default function StudentDashboard() {
   const [earnedBadge, setEarnedBadge] = useState<BadgeType | null>(null);
 
   useEffect(() => {
-    fetch("/api/auth/me", { credentials: "include" })
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/auth/login-password");
+      setLoading(false);
+      return;
+    }
+
+    fetch("/api/auth/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(me => {
         if (!me.hasSeenOnboarding) {
           setShowOnboarding(true);
         }
-        return fetch(`/api/progress/${me.id}`, { credentials: "include" });
+        return fetch(`/api/progress/${me.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
       })
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => { setStudent(data); setTimeout(() => setShowWelcome(false), 2500); })
-      .catch(() => router.push("/login"))
+      .catch(() => {
+        localStorage.removeItem("token");
+        router.push("/auth/login-password");
+      })
       .finally(() => setLoading(false));
   }, [router]);
 
