@@ -1,8 +1,6 @@
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { jwtVerify } from "jose";
-
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "dev-secret-key");
+import jwt from "jsonwebtoken";
 
 export async function GET(request: Request) {
   let session: any = null;
@@ -16,8 +14,8 @@ export async function GET(request: Request) {
     if (authHeader?.startsWith("Bearer ")) {
       const token = authHeader.slice(7);
       try {
-        const verified = await jwtVerify(token, JWT_SECRET);
-        session = verified.payload;
+        const verified = jwt.verify(token, process.env.JWT_SECRET || "secret") as any;
+        session = verified;
       } catch (error) {
         // Invalid token
       }
