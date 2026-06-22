@@ -16,19 +16,26 @@ export async function GET(
     // If no session, try Authorization header (for Bearer tokens)
     if (!authSession) {
       const authHeader = request.headers.get("Authorization");
+      console.log('Progress API: Authorization header present:', !!authHeader);
       if (authHeader?.startsWith("Bearer ")) {
         const token = authHeader.slice(7);
+        console.log('Progress API: Token received, length:', token.length);
         try {
           const secret = process.env.JWT_SECRET || "secret";
+          console.log('Progress API: JWT_SECRET available:', !!process.env.JWT_SECRET);
           const verified = jwt.verify(token, secret) as any;
+          console.log('Progress API: Token verified successfully');
           authSession = verified;
           sessionUserId = verified.studentId;
         } catch (error) {
-          console.error('Progress API: JWT verification failed:', error instanceof Error ? error.message : error);
+          console.error('Progress API: JWT verification failed:', error instanceof Error ? error.message : error, { tokenLength: token.length });
           return Response.json({ error: "Token verification failed" }, { status: 401 });
         }
+      } else {
+        console.log('Progress API: No Bearer token in Authorization header');
       }
     } else {
+      console.log('Progress API: Session auth successful');
       sessionUserId = authSession.id;
     }
 
@@ -109,7 +116,8 @@ export async function GET(
     return Response.json(student);
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
-    console.error('Progress API error:', { message: errorMsg, stack: error instanceof Error ? error.stack : undefined });
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    console.error('Progress API error:', { message: errorMsg, stack: errorStack, error });
     return Response.json(
       { error: 'Failed to fetch progress', details: errorMsg },
       { status: 500 }
