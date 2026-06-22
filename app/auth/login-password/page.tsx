@@ -41,27 +41,35 @@ export default function LoginPasswordPage() {
 
     setLoading(true);
     try {
+      console.log('Attempting login with phone:', phone);
       const response = await fetch('/api/auth/login-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, password }),
       });
 
+      console.log('Login response status:', response.status);
       const data = await response.json();
+      console.log('Login response data:', data);
 
       if (!response.ok) {
-        setError(data.error || 'Login failed');
+        const errorMsg = data.error || 'Login failed';
+        console.error('Login failed:', errorMsg);
+        setError(errorMsg);
         return;
       }
 
+      console.log('Login successful, storing token and redirecting...');
       // Store token
       localStorage.setItem('token', data.token);
 
       // Redirect to dashboard
+      console.log('Redirecting to dashboard...');
       router.push('/student/dashboard');
     } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+      console.error('Login error:', errorMsg, err);
       setError('Error logging in. Please try again.');
-      console.error(err);
     } finally {
       setLoading(false);
     }

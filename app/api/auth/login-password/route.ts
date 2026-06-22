@@ -45,8 +45,9 @@ export async function POST(request: NextRequest) {
 
     const isPasswordValid = await compare(password, student.passwordHash);
     if (!isPasswordValid) {
+      console.error('Password validation failed for phone:', phone);
       return NextResponse.json(
-        { error: 'Invalid password' },
+        { error: 'Invalid phone number or password' },
         { status: 401 }
       );
     }
