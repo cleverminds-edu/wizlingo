@@ -76,7 +76,9 @@ export async function GET(
       try {
         console.log('Creating missing progress for student:', { studentId, dateOfBirth: student.dateOfBirth });
         const { calculateAgeBand } = await import('@/lib/age-band');
-        const ageBand = calculateAgeBand(student.dateOfBirth);
+
+        // If dateOfBirth is missing, default to middle band
+        const ageBand = student.dateOfBirth ? calculateAgeBand(student.dateOfBirth) : '9-11';
 
         const gradeBandMap: Record<string, any> = {
           '6-8': 'BAND_1_2',
