@@ -131,7 +131,9 @@ export default function StudentDashboard() {
       .catch((err) => {
         console.error('Dashboard auth failed:', err);
         localStorage.removeItem("token");
-        router.push("/login");
+        // Redirect to appropriate login based on auth method used
+        const loginPage = token ? "/auth/login-password" : "/login";
+        router.push(loginPage);
       })
       .finally(() => setLoading(false));
   }, [router]);
