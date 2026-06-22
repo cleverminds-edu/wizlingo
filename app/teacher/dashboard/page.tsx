@@ -39,12 +39,12 @@ export default function TeacherDashboard() {
   const [tab, setTab] = useState<Tab>("reading");
 
   useEffect(() => {
-    fetch("/api/auth/me")
+    fetch("/api/auth/me", { credentials: 'include' })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then(async (me) => {
         const results = await Promise.all(
           me.classes.map((c: { id: string }) =>
-            fetch(`/api/teacher/class/${c.id}`).then((r) => r.json())
+            fetch(`/api/teacher/class/${c.id}`, { credentials: 'include' }).then((r) => r.json())
           )
         );
         setClasses(results);

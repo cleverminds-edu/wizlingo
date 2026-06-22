@@ -100,7 +100,7 @@ export default function StudentDashboard() {
     const token = localStorage.getItem("token");
     const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
-    fetch("/api/auth/me", { headers })
+    fetch("/api/auth/me", { headers, credentials: 'include' })
       .then(r => {
         if (!r.ok) {
           console.error('auth/me failed:', r.status, r.statusText);
@@ -113,7 +113,7 @@ export default function StudentDashboard() {
         if (!me.hasSeenOnboarding) {
           setShowOnboarding(true);
         }
-        return fetch(`/api/progress/${me.id}`, { headers });
+        return fetch(`/api/progress/${me.id}`, { headers, credentials: 'include' });
       })
       .then(async r => {
         if (!r.ok) {

@@ -76,7 +76,7 @@ export default function ManagerDashboard() {
     try {
       setLoading(true);
       setError('');
-      const response = await fetch('/api/admin/dashboard-stats');
+      const response = await fetch('/api/admin/dashboard-stats', { credentials: 'include' });
 
       if (!response.ok) {
         throw new Error('Failed to fetch stats');
