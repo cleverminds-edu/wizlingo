@@ -40,8 +40,11 @@ export async function GET(
 
     // Check authorization: student can only see their own progress
     if (sessionUserId && sessionUserId !== studentId) {
+      console.warn('Authorization check failed:', { sessionUserId, studentId });
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
+
+    console.log('Fetching student:', { studentId, sessionUserId });
     const student = await prisma.student.findUnique({
       where: { id: studentId },
       include: {
@@ -62,12 +65,16 @@ export async function GET(
     });
 
     if (!student) {
+      console.error('Student not found:', { studentId });
       return Response.json({ error: "Not found" }, { status: 404 });
     }
+
+    console.log('Student found, checking progress:', { studentId, hasProgress: !!student.progress });
 
     // Ensure progress record exists (create if missing)
     if (!student.progress) {
       try {
+        console.log('Creating missing progress for student:', { studentId, dateOfBirth: student.dateOfBirth });
         const { calculateAgeBand } = await import('@/lib/age-band');
         const ageBand = calculateAgeBand(student.dateOfBirth);
 
@@ -99,9 +106,10 @@ export async function GET(
 
     return Response.json(student);
   } catch (error) {
-    console.error('Progress API error:', error instanceof Error ? error.message : error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error('Progress API error:', { message: errorMsg, stack: error instanceof Error ? error.stack : undefined });
     return Response.json(
-      { error: 'Failed to fetch progress' },
+      { error: 'Failed to fetch progress', details: errorMsg },
       { status: 500 }
     );
   }
