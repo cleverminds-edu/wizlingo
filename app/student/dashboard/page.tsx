@@ -96,16 +96,11 @@ export default function StudentDashboard() {
   const [earnedBadge, setEarnedBadge] = useState<BadgeType | null>(null);
 
   useEffect(() => {
+    // Get auth headers - try localStorage token first, fall back to cookie-based auth
     const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/auth/login-password");
-      setLoading(false);
-      return;
-    }
+    const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
 
-    fetch("/api/auth/me", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch("/api/auth/me", { headers })
       .then(r => {
         if (!r.ok) {
           console.error('auth/me failed:', r.status, r.statusText);
@@ -118,9 +113,7 @@ export default function StudentDashboard() {
         if (!me.hasSeenOnboarding) {
           setShowOnboarding(true);
         }
-        return fetch(`/api/progress/${me.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        return fetch(`/api/progress/${me.id}`, { headers });
       })
       .then(async r => {
         if (!r.ok) {
@@ -138,7 +131,7 @@ export default function StudentDashboard() {
       .catch((err) => {
         console.error('Dashboard auth failed:', err);
         localStorage.removeItem("token");
-        router.push("/auth/login-password");
+        router.push("/login");
       })
       .finally(() => setLoading(false));
   }, [router]);
