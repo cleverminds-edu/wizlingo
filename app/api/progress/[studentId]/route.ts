@@ -42,75 +42,106 @@ export async function GET(
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    // Fetch basic student info first (no relations)
     const student = await prisma.student.findUnique({
       where: { id: studentId },
-      include: {
-        class: {
-          include: {
-            school: { select: { name: true } }
-          }
-        },
-        progress: true,
-        badges: { orderBy: { earnedAt: "asc" } },
-        certificates: { select: { badgeType: true, verifyCode: true, issuedAt: true } },
-      },
     });
-
-    // Try to fetch sessions if the table exists
-    let sessionsData = [];
-    if (student) {
-      try {
-        const sessions = await prisma.readingSession.findMany({
-          where: { studentId },
-          orderBy: { createdAt: "desc" },
-          take: 20,
-          include: { passage: { select: { title: true, level: true } } },
-        });
-        sessionsData = sessions;
-      } catch (e) {
-        // Sessions table may not exist yet, continue without it
-        console.log('ReadingSession table not available yet');
-      }
-    }
 
     if (!student) {
       return Response.json({ error: "Not found" }, { status: 404 });
     }
 
-    // Ensure progress record exists (create if missing)
-    if (!student.progress) {
-      const { calculateAgeBand } = await import('@/lib/age-band');
-      const ageBand = student.dateOfBirth ? calculateAgeBand(student.dateOfBirth) : '9-11';
-
-      const gradeBandMap: Record<string, any> = {
-        '6-8': 'BAND_1_2',
-        '9-11': 'BAND_3_5',
-        '12-14': 'BAND_6_8',
-        '15+': 'BAND_9_10',
-      };
-
-      const gradeBand = gradeBandMap[ageBand] || 'BAND_3_5';
-
-      await prisma.studentProgress.create({
-        data: {
-          studentId: student.id,
-          currentLevel: 2,
-          gradeBand: gradeBand as any,
-        },
-      });
-
-      student.progress = await prisma.studentProgress.findUnique({
-        where: { studentId: student.id },
-      });
+    // Fetch class info safely
+    let classInfo = null;
+    if (student.classId) {
+      try {
+        classInfo = await prisma.class.findUnique({
+          where: { id: student.classId },
+          include: { school: { select: { name: true } } },
+        });
+      } catch (e) {
+        console.log('Class relation unavailable');
+      }
     }
 
-    // Attach sessions data to student object
-    const studentWithSessions = {
-      ...student,
-      sessions: sessionsData,
-    };
+    // Fetch progress safely
+    let progress = null;
+    try {
+      progress = await prisma.studentProgress.findUnique({
+        where: { studentId },
+      });
+    } catch (e) {
+      console.log('Progress relation unavailable');
+    }
 
-    return Response.json(studentWithSessions);
+    // Create progress if missing
+    if (!progress && student.dateOfBirth) {
+      try {
+        const { calculateAgeBand } = await import('@/lib/age-band');
+        const ageBand = calculateAgeBand(student.dateOfBirth);
+        const gradeBandMap: Record<string, any> = {
+          '6-8': 'BAND_1_2',
+          '9-11': 'BAND_3_5',
+          '12-14': 'BAND_6_8',
+          '15+': 'BAND_9_10',
+        };
+        const gradeBand = gradeBandMap[ageBand] || 'BAND_3_5';
+
+        progress = await prisma.studentProgress.create({
+          data: {
+            studentId: student.id,
+            currentLevel: 2,
+            gradeBand: gradeBand as any,
+          },
+        });
+      } catch (e) {
+        console.log('Could not create progress record');
+      }
+    }
+
+    // Fetch sessions safely
+    let sessions = [];
+    try {
+      sessions = await prisma.readingSession.findMany({
+        where: { studentId },
+        orderBy: { createdAt: "desc" },
+        take: 20,
+        include: { passage: { select: { title: true, level: true } } },
+      });
+    } catch (e) {
+      console.log('Sessions unavailable');
+    }
+
+    // Fetch badges safely
+    let badges = [];
+    try {
+      badges = await prisma.badge.findMany({
+        where: { studentId },
+        orderBy: { earnedAt: "asc" },
+      });
+    } catch (e) {
+      console.log('Badges unavailable');
+    }
+
+    // Fetch certificates safely
+    let certificates = [];
+    try {
+      certificates = await prisma.certificate.findMany({
+        where: { studentId },
+        select: { badgeType: true, verifyCode: true, issuedAt: true },
+      });
+    } catch (e) {
+      console.log('Certificates unavailable');
+    }
+
+    return Response.json({
+      ...student,
+      class: classInfo,
+      progress,
+      sessions,
+      badges,
+      certificates,
+    });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error('[Progress API Error]', msg);
