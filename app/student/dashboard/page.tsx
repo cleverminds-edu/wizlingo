@@ -106,8 +106,15 @@ export default function StudentDashboard() {
     fetch("/api/auth/me", {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(r => {
+        if (!r.ok) {
+          console.error('auth/me failed:', r.status, r.statusText);
+          return Promise.reject(new Error(`auth/me: ${r.status}`));
+        }
+        return r.json();
+      })
       .then(me => {
+        console.log('auth/me response:', me);
         if (!me.hasSeenOnboarding) {
           setShowOnboarding(true);
         }
@@ -115,9 +122,20 @@ export default function StudentDashboard() {
           headers: { Authorization: `Bearer ${token}` },
         });
       })
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then(data => { setStudent(data); setTimeout(() => setShowWelcome(false), 2500); })
-      .catch(() => {
+      .then(r => {
+        if (!r.ok) {
+          console.error('progress failed:', r.status, r.statusText);
+          return Promise.reject(new Error(`progress: ${r.status}`));
+        }
+        return r.json();
+      })
+      .then(data => {
+        console.log('progress response:', data);
+        setStudent(data);
+        setTimeout(() => setShowWelcome(false), 2500);
+      })
+      .catch((err) => {
+        console.error('Dashboard auth failed:', err);
         localStorage.removeItem("token");
         router.push("/auth/login-password");
       })
