@@ -52,11 +52,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Create JWT token
+    const secret = process.env.JWT_SECRET || 'secret';
     const token = jwt.sign(
       { studentId: student.id, phone: student.phone },
-      process.env.JWT_SECRET || 'secret',
+      secret,
       { expiresIn: '30d' }
     );
+
+    console.log('Login token created:', { studentId: student.id, hasSecret: !!process.env.JWT_SECRET, tokenLength: token.length });
 
     return NextResponse.json(
       { message: 'Login successful', token, studentId: student.id },

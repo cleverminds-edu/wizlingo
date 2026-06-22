@@ -16,13 +16,21 @@ export async function GET(request: Request) {
       const token = authHeader.slice(7);
       try {
         const secret = process.env.JWT_SECRET || "secret";
+        console.log('Verifying JWT token:', { hasSecret: !!process.env.JWT_SECRET, tokenLength: token.length });
         const verified = jwt.verify(token, secret) as any;
+        console.log('JWT verified successfully:', { studentId: verified.studentId });
         session = verified;
         isJwtAuth = true;
       } catch (error) {
-        console.error('JWT verification failed:', error instanceof Error ? error.message : error);
+        console.error('JWT verification failed:', {
+          error: error instanceof Error ? error.message : error,
+          hasSecret: !!process.env.JWT_SECRET,
+          tokenLength: token.length
+        });
         return Response.json({ error: "Token verification failed" }, { status: 401 });
       }
+    } else {
+      console.log('No Authorization header found');
     }
   }
 
