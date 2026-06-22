@@ -6,121 +6,93 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ studentId: string }> }
 ) {
-  try {
-    let authSession: any = null;
-    let sessionUserId: string | null = null;
+  let authSession: any = null;
+  let sessionUserId: string | null = null;
 
-    // Try session first (for cookies)
-    authSession = await getSession();
+  // Try session first (for cookies)
+  authSession = await getSession();
 
-    // If no session, try Authorization header (for Bearer tokens)
-    if (!authSession) {
-      const authHeader = request.headers.get("Authorization");
-      console.log('Progress API: Authorization header present:', !!authHeader);
-      if (authHeader?.startsWith("Bearer ")) {
-        const token = authHeader.slice(7);
-        console.log('Progress API: Token received, length:', token.length);
-        try {
-          const secret = process.env.JWT_SECRET || "secret";
-          console.log('Progress API: JWT_SECRET available:', !!process.env.JWT_SECRET);
-          const verified = jwt.verify(token, secret) as any;
-          console.log('Progress API: Token verified successfully');
-          authSession = verified;
-          sessionUserId = verified.studentId;
-        } catch (error) {
-          console.error('Progress API: JWT verification failed:', error instanceof Error ? error.message : error, { tokenLength: token.length });
-          return Response.json({ error: "Token verification failed" }, { status: 401 });
-        }
-      } else {
-        console.log('Progress API: No Bearer token in Authorization header');
+  // If no session, try Authorization header (for Bearer tokens)
+  if (!authSession) {
+    const authHeader = request.headers.get("Authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      const token = authHeader.slice(7);
+      try {
+        const secret = process.env.JWT_SECRET || "secret";
+        const verified = jwt.verify(token, secret) as any;
+        authSession = verified;
+        sessionUserId = verified.studentId;
+      } catch (error) {
+        console.error('Progress API: JWT verification failed:', error instanceof Error ? error.message : error);
+        return Response.json({ error: "Token verification failed" }, { status: 401 });
       }
-    } else {
-      console.log('Progress API: Session auth successful');
-      sessionUserId = authSession.id;
     }
+  } else {
+    sessionUserId = authSession.id;
+  }
 
-    if (!authSession) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!authSession) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-    const { studentId } = await params;
+  const { studentId } = await params;
 
-    // Check authorization: student can only see their own progress
-    if (sessionUserId && sessionUserId !== studentId) {
-      console.warn('Authorization check failed:', { sessionUserId, studentId });
-      return Response.json({ error: "Forbidden" }, { status: 403 });
-    }
+  // Check authorization: student can only see their own progress
+  if (sessionUserId && sessionUserId !== studentId) {
+    return Response.json({ error: "Forbidden" }, { status: 403 });
+  }
 
-    console.log('Fetching student:', { studentId, sessionUserId });
-    const student = await prisma.student.findUnique({
-      where: { id: studentId },
-      include: {
-        class: {
-          include: {
-            school: { select: { name: true } }
-          }
-        },
-        progress: true,
-        sessions: {
-          orderBy: { createdAt: "desc" },
-          take: 20,
-          include: { passage: { select: { title: true, level: true } } },
-        },
-        badges: { orderBy: { earnedAt: "asc" } },
-        certificates: { select: { badgeType: true, verifyCode: true, issuedAt: true } },
+  const student = await prisma.student.findUnique({
+    where: { id: studentId },
+    include: {
+      class: {
+        include: {
+          school: { select: { name: true } }
+        }
+      },
+      progress: true,
+      sessions: {
+        orderBy: { createdAt: "desc" },
+        take: 20,
+        include: { passage: { select: { title: true, level: true } } },
+      },
+      badges: { orderBy: { earnedAt: "asc" } },
+      certificates: { select: { badgeType: true, verifyCode: true, issuedAt: true } },
+    },
+  });
+
+  if (!student) {
+    return Response.json({ error: "Not found" }, { status: 404 });
+  }
+
+  // Ensure progress record exists (create if missing)
+  if (!student.progress) {
+    const { calculateAgeBand } = await import('@/lib/age-band');
+
+    // If dateOfBirth is missing, default to middle band
+    const ageBand = student.dateOfBirth ? calculateAgeBand(student.dateOfBirth) : '9-11';
+
+    const gradeBandMap: Record<string, any> = {
+      '6-8': 'BAND_1_2',
+      '9-11': 'BAND_3_5',
+      '12-14': 'BAND_6_8',
+      '15+': 'BAND_9_10',
+    };
+
+    const gradeBand = gradeBandMap[ageBand] || 'BAND_3_5';
+
+    await prisma.studentProgress.create({
+      data: {
+        studentId: student.id,
+        currentLevel: 2,
+        gradeBand: gradeBand as any,
       },
     });
 
-    if (!student) {
-      console.error('Student not found:', { studentId });
-      return Response.json({ error: "Not found" }, { status: 404 });
-    }
-
-    console.log('Student found, checking progress:', { studentId, hasProgress: !!student.progress });
-
-    // Ensure progress record exists (create if missing)
-    if (!student.progress) {
-      try {
-        console.log('Creating missing progress for student:', { studentId, dateOfBirth: student.dateOfBirth });
-        const { calculateAgeBand } = await import('@/lib/age-band');
-
-        // If dateOfBirth is missing, default to middle band
-        const ageBand = student.dateOfBirth ? calculateAgeBand(student.dateOfBirth) : '9-11';
-
-        const gradeBandMap: Record<string, any> = {
-          '6-8': 'BAND_1_2',
-          '9-11': 'BAND_3_5',
-          '12-14': 'BAND_6_8',
-          '15+': 'BAND_9_10',
-        };
-
-        const gradeBand = gradeBandMap[ageBand] || 'BAND_3_5';
-
-        await prisma.studentProgress.create({
-          data: {
-            studentId: student.id,
-            currentLevel: 2,
-            gradeBand: gradeBand as any,
-          },
-        });
-
-        student.progress = await prisma.studentProgress.findUnique({
-          where: { studentId: student.id },
-        });
-      } catch (createError) {
-        console.error('Error creating progress record:', createError instanceof Error ? createError.message : createError);
-        throw createError;
-      }
-    }
-
-    return Response.json(student);
-  } catch (error) {
-    const errorMsg = error instanceof Error ? error.message : String(error);
-    const errorStack = error instanceof Error ? error.stack : undefined;
-    console.error('Progress API error:', { message: errorMsg, stack: errorStack, error });
-    return Response.json(
-      { error: 'Failed to fetch progress', details: errorMsg },
-      { status: 500 }
-    );
+    student.progress = await prisma.studentProgress.findUnique({
+      where: { studentId: student.id },
+    });
   }
+
+  return Response.json(student);
 }
