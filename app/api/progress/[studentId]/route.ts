@@ -62,6 +62,30 @@ export async function GET(
 
     if (!student) return Response.json({ error: "Not found" }, { status: 404 });
 
+    // Ensure progress record exists (create if missing)
+    if (!student.progress) {
+      const { calculateAgeBand } = await import('@/lib/age-band');
+      const ageBand = calculateAgeBand(student.dateOfBirth);
+      const gradeBandMap: Record<string, any> = {
+        '6-8': 'BAND_1_2',
+        '9-11': 'BAND_3_5',
+        '12-14': 'BAND_6_8',
+        '15+': 'BAND_9_10',
+      };
+
+      await prisma.studentProgress.create({
+        data: {
+          studentId: student.id,
+          currentLevel: 2,
+          gradeBand: gradeBandMap[ageBand] || 'BAND_3_5',
+        },
+      });
+
+      student.progress = await prisma.studentProgress.findUnique({
+        where: { studentId: student.id },
+      });
+    }
+
     return Response.json(student);
   } catch (error) {
     console.error('Progress API error:', error instanceof Error ? error.message : error);
