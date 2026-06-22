@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// Store verification codes in memory (in production, use a database or session store)
-const verificationCodes = new Map<string, { code: string; expiresAt: number }>();
-
 export async function POST(req: NextRequest) {
   try {
     const { email, code } = await req.json();
@@ -27,12 +24,36 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // In a real app, you'd check the code against a database
-    // For now, accept any non-empty code as valid (dev mode)
-    // TODO: Implement proper verification code validation
+    // Find verification code in database
+    const verificationRecord = await prisma.verificationCode.findFirst({
+      where: {
+        email,
+        code,
+        usedAt: null, // Not yet used
+      },
+    });
 
-    // Mark user as verified (if you have a field for that)
-    // For now, just return success
+    if (!verificationRecord) {
+      return NextResponse.json(
+        { error: 'Invalid verification code' },
+        { status: 400 }
+      );
+    }
+
+    // Check if code has expired
+    if (new Date() > verificationRecord.expiresAt) {
+      return NextResponse.json(
+        { error: 'Verification code has expired' },
+        { status: 400 }
+      );
+    }
+
+    // Mark code as used
+    await prisma.verificationCode.update({
+      where: { id: verificationRecord.id },
+      data: { usedAt: new Date() },
+    });
+
     return NextResponse.json(
       {
         message: 'Email verified successfully',
@@ -45,7 +66,7 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Verification error:', error);
+    console.error('Verification error:', error instanceof Error ? error.message : error);
     return NextResponse.json(
       { error: 'Verification failed' },
       { status: 500 }

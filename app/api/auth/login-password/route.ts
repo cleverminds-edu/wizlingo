@@ -45,7 +45,6 @@ export async function POST(request: NextRequest) {
 
     const isPasswordValid = await compare(password, student.passwordHash);
     if (!isPasswordValid) {
-      console.error('Password validation failed for phone:', phone);
       return NextResponse.json(
         { error: 'Invalid phone number or password' },
         { status: 401 }
@@ -59,8 +58,6 @@ export async function POST(request: NextRequest) {
       secret,
       { expiresIn: '30d' }
     );
-
-    console.log('Login token created:', { studentId: student.id, hasSecret: !!process.env.JWT_SECRET, tokenLength: token.length });
 
     return NextResponse.json(
       { message: 'Login successful', token, studentId: student.id },

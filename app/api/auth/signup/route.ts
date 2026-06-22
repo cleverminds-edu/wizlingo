@@ -108,12 +108,20 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // TODO: Store verification code in a temporary table or use a session
-    // For now, we'll log it (in production, send via email)
-    console.log(`Verification code for ${email}: ${verificationCode}`);
+    // Store verification code in database (valid for 24 hours)
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    await prisma.verificationCode.create({
+      data: {
+        email,
+        code: verificationCode,
+        expiresAt,
+      },
+    });
 
     // TODO: Send verification email with the code
     // This would typically be done via a service like SendGrid, AWS SES, etc.
+    // Example integration:
+    // await sendVerificationEmail(email, verificationCode);
 
     return NextResponse.json(
       {

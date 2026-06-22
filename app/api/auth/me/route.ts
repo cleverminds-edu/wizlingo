@@ -6,44 +6,29 @@ export async function GET(request: Request) {
   let session: any = null;
   let isJwtAuth = false;
 
-  console.log('Auth/me endpoint called');
-
   // Try session first (for cookies)
   session = await getSession();
-  console.log('Session auth attempt:', { hasSession: !!session });
 
   // If no session, try Authorization header (for localStorage tokens)
   if (!session) {
     const authHeader = request.headers.get("Authorization");
-    console.log('Checking Authorization header:', { hasHeader: !!authHeader });
     if (authHeader?.startsWith("Bearer ")) {
       const token = authHeader.slice(7);
       try {
         const secret = process.env.JWT_SECRET || "secret";
-        console.log('Auth/me: Verifying JWT token:', { hasSecret: !!process.env.JWT_SECRET, tokenLength: token.length });
         const verified = jwt.verify(token, secret) as any;
-        console.log('Auth/me: JWT verified successfully:', { studentId: verified.studentId, phone: verified.phone });
         session = verified;
         isJwtAuth = true;
       } catch (error) {
-        console.error('Auth/me: JWT verification failed:', {
-          error: error instanceof Error ? error.message : error,
-          hasSecret: !!process.env.JWT_SECRET,
-          tokenLength: token.length
-        });
+        console.error('Auth/me: JWT verification failed:', error instanceof Error ? error.message : error);
         return Response.json({ error: "Token verification failed" }, { status: 401 });
       }
-    } else {
-      console.log('Auth/me: No Authorization header found');
     }
   }
 
   if (!session) {
-    console.error('Auth/me: No valid session found');
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  console.log('Auth/me: Auth successful, fetching user data...');
 
   // For JWT tokens (B2C), studentId is in the payload and role is always "student"
   // For session auth, id and role are in the session object
