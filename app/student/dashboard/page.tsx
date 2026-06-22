@@ -122,9 +122,10 @@ export default function StudentDashboard() {
           headers: { Authorization: `Bearer ${token}` },
         });
       })
-      .then(r => {
+      .then(async r => {
         if (!r.ok) {
-          console.error('progress failed:', r.status, r.statusText);
+          const errBody = await r.json().catch(() => ({}));
+          console.error('progress failed:', r.status, errBody);
           return Promise.reject(new Error(`progress: ${r.status}`));
         }
         return r.json();
