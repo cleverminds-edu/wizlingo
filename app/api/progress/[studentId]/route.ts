@@ -51,15 +51,27 @@ export async function GET(
           }
         },
         progress: true,
-        sessions: {
-          orderBy: { createdAt: "desc" },
-          take: 20,
-          include: { passage: { select: { title: true, level: true } } },
-        },
         badges: { orderBy: { earnedAt: "asc" } },
         certificates: { select: { badgeType: true, verifyCode: true, issuedAt: true } },
       },
     });
+
+    // Try to fetch sessions if the table exists
+    let sessionsData = [];
+    if (student) {
+      try {
+        const sessions = await prisma.readingSession.findMany({
+          where: { studentId },
+          orderBy: { createdAt: "desc" },
+          take: 20,
+          include: { passage: { select: { title: true, level: true } } },
+        });
+        sessionsData = sessions;
+      } catch (e) {
+        // Sessions table may not exist yet, continue without it
+        console.log('ReadingSession table not available yet');
+      }
+    }
 
     if (!student) {
       return Response.json({ error: "Not found" }, { status: 404 });
@@ -92,7 +104,13 @@ export async function GET(
       });
     }
 
-    return Response.json(student);
+    // Attach sessions data to student object
+    const studentWithSessions = {
+      ...student,
+      sessions: sessionsData,
+    };
+
+    return Response.json(studentWithSessions);
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error('[Progress API Error]', msg);
