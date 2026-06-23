@@ -73,17 +73,26 @@ function SessionPageInner() {
     if (!topicId || !sessionId) { setPhase("error"); setError("Missing session info."); return; }
 
     Promise.all([
-      fetch(`/api/speaking/topics`, { credentials: "include" }).then((r) => r.ok ? r.json() : Promise.reject()),
-      fetch(`/api/auth/me`, { credentials: "include" }).then((r) => r.ok ? r.json() : Promise.reject()),
+      fetch(`/api/speaking/topics`, { credentials: "include" }).then((r) => r.ok ? r.json() : Promise.reject(r.status)),
+      fetch(`/api/auth/me`, { credentials: "include" }).then((r) => r.ok ? r.json() : Promise.reject(r.status)),
     ])
       .then(([data, me]) => {
+        console.log('🎤 Session data loaded:', { topicId, hasTopics: !!data.topics });
         const t = data.topics.find((t: TopicData) => t.id === topicId);
-        if (!t) throw new Error("Topic not found");
+        if (!t) {
+          console.error('❌ Topic not found:', topicId, 'Available:', data.topics.map((x: any) => x.id));
+          throw new Error("Topic not found");
+        }
+        console.log('✅ Topic loaded:', t.title);
         setTopic(t);
         if (me && me.id) setStudentId(me.id);
         setPhase("conversation");
       })
-      .catch(() => { setPhase("error"); setError("Could not load topic."); });
+      .catch((e) => {
+        console.error('❌ Session load error:', e);
+        setPhase("error");
+        setError(typeof e === 'number' ? `API error: ${e}` : "Could not load topic. Please try again.");
+      });
   }, [topicId, sessionId]);
 
   async function handleComplete({ turns, totalWords, durationSec }: { turns: TurnRecord[]; totalWords: number; durationSec: number }) {

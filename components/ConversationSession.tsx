@@ -172,10 +172,19 @@ export default function ConversationSession({
   const [browserOk, setBrowserOk]     = useState(true);
   const [micError, setMicError]       = useState("");
   const [micReady, setMicReady]       = useState(false);
-  const [currentAiText, setCurrentAiText] = useState(openingLine);
+  const [currentAiText, setCurrentAiText] = useState(openingLine || "Let's start our conversation!");
   const [history, setHistory]         = useState<ConversationTurn[]>([
-    { role: "ai", text: openingLine },
+    { role: "ai", text: openingLine || "Let's start our conversation!" },
   ]);
+
+  useEffect(() => {
+    console.log('🎤 ConversationSession initialized:', {
+      character,
+      topicTitle,
+      openingLine: openingLine ? `${openingLine.substring(0, 30)}...` : 'MISSING',
+      phase,
+    });
+  }, []);
 
   const timerRef          = useRef<ReturnType<typeof setInterval> | null>(null);
   const recognitionRef    = useRef<SpeechRecognitionInstance | null>(null);
