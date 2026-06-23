@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 type Role = "student" | "teacher" | "admin";
+type LoginType = "school" | "b2c";
 
 const INPUT_CLASS =
   "w-full border border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-900 bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition";
@@ -24,12 +25,14 @@ const ROLE_LABELS: Record<Role, string> = {
 
 export default function LoginPage() {
   const router = useRouter();
+  const [loginType, setLoginType] = useState<LoginType>("school");
   const [role, setRole] = useState<Role>("student");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [studentForm, setStudentForm] = useState({ admissionNumber: "", pin: "" });
   const [staffForm, setStaffForm] = useState({ empCode: "", pin: "" });
+  const [b2cForm, setB2CForm] = useState({ username: "", password: "" });
   const [demoLoading, setDemoLoading] = useState<string | null>(null);
 
   async function handleDemoLogin(label: string, body: object, redirect: string) {
@@ -56,23 +59,56 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
-    const body =
-      role === "student"
-        ? { role, ...studentForm }
-        : { role, ...staffForm };
-
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      const data = await res.json();
-      if (!res.ok) { setError(data.error ?? "Login failed"); return; }
+      if (loginType === "b2c") {
+        // B2C login
+        const res = await fetch("/api/auth/login-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: b2cForm.username,
+            password: b2cForm.password,
+          }),
+        });
+        const data = await res.json();
 
-      if (role === "student") router.push("/student/dashboard");
-      else if (role === "teacher") router.push("/teacher/dashboard");
-      else router.push("/admin/dashboard");
+        if (!res.ok) {
+          setError(data.error ?? "Login failed");
+          return;
+        }
+
+        // Handle force password change
+        if (data.status === "FORCE_PASSWORD_CHANGE") {
+          localStorage.setItem("pendingPasswordChange", JSON.stringify({
+            studentId: data.studentId,
+            username: b2cForm.username,
+          }));
+          router.push("/auth/change-password-required");
+          return;
+        }
+
+        // Store token and redirect
+        localStorage.setItem("token", data.token);
+        router.push("/student/dashboard");
+      } else {
+        // School login
+        const body =
+          role === "student"
+            ? { role, ...studentForm }
+            : { role, ...staffForm };
+
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        if (!res.ok) { setError(data.error ?? "Login failed"); return; }
+
+        if (role === "student") router.push("/student/dashboard");
+        else if (role === "teacher") router.push("/teacher/dashboard");
+        else router.push("/admin/dashboard");
+      }
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -170,29 +206,91 @@ export default function LoginPage() {
               <p className="text-gray-600 text-sm">Sign in to continue your WizLingo journey</p>
             </div>
 
-            {/* Role selector */}
+            {/* Login Type Selector */}
             <div className="mb-6">
-              <p className="text-xs font-semibold text-gray-600 mb-3 uppercase tracking-wider">Select your role</p>
+              <p className="text-xs font-semibold text-gray-600 mb-3 uppercase tracking-wider">Login Type</p>
               <div className="flex rounded-xl bg-gray-100 p-1 gap-1">
-                {(["student", "teacher", "admin"] as Role[]).map((r) => (
-                  <button
-                    key={r}
-                    type="button"
-                    onClick={() => { setRole(r); setError(""); }}
-                    className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
-                      role === r
-                        ? "bg-white shadow text-blue-700"
-                        : "text-gray-500 hover:text-gray-700"
-                    }`}
-                  >
-                    {ROLE_LABELS[r]}
-                  </button>
-                ))}
+                <button
+                  type="button"
+                  onClick={() => { setLoginType("school"); setError(""); setRole("student"); }}
+                  className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
+                    loginType === "school"
+                      ? "bg-white shadow text-blue-700"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  🏫 School
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setLoginType("b2c"); setError(""); }}
+                  className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
+                    loginType === "b2c"
+                      ? "bg-white shadow text-blue-700"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  👤 Personal
+                </button>
               </div>
             </div>
 
+            {/* Role selector (only for school login) */}
+            {loginType === "school" && (
+              <div className="mb-6">
+                <p className="text-xs font-semibold text-gray-600 mb-3 uppercase tracking-wider">Select your role</p>
+                <div className="flex rounded-xl bg-gray-100 p-1 gap-1">
+                  {(["student", "teacher", "admin"] as Role[]).map((r) => (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() => { setRole(r); setError(""); }}
+                      className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
+                        role === r
+                          ? "bg-white shadow text-blue-700"
+                          : "text-gray-500 hover:text-gray-700"
+                      }`}
+                    >
+                      {ROLE_LABELS[r]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
-              {role === "student" ? (
+              {loginType === "b2c" ? (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      UserID or Phone
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. WL001234 or 9876543210"
+                      value={b2cForm.username}
+                      onChange={(e) => setB2CForm({ ...b2cForm, username: e.target.value })}
+                      className={INPUT_CLASS}
+                      autoComplete="username"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="Enter your password"
+                      value={b2cForm.password}
+                      onChange={(e) => setB2CForm({ ...b2cForm, password: e.target.value })}
+                      className={INPUT_CLASS}
+                      autoComplete="current-password"
+                      required
+                    />
+                  </div>
+                </>
+              ) : role === "student" ? (
                 <>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -275,7 +373,9 @@ export default function LoginPage() {
             </form>
 
             <p className="mt-4 text-xs text-center text-gray-400">
-            {role === "student"
+            {loginType === "b2c"
+              ? "Use your UserID (WL001, WL002, etc.) or phone number to login"
+              : role === "student"
               ? "Your admission number and PIN are provided by your school"
               : "Your employee code and PIN are issued by your school administrator"}
           </p>
@@ -283,7 +383,10 @@ export default function LoginPage() {
             {/* Signup Link */}
             <div className="mt-6 pt-6 border-t border-gray-200 text-center">
               <p className="text-sm text-gray-600">
-                New user? <a href="/auth/signup" className="text-blue-600 hover:underline font-semibold">Start here</a>
+                {loginType === "b2c"
+                  ? <>New user? <a href="/auth/signup-b2c" className="text-blue-600 hover:underline font-semibold">Sign up here</a></>
+                  : <>New user? <a href="/auth/signup" className="text-blue-600 hover:underline font-semibold">Sign up here</a></>
+                }
               </p>
             </div>
           </div>
