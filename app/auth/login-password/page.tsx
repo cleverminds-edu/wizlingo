@@ -69,8 +69,25 @@ export default function LoginPasswordPage() {
 
       // Store token and redirect
       console.log('✅ Login successful, storing token and redirecting...');
-      localStorage.setItem('token', data.token);
-      console.log('💾 Token saved to localStorage');
+      console.log('🔑 Token value:', data.token ? `${data.token.substring(0, 20)}...` : 'UNDEFINED');
+
+      if (!data.token) {
+        console.error('❌ ERROR: Server did not return a token!');
+        setError('Login failed: No token received');
+        return;
+      }
+
+      try {
+        localStorage.setItem('token', data.token);
+        console.log('💾 Token saved to localStorage successfully');
+        const stored = localStorage.getItem('token');
+        console.log('✅ Verification: token in localStorage:', stored ? 'YES' : 'NO');
+      } catch (e) {
+        console.error('❌ localStorage error:', e);
+        setError('Failed to save login token');
+        return;
+      }
+
       console.log('🚀 Redirecting to /student/dashboard');
       router.push('/student/dashboard');
     } catch (err) {
