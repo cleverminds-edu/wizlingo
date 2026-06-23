@@ -33,8 +33,8 @@ try {
     env: { ...process.env, DATABASE_URL: dbUrl }
   });
 
-  console.log('\nStep 2️⃣  - Running Prisma migrations...');
-  execSync('npx prisma migrate deploy --skip-generate', {
+  console.log('\nStep 2️⃣  - Running custom migrations...');
+  execSync('node scripts/apply-migration.js', {
     stdio: 'inherit',
     env: { ...process.env, DATABASE_URL: dbUrl }
   });
