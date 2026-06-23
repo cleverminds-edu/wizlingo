@@ -20,7 +20,7 @@ export default function LoginPasswordPage() {
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
     setUsername(value);
-    const isValidUserID = /^WL\d{3}$/i.test(value);
+    const isValidUserID = /^WL\d{6}$/i.test(value);
     const isValidPhone = /^\d{10}$/.test(value);
     setIsValid((isValidUserID || isValidPhone) && password.length >= 6);
   };
@@ -218,7 +218,7 @@ export default function LoginPasswordPage() {
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
-                    const isValidUserID = /^WL\d{3}$/i.test(username);
+                    const isValidUserID = /^WL\d{6}$/i.test(username);
                     const isValidPhone = /^\d{10}$/.test(username);
                     setIsValid((isValidUserID || isValidPhone) && e.target.value.length >= 6);
                   }}
