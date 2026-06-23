@@ -35,6 +35,16 @@ try {
     env: { ...process.env, DATABASE_URL: dbUrl }
   });
 
+  console.log('\nStep 3️⃣  - Seeding content...');
+  try {
+    execSync('npx prisma db seed', {
+      stdio: 'inherit',
+      env: { ...process.env, DATABASE_URL: dbUrl }
+    });
+  } catch (e) {
+    console.log('⚠️  Seeding skipped or failed (this is OK, content may already exist)');
+  }
+
   console.log('\n════════════════════════════════════════════════════════════');
   console.log('✅ Database initialization complete');
   console.log('════════════════════════════════════════════════════════════\n');
