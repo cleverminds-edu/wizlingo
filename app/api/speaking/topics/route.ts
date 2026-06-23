@@ -12,15 +12,32 @@ import {
 } from "@/lib/speaking-preference";
 
 export async function GET(request: Request) {
+  console.log('🎤 GET /api/speaking/topics - Starting');
+
   // Auto-seed if database is empty
   await ensurePassagesSeeded();
 
+  // Debug: Count topics in database
+  const topicCount = await prisma.conversationTopic.count();
+  console.log(`📊 Database has ${topicCount} conversation topics`);
+  if (topicCount === 0) {
+    console.error('❌ NO TOPICS IN DATABASE - This should have been seeded at startup!');
+    return Response.json({
+      error: 'No conversation topics available in database. System is not properly initialized.',
+      debug: { topicCount }
+    }, { status: 503 });
+  }
+
   const auth = await getAuth(request);
+  console.log('🔐 Auth check:', { hasAuth: !!auth, role: auth?.role });
   if (!auth || auth.role !== "student") {
+    console.error('❌ Auth failed');
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const studentId = getStudentIdFromAuth(auth);
+  console.log('👤 Student ID:', studentId);
+
   const student = await prisma.student.findUnique({
     where: { id: studentId },
     include: { class: true, progress: true, speakingProgress: true },
