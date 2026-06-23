@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 const { Client } = require('pg');
+const fs = require('fs');
+const path = require('path');
 const path = require('path');
 
 const dbUrl = process.env.DATABASE_URL;
@@ -74,22 +76,16 @@ async function seed() {
     console.log(`📊 Found ${topicCount} existing conversation topics`);
 
     if (topicCount === 0) {
-      console.log('🌱 Seeding conversation topics...');
-      for (const t of topics) {
-        try {
-          await client.query(
-            `INSERT INTO "ConversationTopic" (id, title, character, "characterGender", "characterRole", "openingLine", script, level, "gradeBand", mode, "createdAt")
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())`,
-            [t.id, t.title, t.character, t.characterGender, t.characterRole, t.openingLine, t.script, t.level, t.gradeBand, 'SCRIPTED']
-          );
-        } catch (e) {
-          if (e.code === '23505') { // duplicate key
-            continue;
-          }
-          throw e;
-        }
+      console.log('🌱 Seeding conversation topics via SQL...');
+      try {
+        const sqlFile = path.join(__dirname, 'seed-topics.sql');
+        const sql = fs.readFileSync(sqlFile, 'utf8');
+        await client.query(sql);
+        console.log(`✅ Seeded conversation topics from SQL`);
+      } catch (e) {
+        console.error('❌ Failed to seed topics from SQL:', e.message);
+        throw e;
       }
-      console.log(`✅ Inserted ${topics.length} conversation topics`);
     }
 
     console.log('✅ Seeding complete!');
