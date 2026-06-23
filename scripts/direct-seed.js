@@ -16,6 +16,11 @@ const passages = [
 ];
 
 async function seedPassages() {
+  if (!process.env.DATABASE_URL) {
+    console.error('❌ DATABASE_URL not set');
+    process.exit(1);
+  }
+
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
   });
@@ -23,22 +28,31 @@ async function seedPassages() {
   try {
     console.log('🌱 Connecting to database...');
     await client.connect();
+    console.log('✅ Connected');
 
-    console.log('📝 Inserting passages...');
+    console.log('📝 Checking existing passages...');
+    const result = await client.query('SELECT COUNT(*) as count FROM "ReadingPassage"');
+    const existingCount = parseInt(result.rows[0].count);
+    console.log(`Found ${existingCount} existing passages`);
 
-    for (const p of passages) {
-      await client.query(
-        `INSERT INTO "ReadingPassage" (id, title, content, "wordCount", "gradeBand", level, topic, "createdAt")
-         VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
-         ON CONFLICT (id) DO NOTHING`,
-        [p.id, p.title, p.content, p.wordCount, p.gradeBand, p.level, p.topic]
-      );
+    if (existingCount === 0) {
+      console.log(`Inserting ${passages.length} new passages...`);
+      for (const p of passages) {
+        await client.query(
+          `INSERT INTO "ReadingPassage" (id, title, content, "wordCount", "gradeBand", level, topic, "createdAt")
+           VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())`,
+          [p.id, p.title, p.content, p.wordCount, p.gradeBand, p.level, p.topic]
+        );
+      }
+      console.log(`✅ Inserted ${passages.length} passages`);
+    } else {
+      console.log('✅ Passages already exist, skipping');
     }
 
-    console.log(`✅ Inserted ${passages.length} passages`);
     await client.end();
+    console.log('✅ Seeding complete');
   } catch (error) {
-    console.error('❌ Seeding failed:', error.message);
+    console.error('❌ Seeding failed:', error instanceof Error ? error.message : error);
     process.exit(1);
   }
 }
