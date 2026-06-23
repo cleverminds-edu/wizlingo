@@ -118,11 +118,11 @@ export async function GET(request: Request) {
     filteredTopics = allTopics;
   }
 
-  // Random selection
-  const selectedTopic = filteredTopics[Math.floor(Math.random() * filteredTopics.length)];
-
+  // Return all available topics for the student's level
   return Response.json({
-    topic: selectedTopic,
+    topics: filteredTopics.length > 0 ? filteredTopics : allTopics,
+    gradeBand,
+    level,
     preference: {
       characterGenderPref: preference.characterGenderPref,
       pronouns: preference.pronouns,
