@@ -41,21 +41,26 @@ export default function LoginPasswordPage() {
 
     setLoading(true);
     try {
+      console.log('🔐 Attempting login with:', { username });
       const response = await fetch('/api/auth/login-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
 
+      console.log('📡 Login response status:', response.status);
       const data = await response.json();
+      console.log('📋 Login response data:', { status: data.status, hasToken: !!data.token, message: data.message });
 
       if (!response.ok) {
+        console.error('❌ Login failed:', data.error);
         setError(data.error || 'Login failed');
         return;
       }
 
       // Check if password change is required
       if (data.status === 'FORCE_PASSWORD_CHANGE') {
+        console.log('🔐 Password change required');
         setForcePasswordChange(true);
         setStudentId(data.studentId);
         setPassword('');
@@ -63,11 +68,14 @@ export default function LoginPasswordPage() {
       }
 
       // Store token and redirect
+      console.log('✅ Login successful, storing token and redirecting...');
       localStorage.setItem('token', data.token);
+      console.log('💾 Token saved to localStorage');
+      console.log('🚀 Redirecting to /student/dashboard');
       router.push('/student/dashboard');
     } catch (err) {
+      console.error('❌ Login error:', err);
       setError('Error logging in. Please try again.');
-      console.error(err);
     } finally {
       setLoading(false);
     }
