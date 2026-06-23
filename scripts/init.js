@@ -37,12 +37,22 @@ try {
 
   console.log('\nStep 3️⃣  - Seeding content...');
   try {
+    // Try prisma seed first
     execSync('npx prisma db seed', {
       stdio: 'inherit',
       env: { ...process.env, DATABASE_URL: dbUrl }
     });
   } catch (e) {
-    console.log('⚠️  Seeding skipped or failed (this is OK, content may already exist)');
+    // If seed fails, try direct seed script
+    try {
+      console.log('Attempting direct seeding...');
+      execSync('node scripts/direct-seed.js', {
+        stdio: 'inherit',
+        env: { ...process.env, DATABASE_URL: dbUrl }
+      });
+    } catch (e2) {
+      console.log('⚠️  Seeding skipped (content may already exist)');
+    }
   }
 
   console.log('\n════════════════════════════════════════════════════════════');
