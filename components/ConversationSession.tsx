@@ -392,6 +392,11 @@ export default function ConversationSession({
       rec.continuous     = true;
       rec.interimResults = true;
       rec.lang           = "en-IN";
+      console.log('🎙️  Starting speech recognition...');
+
+      rec.onstart = () => {
+        console.log('✅ Speech recognition started');
+      };
 
       rec.onresult = (e: SpeechRecognitionEvent) => {
         let finals = "";
@@ -401,18 +406,36 @@ export default function ConversationSession({
           if (e.results[i].isFinal) finals += t + " ";
           else interim = t;
         }
-        if (finals) finalTranscriptRef.current = finals;
+        if (finals) {
+          console.log('📝 Final transcript:', finals);
+          finalTranscriptRef.current = finals;
+        }
+        if (interim) console.log('💬 Interim:', interim);
         setTranscript(finalTranscriptRef.current);
         setInterimText(interim);
       };
 
       rec.onerror = (e: SpeechRecognitionErrorEvent) => {
-        if (e.error === "not-allowed") setMicError("Mic access denied. Please allow microphone.");
-        else if (e.error === "no-speech") startRec();
-        else if (e.error !== "aborted") setMicError(`Mic error: ${e.error}`);
+        console.error('❌ Speech recognition error:', e.error);
+        if (e.error === "not-allowed") {
+          setMicError("🔴 Mic access denied. Please allow microphone permission in browser settings.");
+          console.error('User denied microphone permission');
+        }
+        else if (e.error === "no-speech") {
+          console.log('⚠️  No speech detected, restarting...');
+          startRec();
+        }
+        else if (e.error === "network") {
+          setMicError("🌐 Network error. Check your internet connection.");
+          console.error('Network error in speech recognition');
+        }
+        else if (e.error !== "aborted") {
+          setMicError(`🎙️ Mic error: ${e.error}`);
+        }
       };
 
       rec.onend = () => {
+        console.log('🛑 Speech recognition ended');
         if (!committedRef.current) {
           try { rec.start(); } catch { /* ignore restart errors */ }
         }
@@ -422,8 +445,10 @@ export default function ConversationSession({
         rec.start();
         recognitionRef.current = rec;
         setTimeout(() => setMicReady(true), 600);
-      } catch {
-        setMicError("Could not start microphone.");
+        console.log('✅ Microphone started successfully');
+      } catch (e) {
+        console.error('❌ Could not start microphone:', e);
+        setMicError("Could not start microphone. Please check browser permissions.");
       }
     }
 
