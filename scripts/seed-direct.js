@@ -24,11 +24,11 @@ const passages = [
 ];
 
 const topics = [
-  { id: 't1', title: 'Breakfast Chat', character: 'Mom', characterGender: 'Female', characterRole: 'Parent', openingLine: 'Good morning! Did you sleep well?', script: 'Regular conversation about breakfast and morning routine', level: 1, gradeBand: 'BAND_3_5', topic: 'Daily Life' },
-  { id: 't2', title: 'Pet Friend', character: 'Alex', characterGender: 'Male', characterRole: 'Friend', openingLine: 'I got a new puppy! Want to see?', script: 'Conversation about pets and animals', level: 1, gradeBand: 'BAND_3_5', topic: 'Animals' },
-  { id: 't3', title: 'School Day', character: 'Teacher', characterGender: 'Female', characterRole: 'Teacher', openingLine: 'How was your school day?', script: 'Discussion about school, classes, and friends', level: 2, gradeBand: 'BAND_3_5', topic: 'Daily Life' },
-  { id: 't4', title: 'Weather Talk', character: 'Jamie', characterGender: 'Non-binary', characterRole: 'Friend', openingLine: 'What do you think about this weather?', script: 'Conversation about different weather types', level: 1, gradeBand: 'BAND_6_8', topic: 'Weather' },
-  { id: 't5', title: 'Adventure Time', character: 'Explorer', characterGender: 'Male', characterRole: 'Mentor', openingLine: 'Would you like to go on an adventure?', script: 'Planning and discussing outdoor adventures', level: 2, gradeBand: 'BAND_6_8', topic: 'Nature' },
+  { id: 't1', title: 'Breakfast Chat', character: 'Mom', characterGender: 'FEMALE', characterRole: 'Parent', openingLine: 'Good morning! Did you sleep well?', script: 'Regular conversation about breakfast and morning routine', level: 1, gradeBand: 'BAND_3_5', topic: 'Daily Life' },
+  { id: 't2', title: 'Pet Friend', character: 'Alex', characterGender: 'MALE', characterRole: 'Friend', openingLine: 'I got a new puppy! Want to see?', script: 'Conversation about pets and animals', level: 1, gradeBand: 'BAND_3_5', topic: 'Animals' },
+  { id: 't3', title: 'School Day', character: 'Teacher', characterGender: 'FEMALE', characterRole: 'Teacher', openingLine: 'How was your school day?', script: 'Discussion about school, classes, and friends', level: 2, gradeBand: 'BAND_3_5', topic: 'Daily Life' },
+  { id: 't4', title: 'Weather Talk', character: 'Jamie', characterGender: 'MALE', characterRole: 'Friend', openingLine: 'What do you think about this weather?', script: 'Conversation about different weather types', level: 1, gradeBand: 'BAND_6_8', topic: 'Weather' },
+  { id: 't5', title: 'Adventure Time', character: 'Explorer', characterGender: 'MALE', characterRole: 'Mentor', openingLine: 'Would you like to go on an adventure?', script: 'Planning and discussing outdoor adventures', level: 2, gradeBand: 'BAND_6_8', topic: 'Nature' },
 ];
 
 async function seed() {
