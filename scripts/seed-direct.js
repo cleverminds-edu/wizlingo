@@ -3,7 +3,6 @@
 const { Client } = require('pg');
 const fs = require('fs');
 const path = require('path');
-const path = require('path');
 
 const dbUrl = process.env.DATABASE_URL;
 
