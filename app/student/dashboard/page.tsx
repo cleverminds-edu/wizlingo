@@ -155,17 +155,29 @@ export default function StudentDashboard() {
   const handleOnboardingComplete = async () => {
     if (student) {
       const token = localStorage.getItem("token");
-      await fetch("/api/onboarding/complete", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        credentials: "include",
-        body: JSON.stringify({ studentId: student.id }),
-      });
+      try {
+        const response = await fetch("/api/onboarding/complete", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token && { Authorization: `Bearer ${token}` }),
+          },
+          credentials: "include",
+          body: JSON.stringify({ studentId: student.id }),
+        });
+
+        if (!response.ok) {
+          const error = await response.text();
+          console.error(`Onboarding complete failed: ${response.status}`, error);
+          return;
+        }
+
+        console.log('✅ Onboarding marked complete');
+        setShowOnboarding(false);
+      } catch (error) {
+        console.error('Onboarding complete error:', error);
+      }
     }
-    setShowOnboarding(false);
   };
 
   async function logout() {

@@ -3,8 +3,12 @@ import { prisma } from "@/lib/prisma";
 import { gradeToBand } from "@/lib/scoring";
 import { ageBandToGradeBand } from "@/lib/age-band-mapping";
 import { selectReadingPassage } from "@/lib/content-selection";
+import { ensurePassagesSeeded } from "@/lib/seed-passages";
 
 export async function GET(request: Request) {
+  // Auto-seed passages if database is empty (useful if init script failed)
+  await ensurePassagesSeeded();
+
   const auth = await getAuth(request);
   if (!auth || auth.role !== "student") {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
