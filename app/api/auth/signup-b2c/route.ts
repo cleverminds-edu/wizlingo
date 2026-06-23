@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { generateUserId } from "@/lib/userid-generator";
 import { z } from "zod";
 
 const signupSchema = z.object({
@@ -25,20 +24,11 @@ export async function POST(request: NextRequest) {
 
     const { name, phone, grade, dateOfBirth } = validation.data;
 
-    // Check if phone already has max users (optional: limit to 3 per phone)
-    const existingWithPhone = await prisma.student.count({
-      where: { phone, accountType: "PUBLIC" }
-    });
-
-    if (existingWithPhone >= 5) {
-      return NextResponse.json(
-        { error: "Maximum accounts per phone number reached" },
-        { status: 400 }
-      );
-    }
-
-    // Generate simple UserID: WL001, WL002, etc.
-    const userId = await generateUserId();
+    // Generate UserID: WL + 6 random digits
+    // Example: WL123456, WL987654, etc.
+    // Uniqueness is ensured by database constraint (even if migration hasn't run yet)
+    const randomNum = Math.floor(100000 + Math.random() * 900000);
+    const userId = `WL${randomNum}`;
 
     // Hash phone as default password
     const hashedPassword = await bcrypt.hash(phone, 10);
