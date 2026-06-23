@@ -78,9 +78,9 @@ async function seed() {
       for (const t of topics) {
         try {
           await client.query(
-            `INSERT INTO "ConversationTopic" (id, title, character, "characterGender", "characterRole", "openingLine", script, level, "gradeBand", topic, "createdAt")
+            `INSERT INTO "ConversationTopic" (id, title, character, "characterGender", "characterRole", "openingLine", script, level, "gradeBand", mode, "createdAt")
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())`,
-            [t.id, t.title, t.character, t.characterGender, t.characterRole, t.openingLine, t.script, t.level, t.gradeBand, t.topic]
+            [t.id, t.title, t.character, t.characterGender, t.characterRole, t.openingLine, t.script, t.level, t.gradeBand, 'SCRIPTED']
           );
         } catch (e) {
           if (e.code === '23505') { // duplicate key
