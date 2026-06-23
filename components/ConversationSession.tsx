@@ -97,6 +97,9 @@ const VOICE_SETTINGS: Record<string, { pitchF: number; pitchM: number; rate: num
 };
 
 function pickVoice(character: string, gradeBand: string, topicTitle?: string): { voice: SpeechSynthesisVoice | null; pitch: number; rate: number } {
+  // Determine character gender for voice matching
+  const isFemale = FEMALE_CHARACTERS.includes(character);
+
   // Get character profile
   let pitch = 1.0;
   let rate = 0.88;
@@ -107,7 +110,6 @@ function pickVoice(character: string, gradeBand: string, topicTitle?: string): {
     rate = charProfile.rate;
   } else {
     // Fallback to gender-based settings
-    const isFemale = FEMALE_CHARACTERS.includes(character);
     const settings = VOICE_SETTINGS[gradeBand] ?? VOICE_SETTINGS.BAND_3_5;
     pitch = isFemale ? settings.pitchF : settings.pitchM;
     rate = settings.rate;
