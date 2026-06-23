@@ -22,10 +22,6 @@ if (!dbUrl) {
 
 console.log(`📍 Database: ${dbUrl.replace(/:[^@]*@/, ':***@')}\n`);
 
-// Write temporary .env file for Prisma to read
-const envContent = `DATABASE_URL="${dbUrl}"\n`;
-fs.writeFileSync('.env', envContent);
-
 try {
   console.log('Step 1️⃣  - Creating PostgreSQL enums...');
   execSync('node scripts/sync-db.js', {
@@ -61,9 +57,3 @@ try {
     console.log('⚠️  The app may not work if tables are missing');
     console.log('════════════════════════════════════════════════════════════\n');
   }
-} finally {
-  // Clean up temporary .env file
-  try {
-    fs.unlinkSync('.env');
-  } catch (e) {}
-}
