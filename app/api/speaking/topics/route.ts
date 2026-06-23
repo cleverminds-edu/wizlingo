@@ -18,14 +18,38 @@ export async function GET(request: Request) {
   await ensurePassagesSeeded();
 
   // Debug: Count topics in database
-  const topicCount = await prisma.conversationTopic.count();
+  let topicCount = await prisma.conversationTopic.count();
   console.log(`📊 Database has ${topicCount} conversation topics`);
+
   if (topicCount === 0) {
-    console.error('❌ NO TOPICS IN DATABASE - This should have been seeded at startup!');
-    return Response.json({
-      error: 'No conversation topics available in database. System is not properly initialized.',
-      debug: { topicCount }
-    }, { status: 503 });
+    console.warn('⚠️  NO TOPICS IN DATABASE - Attempting emergency seed...');
+    try {
+      // Emergency: Create topics directly
+      const topics = [
+        { id: 't1', title: 'Breakfast Chat', character: 'Mom', characterGender: 'FEMALE' as const, characterRole: 'Parent', openingLine: 'Good morning! Did you sleep well?', script: 'Regular conversation about breakfast and morning routine', level: 1, gradeBand: 'BAND_3_5' as const, mode: 'SCRIPTED' as const },
+        { id: 't2', title: 'Pet Friend', character: 'Alex', characterGender: 'MALE' as const, characterRole: 'Friend', openingLine: 'I got a new puppy! Want to see?', script: 'Conversation about pets and animals', level: 1, gradeBand: 'BAND_3_5' as const, mode: 'SCRIPTED' as const },
+        { id: 't3', title: 'School Day', character: 'Teacher', characterGender: 'FEMALE' as const, characterRole: 'Teacher', openingLine: 'How was your school day?', script: 'Discussion about school, classes, and friends', level: 2, gradeBand: 'BAND_3_5' as const, mode: 'SCRIPTED' as const },
+        { id: 't4', title: 'Weather Talk', character: 'Jamie', characterGender: 'MALE' as const, characterRole: 'Friend', openingLine: 'What do you think about this weather?', script: 'Conversation about different weather types', level: 1, gradeBand: 'BAND_6_8' as const, mode: 'SCRIPTED' as const },
+        { id: 't5', title: 'Adventure Time', character: 'Explorer', characterGender: 'MALE' as const, characterRole: 'Mentor', openingLine: 'Would you like to go on an adventure?', script: 'Planning and discussing outdoor adventures', level: 2, gradeBand: 'BAND_6_8' as const, mode: 'SCRIPTED' as const },
+      ];
+
+      for (const topic of topics) {
+        try {
+          await prisma.conversationTopic.create({ data: topic });
+        } catch (e) {
+          // Skip duplicates
+          if ((e as any).code !== 'P2002') throw e;
+        }
+      }
+      console.log(`✅ Emergency seeded ${topics.length} topics`);
+      topicCount = await prisma.conversationTopic.count();
+    } catch (e) {
+      console.error('❌ Emergency seed failed:', e instanceof Error ? e.message : e);
+      return Response.json({
+        error: 'No conversation topics available. Emergency seeding failed.',
+        debug: { topicCount, error: e instanceof Error ? e.message : String(e) }
+      }, { status: 503 });
+    }
   }
 
   const auth = await getAuth(request);
