@@ -129,6 +129,7 @@ function pickVoice(character: string, gradeBand: string, topicTitle?: string): {
   rate = Math.max(0.5, Math.min(1.5, rate));
 
   const voices = window.speechSynthesis.getVoices();
+  console.log('🎤 pickVoice:', { character, topicTitle, pitch, rate, availableVoices: voices.length });
   const local  = voices.filter(v => v.localService);
   const pool   = local.length > 0 ? local : voices;
 
@@ -209,8 +210,13 @@ export default function ConversationSession({
   };
 
   const speakText = useCallback((text: string, onEnd?: () => void) => {
-    if (typeof window === "undefined" || !window.speechSynthesis) { onEnd?.(); return; }
+    if (typeof window === "undefined" || !window.speechSynthesis) {
+      console.error('❌ Speech synthesis not available');
+      onEnd?.();
+      return;
+    }
     const synth = window.speechSynthesis;
+    console.log('🔊 speakText called:', { textLength: text.length, isSpeaking: synth.speaking, isPending: synth.pending });
     if (synth.speaking || synth.pending) synth.cancel();
 
     const makeUtter = (withVoice = true) => {
@@ -242,10 +248,12 @@ export default function ConversationSession({
 
     const trySpeak = (attempt: number) => {
       if (done) return;
+      console.log('🎤 trySpeak attempt:', attempt);
       const utter = makeUtter(attempt === 1);
       let utterDone = false;
 
       utter.onend = () => {
+        console.log('✅ Speech ended');
         if (utterDone || done) return;
         utterDone = true;
         if (fallbackId) { clearTimeout(fallbackId); fallbackId = null; }
@@ -253,10 +261,12 @@ export default function ConversationSession({
       };
 
       utter.onerror = (e) => {
+        console.error('❌ Speech error:', e.error);
         if (utterDone || done) return;
         utterDone = true;
         if (fallbackId) { clearTimeout(fallbackId); fallbackId = null; }
         if ((e.error === "canceled" || e.error === "interrupted") && attempt < 2) {
+          console.log('🔄 Retrying speech...');
           setTimeout(() => trySpeak(2), 300);
         } else {
           finish();
