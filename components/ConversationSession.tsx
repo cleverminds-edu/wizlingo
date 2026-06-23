@@ -37,9 +37,58 @@ function getSpeechRecognition(): (new () => SpeechRecognitionInstance) | null {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
-const FEMALE_CHARACTERS = ["Meera", "Priya"];
+const FEMALE_CHARACTERS = ["Meera", "Priya", "Mom", "Sarah", "Emma", "Aisha", "Teacher", "Chef", "Librarian", "Maya", "Eco"];
+const MALE_CHARACTERS = ["Alex", "Jamie", "Ravi", "Marco", "Professor", "Mentor", "Coach", "Tech", "Sage"];
 
-// Voice pitch and rate matched to grade band and character gender
+// Character personality profiles with voice modulation
+const CHARACTER_VOICE_PROFILES: Record<string, { pitch: number; rate: number; volume?: number; warmth?: string }> = {
+  // Parent/Family
+  "Mom": { pitch: 1.4, rate: 0.85, warmth: "warm" },
+  // Friends
+  "Alex": { pitch: 1.1, rate: 0.95, warmth: "friendly" },
+  "Sarah": { pitch: 1.25, rate: 0.92, warmth: "friendly" },
+  "Jamie": { pitch: 1.0, rate: 0.93, warmth: "casual" },
+  "Ravi": { pitch: 0.95, rate: 0.88, warmth: "enthusiastic" },
+  "Aisha": { pitch: 1.3, rate: 0.90, warmth: "energetic" },
+  // Mentors/Teachers
+  "Teacher": { pitch: 1.2, rate: 0.90, warmth: "encouraging" },
+  "Professor": { pitch: 0.9, rate: 0.85, warmth: "thoughtful" },
+  "Chef": { pitch: 1.1, rate: 0.95, warmth: "enthusiastic" },
+  "Librarian": { pitch: 1.15, rate: 0.88, warmth: "thoughtful" },
+  "Explorer": { pitch: 1.0, rate: 1.0, warmth: "energetic" },
+  "Coach": { pitch: 0.95, rate: 0.93, warmth: "motivating" },
+  "Tech": { pitch: 0.98, rate: 0.92, warmth: "excited" },
+  "Sage": { pitch: 0.88, rate: 0.82, warmth: "wise" },
+  "Maya": { pitch: 1.2, rate: 0.90, warmth: "curious" },
+  "Eco": { pitch: 1.15, rate: 0.92, warmth: "passionate" },
+  "Emma": { pitch: 1.25, rate: 0.90, warmth: "friendly" },
+};
+
+// Topic-based rate and pitch modulation
+const TOPIC_VOICE_MODS: Record<string, { rateMod: number; pitchMod: number }> = {
+  "Breakfast": { rateMod: -0.05, pitchMod: 0.1 }, // Slower, warmer
+  "Pet": { rateMod: 0.05, pitchMod: 0.15 }, // Excited, enthusiastic
+  "School": { rateMod: -0.03, pitchMod: 0.0 }, // Normal, caring
+  "Weather": { rateMod: 0.02, pitchMod: 0.05 }, // Conversational
+  "Adventure": { rateMod: 0.08, pitchMod: 0.1 }, // Fast, excited
+  "Movie": { rateMod: 0.05, pitchMod: 0.1 }, // Enthusiastic
+  "Sports": { rateMod: 0.1, pitchMod: 0.05 }, // Energetic
+  "Hobby": { rateMod: 0.05, pitchMod: 0.08 }, // Enthusiastic
+  "Travel": { rateMod: 0.05, pitchMod: 0.12 }, // Excited
+  "Science": { rateMod: -0.05, pitchMod: -0.05 }, // Measured, thoughtful
+  "Food": { rateMod: 0.02, pitchMod: 0.1 }, // Warm, enthusiastic
+  "Music": { rateMod: 0.08, pitchMod: 0.15 }, // Energetic, excited
+  "Future": { rateMod: -0.02, pitchMod: 0.05 }, // Thoughtful, hopeful
+  "Technology": { rateMod: 0.05, pitchMod: 0.08 }, // Excited
+  "Book": { rateMod: -0.05, pitchMod: 0.02 }, // Thoughtful, warm
+  "Environment": { rateMod: -0.03, pitchMod: 0.05 }, // Passionate
+  "Culture": { rateMod: 0.0, pitchMod: 0.05 }, // Curious
+  "Dream": { rateMod: 0.03, pitchMod: 0.08 }, // Inspiring
+  "Friendship": { rateMod: 0.02, pitchMod: 0.08 }, // Warm
+  "Learning": { rateMod: -0.02, pitchMod: 0.05 }, // Encouraging
+};
+
+// Voice pitch and rate matched to grade band
 const VOICE_SETTINGS: Record<string, { pitchF: number; pitchM: number; rate: number }> = {
   BAND_1_2:  { pitchF: 1.5, pitchM: 1.2, rate: 0.82 },
   BAND_3_5:  { pitchF: 1.3, pitchM: 1.05, rate: 0.88 },
@@ -47,11 +96,37 @@ const VOICE_SETTINGS: Record<string, { pitchF: number; pitchM: number; rate: num
   BAND_9_10: { pitchF: 1.0, pitchM: 0.88, rate: 1.0  },
 };
 
-function pickVoice(character: string, gradeBand: string): { voice: SpeechSynthesisVoice | null; pitch: number; rate: number } {
-  const isFemale = FEMALE_CHARACTERS.includes(character);
-  const settings = VOICE_SETTINGS[gradeBand] ?? VOICE_SETTINGS.BAND_3_5;
-  const pitch = isFemale ? settings.pitchF : settings.pitchM;
-  const rate  = settings.rate;
+function pickVoice(character: string, gradeBand: string, topicTitle?: string): { voice: SpeechSynthesisVoice | null; pitch: number; rate: number } {
+  // Get character profile
+  let pitch = 1.0;
+  let rate = 0.88;
+
+  const charProfile = CHARACTER_VOICE_PROFILES[character];
+  if (charProfile) {
+    pitch = charProfile.pitch;
+    rate = charProfile.rate;
+  } else {
+    // Fallback to gender-based settings
+    const isFemale = FEMALE_CHARACTERS.includes(character);
+    const settings = VOICE_SETTINGS[gradeBand] ?? VOICE_SETTINGS.BAND_3_5;
+    pitch = isFemale ? settings.pitchF : settings.pitchM;
+    rate = settings.rate;
+  }
+
+  // Apply topic-based modulation
+  if (topicTitle) {
+    for (const [topicKey, mod] of Object.entries(TOPIC_VOICE_MODS)) {
+      if (topicTitle.toLowerCase().includes(topicKey.toLowerCase())) {
+        pitch += mod.pitchMod;
+        rate += mod.rateMod;
+        break;
+      }
+    }
+  }
+
+  // Clamp values to reasonable ranges
+  pitch = Math.max(0.5, Math.min(2.0, pitch));
+  rate = Math.max(0.5, Math.min(1.5, rate));
 
   const voices = window.speechSynthesis.getVoices();
   const local  = voices.filter(v => v.localService);
@@ -132,7 +207,7 @@ export default function ConversationSession({
     const makeUtter = (withVoice = true) => {
       const u = new SpeechSynthesisUtterance(text);
       u.lang = "en-IN";
-      const { voice, pitch, rate } = pickVoice(character, gradeBand);
+      const { voice, pitch, rate } = pickVoice(character, gradeBand, topicTitle);
       u.pitch = pitch;
       u.rate  = rate;
       if (withVoice && voice) u.voice = voice;
