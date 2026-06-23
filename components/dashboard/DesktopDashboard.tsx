@@ -241,7 +241,7 @@ export default function DesktopDashboard({ student, onLogout }: { student: Stude
           <div>
             <h1 className="text-2xl font-black text-white tracking-tight">{greeting(student.name)} 👋</h1>
             <p className="text-sm mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>
-              {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+              🔥 {student.progress?.totalSessions ?? 0} sessions done
             </p>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold"
@@ -253,37 +253,65 @@ export default function DesktopDashboard({ student, onLogout }: { student: Stude
 
         <div className="px-10 py-8 space-y-6">
 
-          {/* ── Row 1: Level hero + stat cards ─────────────────────────── */}
-          <div className="grid grid-cols-5 gap-5">
-
-            {/* Level hero */}
-            <div className="col-span-3 relative rounded-3xl p-8 overflow-hidden shadow-2xl"
-              style={{ background: `linear-gradient(135deg, ${meta.grad[0]}, ${meta.grad[1]})` }}>
-              <div className="absolute -right-6 -top-6 text-[160px] leading-none opacity-[0.08] select-none pointer-events-none">
-                {meta.emoji}
-              </div>
-              <div className="relative z-10">
-                <p className="text-xs font-bold uppercase tracking-widest mb-4"
-                  style={{ color: "rgba(255,255,255,0.55)" }}>Current Level</p>
-                <div className="flex items-end gap-5 mb-6">
-                  <span className="text-[80px] font-black leading-none text-white">{level}</span>
-                  <div className="mb-2">
-                    <p className="text-3xl font-black text-white">{meta.label}</p>
-                    <div className="flex gap-1 mt-1.5">
-                      {[1, 2, 3].map(i => (
-                        <span key={i} className={`text-lg transition-opacity ${i <= level ? "opacity-100" : "opacity-20"}`}>⭐</span>
-                      ))}
-                    </div>
+          {/* ── Row 1: GIANT HERO CTA BUTTONS ─────────────────────────── */}
+          <div className="grid grid-cols-2 gap-6">
+            {[
+              { label: "Read", emoji: "📖", grad: ["#FF6B35", "#F7931E"], sub: "Unlock new passages & earn stars", href: "/student/session" },
+              { label: "Speak", emoji: "🎤", grad: ["#7C3AED", "#DB2777"], sub: "Chat with AI & boost fluency", href: "/student/speaking" },
+            ].map(({ label, emoji, grad, sub, href }) => (
+              <button key={label} onClick={() => router.push(href)}
+                className="relative group rounded-3xl overflow-hidden shadow-2xl transition-all hover:shadow-3xl hover:scale-[1.02] active:scale-95"
+                style={{ background: `linear-gradient(135deg, ${grad[0]}, ${grad[1]})`, minHeight: "180px" }}>
+                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
+                <div className="p-8 text-center text-white relative z-10 flex flex-col items-center justify-center h-full">
+                  <div className="text-7xl mb-4 animate-bounce">{emoji}</div>
+                  <h2 className="text-5xl font-black mb-2">{label}</h2>
+                  <p className="text-lg font-semibold text-white/90">{sub}</p>
+                  <div className="mt-4 inline-block bg-white/20 px-4 py-2 rounded-xl text-sm font-bold">
+                    Tap to start
                   </div>
                 </div>
+              </button>
+            ))}
+          </div>
+
+          {/* ── Row 2: Quick Stats + Level Progress ─────────────────────── */}
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { emoji: "🔥", value: String(student.progress?.totalSessions ?? 0), label: "Sessions", sub: "completed" },
+              { emoji: "⚡", value: student.progress?.avgWpm ? `${Math.round(student.progress.avgWpm)}` : "—", label: "Avg WPM", sub: "words/min" },
+              { emoji: "🎯", value: student.progress?.avgAccuracy ? `${Math.round(student.progress.avgAccuracy)}%` : "—", label: "Accuracy", sub: "reading score" },
+            ].map(({ emoji, value, label, sub }) => (
+              <div key={label} className="rounded-2xl px-5 py-4"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-2xl">{emoji}</span>
+                  <span className="text-xs font-bold uppercase" style={{ color: "rgba(255,255,255,0.55)" }}>{label}</span>
+                </div>
+                <p className="text-3xl font-black text-white leading-none">{value}</p>
+                <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.25)" }}>{sub}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* ── Row 3: Level Progress Card ─────────────────────────────────── */}
+          <div className={`relative rounded-3xl p-8 overflow-hidden shadow-2xl`}
+            style={{ background: `linear-gradient(135deg, ${meta.grad[0]}, ${meta.grad[1]})` }}>
+            <div className="absolute -right-6 -top-6 text-[160px] leading-none opacity-[0.08] select-none pointer-events-none">
+              {meta.emoji}
+            </div>
+            <div className="relative z-10 flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-xs font-bold uppercase tracking-widest mb-3"
+                  style={{ color: "rgba(255,255,255,0.55)" }}>Level {level} · {meta.label}</p>
                 {level < 3 ? (
                   <>
                     <div className="flex justify-between text-sm mb-2">
                       <span style={{ color: "rgba(255,255,255,0.6)" }}>Progress to Level {level + 1}</span>
-                      <span className="text-white font-bold">{passes} / {PASSES_TO_LEVEL_UP} passes</span>
+                      <span className="text-white font-bold">{passes} / {PASSES_TO_LEVEL_UP}</span>
                     </div>
-                    <div className="rounded-full h-2.5" style={{ background: "rgba(0,0,0,0.25)" }}>
-                      <div className="h-2.5 rounded-full transition-all duration-700"
+                    <div className="rounded-full h-3" style={{ background: "rgba(0,0,0,0.25)" }}>
+                      <div className="h-3 rounded-full transition-all duration-700"
                         style={{ width: `${Math.min((passes / PASSES_TO_LEVEL_UP) * 100, 100)}%`, background: "rgba(255,255,255,0.85)" }} />
                     </div>
                   </>
@@ -292,32 +320,13 @@ export default function DesktopDashboard({ student, onLogout }: { student: Stude
                 )}
               </div>
             </div>
-
-            {/* Stat cards */}
-            <div className="col-span-2 flex flex-col gap-4">
-              {[
-                { emoji: "🔥", value: String(student.progress?.totalSessions ?? 0), label: "Total Sessions", sub: "completed" },
-                { emoji: "⚡", value: student.progress?.avgWpm ? `${Math.round(student.progress.avgWpm)}` : "—", label: "Avg Speed", sub: "words / min" },
-                { emoji: "🎯", value: student.progress?.avgAccuracy ? `${Math.round(student.progress.avgAccuracy)}%` : "—", label: "Accuracy", sub: "reading score" },
-              ].map(({ emoji, value, label, sub }) => (
-                <div key={label} className="flex-1 flex items-center gap-4 rounded-2xl px-5 py-4"
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                  <span className="text-2xl">{emoji}</span>
-                  <div>
-                    <p className="text-2xl font-black text-white leading-none">{value}</p>
-                    <p className="text-xs font-semibold mt-1" style={{ color: "rgba(255,255,255,0.55)" }}>{label}</p>
-                    <p className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>{sub}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
 
-          {/* ── Row 2: WPM chart + accuracy ring + coach ───────────────── */}
-          <div className="grid grid-cols-5 gap-5">
+          {/* ── Row 4: WPM chart + accuracy ring + coach ───────────────── */}
+          <div className="grid grid-cols-3 gap-5">
 
             {/* WPM line chart */}
-            <div className="col-span-3 rounded-3xl p-7"
+            <div className="col-span-2 rounded-3xl p-7"
               style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
               <p className="text-white font-bold text-base mb-1">Reading Speed Trend</p>
               <p className="text-xs mb-6" style={{ color: "rgba(255,255,255,0.35)" }}>Words per minute across your last sessions</p>
@@ -345,13 +354,13 @@ export default function DesktopDashboard({ student, onLogout }: { student: Stude
             </div>
 
             {/* Accuracy ring + AI coach */}
-            <div className="col-span-2 flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
 
               {/* Accuracy ring */}
               <div className="flex-1 rounded-3xl p-6 flex items-center gap-5"
                 style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div className="relative w-24 h-24 flex-shrink-0">
-                  <svg viewBox="0 0 80 80" className="w-24 h-24" style={{ transform: "rotate(-90deg)" }}>
+                <div className="relative w-20 h-20 flex-shrink-0">
+                  <svg viewBox="0 0 80 80" className="w-20 h-20" style={{ transform: "rotate(-90deg)" }}>
                     <circle cx="40" cy="40" r="32" fill="none"
                       stroke="rgba(255,255,255,0.07)" strokeWidth="7" />
                     <circle cx="40" cy="40" r="32" fill="none"
@@ -362,18 +371,18 @@ export default function DesktopDashboard({ student, onLogout }: { student: Stude
                       style={{ transition: "stroke-dashoffset 1.2s ease" }} />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-white font-black text-lg">
+                    <span className="text-white font-black text-sm">
                       {acc ? `${Math.round(acc)}%` : "—"}
                     </span>
                   </div>
                 </div>
                 <div>
-                  <p className="text-white font-bold">Accuracy</p>
+                  <p className="text-white font-bold text-sm">Accuracy</p>
                   <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>Avg reading score</p>
                   {acc > 0 && (
                     <p className="text-xs font-bold mt-2"
                       style={{ color: acc >= 85 ? "#34d399" : acc >= 70 ? "#fbbf24" : "#f87171" }}>
-                      {acc >= 85 ? "Excellent 🌟" : acc >= 70 ? "Good 👍" : "Keep practising 💪"}
+                      {acc >= 85 ? "Excellent 🌟" : acc >= 70 ? "Good 👍" : "Keep going 💪"}
                     </p>
                   )}
                 </div>
@@ -383,7 +392,7 @@ export default function DesktopDashboard({ student, onLogout }: { student: Stude
               <div className="flex-1 rounded-3xl p-6"
                 style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)" }}>
                 <p className="text-xs font-bold uppercase tracking-widest mb-3"
-                  style={{ color: "#818cf8" }}>🧙 WizLingo Coach</p>
+                  style={{ color: "#818cf8" }}>🧙 Coach</p>
                 <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
                   {coachMessage(student)}
                 </p>
@@ -391,88 +400,64 @@ export default function DesktopDashboard({ student, onLogout }: { student: Stude
             </div>
           </div>
 
-          {/* ── Row 3: CTA cards + recent sessions ─────────────────────── */}
-          <div className="grid grid-cols-5 gap-5">
-
-            {/* CTA cards */}
-            <div className="col-span-2 flex flex-col gap-4">
-              {[
-                { label: "Reading",  sub: "Read aloud · earn stars",      emoji: "📖", grad: ["#d97706","#ef4444"], href: "/student/session"  },
-                { label: "Speaking", sub: "Chat with AI · build fluency",  emoji: "🎤", grad: ["#6366f1","#a855f7"], href: "/student/speaking" },
-              ].map(({ label, sub, emoji, grad, href }) => (
-                <button key={label} onClick={() => router.push(href)}
-                  className="flex-1 relative rounded-3xl p-7 text-left overflow-hidden transition-transform hover:scale-[1.02] active:scale-[0.98]"
-                  style={{ background: `linear-gradient(135deg, ${grad[0]}, ${grad[1]})` }}>
-                  <span className="absolute right-4 bottom-2 text-[70px] opacity-[0.15] pointer-events-none select-none">
-                    {emoji}
-                  </span>
-                  <p className="text-xs font-bold uppercase tracking-widest mb-2"
-                    style={{ color: "rgba(255,255,255,0.55)" }}>Module</p>
-                  <p className="text-white font-black text-2xl">{label}</p>
-                  <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>{sub}</p>
-                </button>
-              ))}
-            </div>
-
-            {/* Recent sessions */}
-            <div className="col-span-3 rounded-3xl p-7"
-              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-              <p className="text-white font-bold text-base mb-5">Recent Sessions</p>
-              {student.sessions.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 gap-3">
-                  <span className="text-4xl">🌟</span>
-                  <p className="text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>No sessions yet — start reading!</p>
+          {/* ── Row 5: Recent sessions ───────────────────────────── */}
+          <div className="rounded-3xl p-7"
+            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+            <p className="text-white font-bold text-base mb-5">Recent Sessions</p>
+            {student.sessions.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 gap-3">
+                <span className="text-4xl">🌟</span>
+                <p className="text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>No sessions yet — start reading!</p>
+              </div>
+            ) : (
+              <div>
+                {/* Table header */}
+                <div className="grid grid-cols-4 text-xs font-bold uppercase tracking-widest mb-3 px-2"
+                  style={{ color: "rgba(255,255,255,0.25)" }}>
+                  <span className="col-span-2">Passage</span>
+                  <span className="text-center">Speed</span>
+                  <span className="text-right">Score</span>
                 </div>
-              ) : (
-                <div>
-                  {/* Table header */}
-                  <div className="grid grid-cols-4 text-xs font-bold uppercase tracking-widest mb-3 px-2"
-                    style={{ color: "rgba(255,255,255,0.25)" }}>
-                    <span className="col-span-2">Passage</span>
-                    <span className="text-center">Speed</span>
-                    <span className="text-right">Score</span>
-                  </div>
-                  <div className="space-y-1">
-                    {student.sessions.slice(0, 7).map((s) => {
-                      const stars = !s.wpm ? 0 : (s.accuracy ?? 0) >= 90 ? 3 : (s.accuracy ?? 0) >= 80 ? 2 : 1;
-                      return (
-                        <div key={s.id}
-                          className="grid grid-cols-4 items-center px-3 py-3 rounded-xl transition-colors"
-                          style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)"; }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
-                          <div className="col-span-2 flex items-center gap-3 min-w-0">
-                            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs flex-shrink-0"
-                              style={{ background: "rgba(99,102,241,0.2)" }}>
-                              {s.passage.level === 1 ? "🌱" : s.passage.level === 2 ? "🚀" : "🏆"}
-                            </div>
-                            <div className="min-w-0">
-                              <p className="text-white text-sm font-medium truncate">{s.passage.title}</p>
-                              <p className="text-xs" style={{ color: "rgba(255,255,255,0.28)" }}>Level {s.passage.level}</p>
-                            </div>
+                <div className="space-y-1">
+                  {student.sessions.slice(0, 7).map((s) => {
+                    const stars = !s.wpm ? 0 : (s.accuracy ?? 0) >= 90 ? 3 : (s.accuracy ?? 0) >= 80 ? 2 : 1;
+                    return (
+                      <div key={s.id}
+                        className="grid grid-cols-4 items-center px-3 py-3 rounded-xl transition-colors"
+                        style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)"; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                        <div className="col-span-2 flex items-center gap-3 min-w-0">
+                          <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs flex-shrink-0"
+                            style={{ background: "rgba(99,102,241,0.2)" }}>
+                            {s.passage.level === 1 ? "🌱" : s.passage.level === 2 ? "🚀" : "🏆"}
                           </div>
-                          <div className="text-center">
-                            {s.wpm
-                              ? <span className="text-sm font-bold" style={{ color: "#a5b4fc" }}>{Math.round(s.wpm)} <span className="text-xs font-normal" style={{ color: "rgba(255,255,255,0.3)" }}>wpm</span></span>
-                              : <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(245,158,11,0.15)", color: "#fbbf24" }}>Pending</span>
-                            }
-                          </div>
-                          <div className="flex justify-end gap-0.5">
-                            {s.wpm
-                              ? [1,2,3].map(i => <span key={i} className={`text-sm ${i <= stars ? "opacity-100" : "opacity-15"}`}>⭐</span>)
-                              : null
-                            }
+                          <div className="min-w-0">
+                            <p className="text-white text-sm font-medium truncate">{s.passage.title}</p>
+                            <p className="text-xs" style={{ color: "rgba(255,255,255,0.28)" }}>Level {s.passage.level}</p>
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
+                        <div className="text-center">
+                          {s.wpm
+                            ? <span className="text-sm font-bold" style={{ color: "#a5b4fc" }}>{Math.round(s.wpm)} <span className="text-xs font-normal" style={{ color: "rgba(255,255,255,0.3)" }}>wpm</span></span>
+                            : <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(245,158,11,0.15)", color: "#fbbf24" }}>Pending</span>
+                          }
+                        </div>
+                        <div className="flex justify-end gap-0.5">
+                          {s.wpm
+                            ? [1,2,3].map(i => <span key={i} className={`text-sm ${i <= stars ? "opacity-100" : "opacity-15"}`}>⭐</span>)
+                            : null
+                          }
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
-          {/* ── Row 4: Badges & Achievements ─────────────────────── */}
+          {/* ── Row 6: Badges & Achievements ─────────────────────── */}
           <div className="mt-8">
             <ModernBadgeDisplay
               studentId={student.id}
