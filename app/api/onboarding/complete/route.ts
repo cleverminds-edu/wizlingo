@@ -1,22 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { validateBody, onboardingCompleteSchema } from '@/lib/validation';
 import jwt from 'jsonwebtoken';
 
 export async function POST(req: NextRequest) {
   try {
-    // Validate request body
-    const validation = await validateBody(req, onboardingCompleteSchema);
-    if (!validation.success) {
-      console.error('Onboarding complete: validation error', validation.error);
+    // Parse request body
+    let body: any;
+    try {
+      body = await req.json();
+    } catch (e) {
+      console.error('❌ Failed to parse JSON:', e instanceof Error ? e.message : e);
       return NextResponse.json(
-        { error: validation.error },
+        { error: 'Invalid JSON in request body' },
         { status: 400 }
       );
     }
 
-    const { studentId } = validation.data;
+    const { studentId } = body;
+    if (!studentId || typeof studentId !== 'string') {
+      console.error('❌ Missing or invalid studentId:', studentId);
+      return NextResponse.json(
+        { error: 'studentId is required and must be a string' },
+        { status: 400 }
+      );
+    }
     console.log('📝 Onboarding complete request for studentId:', studentId);
 
     // Authenticate: try session first, then JWT bearer token
