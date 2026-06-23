@@ -24,37 +24,43 @@ export async function POST(request: NextRequest) {
 
     let student = null;
 
-    // Check if it's a UserID (starts with WL) or phone number
-    if (username.startsWith('WL') || username.startsWith('wl')) {
-      // B2C login with UserID
-      student = await prisma.student.findUnique({
-        where: { userId: username.toUpperCase() },
-        include: { progress: true }
-      });
+    try {
+      // Check if it's a UserID (starts with WL) or phone number
+      if (username.startsWith('WL') || username.startsWith('wl')) {
+        // B2C login with UserID
+        student = await prisma.student.findUnique({
+          where: { userId: username.toUpperCase() }
+        });
 
-      if (!student) {
+        if (!student) {
+          return NextResponse.json(
+            { error: 'UserID not found' },
+            { status: 401 }
+          );
+        }
+      } else if (/^\d{10}$/.test(username)) {
+        // School login with phone
+        student = await prisma.student.findUnique({
+          where: { phone: username }
+        });
+
+        if (!student) {
+          return NextResponse.json(
+            { error: 'Phone number not found' },
+            { status: 401 }
+          );
+        }
+      } else {
         return NextResponse.json(
-          { error: 'UserID not found' },
-          { status: 401 }
+          { error: 'Invalid UserID or phone format' },
+          { status: 400 }
         );
       }
-    } else if (/^\d{10}$/.test(username)) {
-      // School login with phone
-      student = await prisma.student.findUnique({
-        where: { phone: username },
-        select: { id: true, phone: true, passwordHash: true, progress: true }
-      });
-
-      if (!student) {
-        return NextResponse.json(
-          { error: 'Phone number not found' },
-          { status: 401 }
-        );
-      }
-    } else {
+    } catch (dbError) {
+      console.error('Database error finding student:', dbError);
       return NextResponse.json(
-        { error: 'Invalid UserID or phone format' },
-        { status: 400 }
+        { error: 'Database error' },
+        { status: 500 }
       );
     }
 

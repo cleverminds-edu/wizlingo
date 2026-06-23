@@ -6,31 +6,31 @@ import Image from 'next/image';
 
 export default function LoginPasswordPage() {
   const router = useRouter();
-  const [phone, setPhone] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isValid, setIsValid] = useState(false);
+  const [forcePasswordChange, setForcePasswordChange] = useState(false);
+  const [studentId, setStudentId] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 10);
-    setPhone(value);
-    setIsValid(value.length === 10 && password.length >= 6);
-  };
-
-  const formatPhoneDisplay = (value: string) => {
-    if (!value) return '';
-    if (value.length <= 5) return value;
-    if (value.length <= 9) return `${value.slice(0, 5)} ${value.slice(5)}`;
-    return `${value.slice(0, 5)} ${value.slice(5, 10)}`;
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.trim();
+    setUsername(value);
+    const isValidUserID = /^WL\d{3}$/i.test(value);
+    const isValidPhone = /^\d{10}$/.test(value);
+    setIsValid((isValidUserID || isValidPhone) && password.length >= 6);
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (phone.length !== 10) {
-      setError('Please enter a valid phone number');
+    if (!username) {
+      setError('Please enter your UserID or phone number');
       return;
     }
 
@@ -41,37 +41,78 @@ export default function LoginPasswordPage() {
 
     setLoading(true);
     try {
-      console.log('Attempting login with phone:', phone);
       const response = await fetch('/api/auth/login-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, password }),
+        body: JSON.stringify({ username, password }),
       });
 
-      console.log('Login response status:', response.status);
       const data = await response.json();
-      console.log('Login response data:', data);
 
       if (!response.ok) {
-        const errorMsg = data.error || 'Login failed';
-        console.error('Login failed:', errorMsg);
-        setError(errorMsg);
+        setError(data.error || 'Login failed');
         return;
       }
 
-      console.log('Login successful, storing token and redirecting...');
-      // Store token
-      localStorage.setItem('token', data.token);
+      // Check if password change is required
+      if (data.status === 'FORCE_PASSWORD_CHANGE') {
+        setForcePasswordChange(true);
+        setStudentId(data.studentId);
+        setPassword('');
+        return;
+      }
 
-      // Redirect to dashboard
-      console.log('Redirecting to dashboard...');
+      // Store token and redirect
+      localStorage.setItem('token', data.token);
       router.push('/student/dashboard');
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-      console.error('Login error:', errorMsg, err);
       setError('Error logging in. Please try again.');
+      console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (newPassword.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      const response = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ studentId, newPassword }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to change password');
+        return;
+      }
+
+      alert('Password changed successfully! Please login with your new password.');
+      setForcePasswordChange(false);
+      setUsername('');
+      setPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      setError('Error changing password. Please try again.');
+      console.error(err);
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -149,77 +190,139 @@ export default function LoginPasswordPage() {
             Welcome back to WizLingo
           </p>
 
-          <form onSubmit={handleLogin} className="space-y-6 fade-in-up fade-in-up-delay-3">
-            {/* Phone Input */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
-                📱 Phone Number
-              </label>
-              <div className="relative">
-                <div className="absolute left-4 top-4 text-gray-700 font-semibold text-lg">
-                  +91
-                </div>
+          {!forcePasswordChange ? (
+            <form onSubmit={handleLogin} className="space-y-6 fade-in-up fade-in-up-delay-3">
+              {/* Username Input (UserID or Phone) */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  🆔 UserID or Phone
+                </label>
                 <input
-                  type="tel"
-                  placeholder="98765 43210"
-                  value={formatPhoneDisplay(phone)}
-                  onChange={handlePhoneChange}
+                  type="text"
+                  placeholder="e.g., WL001 or 98765 43210"
+                  value={username}
+                  onChange={handleUsernameChange}
                   disabled={loading}
-                  maxLength={11}
-                  className="w-full pl-16 pr-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 text-lg tracking-wider font-semibold transition-all placeholder:text-gray-400"
+                  className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 text-lg transition-all placeholder:text-gray-400"
                 />
               </div>
-            </div>
 
-            {/* Password Input */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-3">
-                🔐 Password
-              </label>
-              <input
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setIsValid(phone.length === 10 && e.target.value.length >= 6);
-                }}
-                disabled={loading}
-                className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 text-lg transition-all placeholder:text-gray-400"
-              />
-            </div>
-
-            {/* Error */}
-            {error && (
-              <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl">
-                <p className="text-red-700 text-sm font-medium">⚠️ {error}</p>
+              {/* Password Input */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  🔐 Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    const isValidUserID = /^WL\d{3}$/i.test(username);
+                    const isValidPhone = /^\d{10}$/.test(username);
+                    setIsValid((isValidUserID || isValidPhone) && e.target.value.length >= 6);
+                  }}
+                  disabled={loading}
+                  className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 text-lg transition-all placeholder:text-gray-400"
+                />
               </div>
-            )}
 
-            {/* Sign In Button */}
-            <button
-              type="submit"
-              disabled={loading || !isValid}
-              className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 duration-200"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Signing in...
-                </span>
-              ) : (
-                '🔓 Sign In'
+              {/* Error */}
+              {error && (
+                <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl">
+                  <p className="text-red-700 text-sm font-medium">⚠️ {error}</p>
+                </div>
               )}
-            </button>
-          </form>
+
+              {/* Sign In Button */}
+              <button
+                type="submit"
+                disabled={loading || !isValid}
+                className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 duration-200"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Signing in...
+                  </span>
+                ) : (
+                  '🔓 Sign In'
+                )}
+              </button>
+            </form>
+          ) : (
+            /* Force Password Change Form */
+            <form onSubmit={handleChangePassword} className="space-y-6 fade-in-up fade-in-up-delay-3">
+              <div className="p-4 bg-yellow-50 border-2 border-yellow-300 rounded-xl">
+                <p className="text-yellow-800 text-sm font-semibold">⚠️ First Login: Change Your Password</p>
+                <p className="text-yellow-700 text-xs mt-2">For security, you must set a new password before accessing the app.</p>
+              </div>
+
+              {/* New Password */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="At least 8 characters"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  disabled={changingPassword}
+                  className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 text-lg transition-all placeholder:text-gray-400"
+                />
+                <p className="text-xs text-gray-500 mt-1">Min 8 characters, mix of uppercase, lowercase, numbers</p>
+              </div>
+
+              {/* Confirm Password */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="Re-enter your password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  disabled={changingPassword}
+                  className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-transparent focus:ring-2 focus:ring-orange-500 text-lg transition-all placeholder:text-gray-400"
+                />
+              </div>
+
+              {/* Error */}
+              {error && (
+                <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl">
+                  <p className="text-red-700 text-sm font-medium">⚠️ {error}</p>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={changingPassword || newPassword.length < 8 || newPassword !== confirmPassword}
+                className="w-full py-4 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-xl hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 duration-200"
+              >
+                {changingPassword ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Setting Password...
+                  </span>
+                ) : (
+                  '✅ Set Password & Login'
+                )}
+              </button>
+            </form>
+          )}
 
           {/* Password Info - After Form */}
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mt-6 mb-6 fade-in-up fade-in-up-delay-3">
-            <p className="text-xs text-blue-800 leading-relaxed">
-              <span className="font-semibold">🔑 Password Reminder:</span><br/>
-              Your password is: First 3 letters of name + birth year + last 3 phone digits
-            </p>
-          </div>
+          {!forcePasswordChange && (
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mt-6 mb-6 fade-in-up fade-in-up-delay-3">
+              <p className="text-xs text-blue-800 leading-relaxed">
+                <span className="font-semibold">💡 First Time?</span><br/>
+                If this is your first login with B2C (WL001 etc), your default password is your phone number.
+              </p>
+            </div>
+          )}
 
           {/* Divider */}
           <div className="flex items-center gap-2 my-6">
@@ -229,12 +332,14 @@ export default function LoginPasswordPage() {
           </div>
 
           {/* Sign Up Link */}
-          <button
-            onClick={() => router.push('/auth/signup')}
-            className="w-full py-3 border-2 border-purple-200 text-purple-700 font-semibold rounded-xl hover:bg-purple-50 text-sm transition-all"
-          >
-            ✨ Create Account
-          </button>
+          {!forcePasswordChange && (
+            <button
+              onClick={() => router.push('/auth/signup-b2c')}
+              className="w-full py-3 border-2 border-purple-200 text-purple-700 font-semibold rounded-xl hover:bg-purple-50 text-sm transition-all"
+            >
+              ✨ Create Account
+            </button>
+          )}
 
           {/* Legal */}
           <p className="text-center text-xs text-gray-500 mt-4 fade-in-up fade-in-up-delay-4">

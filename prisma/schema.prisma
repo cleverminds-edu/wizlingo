@@ -7,6 +7,7 @@ datasource db {
   provider = "postgresql"
 }
 
+
 model School {
   id                      String                       @id @default(cuid())
   name                    String
