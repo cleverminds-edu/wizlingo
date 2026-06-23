@@ -40,52 +40,52 @@ function getSpeechRecognition(): (new () => SpeechRecognitionInstance) | null {
 const FEMALE_CHARACTERS = ["Meera", "Priya", "Mom", "Sarah", "Emma", "Aisha", "Teacher", "Chef", "Librarian", "Maya", "Eco"];
 const MALE_CHARACTERS = ["Alex", "Jamie", "Ravi", "Marco", "Professor", "Mentor", "Coach", "Tech", "Sage"];
 
-// Character personality profiles with voice modulation
+// Character personality profiles with voice modulation (subtle, natural)
 const CHARACTER_VOICE_PROFILES: Record<string, { pitch: number; rate: number; volume?: number; warmth?: string }> = {
   // Parent/Family
-  "Mom": { pitch: 1.4, rate: 0.85, warmth: "warm" },
+  "Mom": { pitch: 1.15, rate: 0.92, warmth: "warm" },
   // Friends
-  "Alex": { pitch: 1.1, rate: 0.95, warmth: "friendly" },
-  "Sarah": { pitch: 1.25, rate: 0.92, warmth: "friendly" },
-  "Jamie": { pitch: 1.0, rate: 0.93, warmth: "casual" },
-  "Ravi": { pitch: 0.95, rate: 0.88, warmth: "enthusiastic" },
-  "Aisha": { pitch: 1.3, rate: 0.90, warmth: "energetic" },
+  "Alex": { pitch: 1.0, rate: 0.95, warmth: "friendly" },
+  "Sarah": { pitch: 1.08, rate: 0.94, warmth: "friendly" },
+  "Jamie": { pitch: 1.0, rate: 0.95, warmth: "casual" },
+  "Ravi": { pitch: 0.98, rate: 0.92, warmth: "enthusiastic" },
+  "Aisha": { pitch: 1.10, rate: 0.93, warmth: "energetic" },
   // Mentors/Teachers
-  "Teacher": { pitch: 1.2, rate: 0.90, warmth: "encouraging" },
-  "Professor": { pitch: 0.9, rate: 0.85, warmth: "thoughtful" },
-  "Chef": { pitch: 1.1, rate: 0.95, warmth: "enthusiastic" },
-  "Librarian": { pitch: 1.15, rate: 0.88, warmth: "thoughtful" },
-  "Explorer": { pitch: 1.0, rate: 1.0, warmth: "energetic" },
-  "Coach": { pitch: 0.95, rate: 0.93, warmth: "motivating" },
-  "Tech": { pitch: 0.98, rate: 0.92, warmth: "excited" },
-  "Sage": { pitch: 0.88, rate: 0.82, warmth: "wise" },
-  "Maya": { pitch: 1.2, rate: 0.90, warmth: "curious" },
-  "Eco": { pitch: 1.15, rate: 0.92, warmth: "passionate" },
-  "Emma": { pitch: 1.25, rate: 0.90, warmth: "friendly" },
+  "Teacher": { pitch: 1.05, rate: 0.93, warmth: "encouraging" },
+  "Professor": { pitch: 0.95, rate: 0.90, warmth: "thoughtful" },
+  "Chef": { pitch: 1.02, rate: 0.94, warmth: "enthusiastic" },
+  "Librarian": { pitch: 1.05, rate: 0.92, warmth: "thoughtful" },
+  "Explorer": { pitch: 1.0, rate: 0.98, warmth: "energetic" },
+  "Coach": { pitch: 0.98, rate: 0.94, warmth: "motivating" },
+  "Tech": { pitch: 1.0, rate: 0.94, warmth: "excited" },
+  "Sage": { pitch: 0.95, rate: 0.90, warmth: "wise" },
+  "Maya": { pitch: 1.05, rate: 0.93, warmth: "curious" },
+  "Eco": { pitch: 1.05, rate: 0.94, warmth: "passionate" },
+  "Emma": { pitch: 1.08, rate: 0.93, warmth: "friendly" },
 };
 
-// Topic-based rate and pitch modulation
+// Topic-based rate and pitch modulation (subtle, natural)
 const TOPIC_VOICE_MODS: Record<string, { rateMod: number; pitchMod: number }> = {
-  "Breakfast": { rateMod: -0.05, pitchMod: 0.1 }, // Slower, warmer
-  "Pet": { rateMod: 0.05, pitchMod: 0.15 }, // Excited, enthusiastic
-  "School": { rateMod: -0.03, pitchMod: 0.0 }, // Normal, caring
-  "Weather": { rateMod: 0.02, pitchMod: 0.05 }, // Conversational
-  "Adventure": { rateMod: 0.08, pitchMod: 0.1 }, // Fast, excited
-  "Movie": { rateMod: 0.05, pitchMod: 0.1 }, // Enthusiastic
-  "Sports": { rateMod: 0.1, pitchMod: 0.05 }, // Energetic
-  "Hobby": { rateMod: 0.05, pitchMod: 0.08 }, // Enthusiastic
-  "Travel": { rateMod: 0.05, pitchMod: 0.12 }, // Excited
-  "Science": { rateMod: -0.05, pitchMod: -0.05 }, // Measured, thoughtful
-  "Food": { rateMod: 0.02, pitchMod: 0.1 }, // Warm, enthusiastic
-  "Music": { rateMod: 0.08, pitchMod: 0.15 }, // Energetic, excited
-  "Future": { rateMod: -0.02, pitchMod: 0.05 }, // Thoughtful, hopeful
-  "Technology": { rateMod: 0.05, pitchMod: 0.08 }, // Excited
-  "Book": { rateMod: -0.05, pitchMod: 0.02 }, // Thoughtful, warm
-  "Environment": { rateMod: -0.03, pitchMod: 0.05 }, // Passionate
-  "Culture": { rateMod: 0.0, pitchMod: 0.05 }, // Curious
-  "Dream": { rateMod: 0.03, pitchMod: 0.08 }, // Inspiring
-  "Friendship": { rateMod: 0.02, pitchMod: 0.08 }, // Warm
-  "Learning": { rateMod: -0.02, pitchMod: 0.05 }, // Encouraging
+  "Breakfast": { rateMod: -0.02, pitchMod: 0.03 }, // Slightly slower, warmer
+  "Pet": { rateMod: 0.02, pitchMod: 0.04 }, // Slightly excited
+  "School": { rateMod: 0.0, pitchMod: 0.0 }, // Natural
+  "Weather": { rateMod: 0.01, pitchMod: 0.02 }, // Conversational
+  "Adventure": { rateMod: 0.03, pitchMod: 0.04 }, // Slightly faster, excited
+  "Movie": { rateMod: 0.02, pitchMod: 0.03 }, // Slightly enthusiastic
+  "Sports": { rateMod: 0.03, pitchMod: 0.02 }, // Slightly energetic
+  "Hobby": { rateMod: 0.02, pitchMod: 0.03 }, // Slightly enthusiastic
+  "Travel": { rateMod: 0.02, pitchMod: 0.04 }, // Slightly excited
+  "Science": { rateMod: -0.02, pitchMod: -0.02 }, // Slightly measured
+  "Food": { rateMod: 0.01, pitchMod: 0.03 }, // Slightly warm
+  "Music": { rateMod: 0.03, pitchMod: 0.04 }, // Slightly energetic
+  "Future": { rateMod: -0.01, pitchMod: 0.02 }, // Thoughtful
+  "Technology": { rateMod: 0.02, pitchMod: 0.03 }, // Slightly excited
+  "Book": { rateMod: -0.02, pitchMod: 0.01 }, // Thoughtful
+  "Environment": { rateMod: -0.01, pitchMod: 0.02 }, // Engaged
+  "Culture": { rateMod: 0.0, pitchMod: 0.02 }, // Curious
+  "Dream": { rateMod: 0.01, pitchMod: 0.03 }, // Inspiring
+  "Friendship": { rateMod: 0.01, pitchMod: 0.03 }, // Warm
+  "Learning": { rateMod: -0.01, pitchMod: 0.02 }, // Encouraging
 };
 
 // Voice pitch and rate matched to grade band
