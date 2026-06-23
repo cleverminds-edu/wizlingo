@@ -302,11 +302,192 @@ export default function StudentDashboard() {
       </header>
 
       {/* Main content */}
-      <main className="flex-1 px-6 py-4 max-w-7xl w-full mx-auto">
-        <div className="grid grid-cols-3 gap-4 h-full">
+      <main className="flex-1 px-6 py-6 max-w-6xl w-full mx-auto">
 
-          {/* Left column: hero + CTA */}
-          <div className="col-span-2 flex flex-col gap-4">
+        {/* Hero Welcome Section */}
+        <div className="mb-8 animate-slide-up">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h1 className="text-5xl font-black text-white mb-2">
+                Hey {firstName}! 👋
+              </h1>
+              <p className="text-purple-300 text-lg font-semibold">
+                {level < 3 ? `You're a ${levelInfo.label}! Keep going! 🚀` : "You're a Champion! Keep it up! 🏆"}
+              </p>
+            </div>
+            <div className="bg-gradient-to-br from-orange-400 to-pink-500 rounded-3xl p-6 text-center shadow-2xl min-w-max">
+              <div className="text-xs text-white/80 font-bold uppercase mb-1">Current Streak</div>
+              <div className="text-5xl font-black text-white">🔥 {totalSessions}</div>
+              <div className="text-sm text-white/90 font-semibold mt-1">sessions done</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Stats Bar */}
+        <div className="grid grid-cols-3 gap-3 mb-8 animate-slide-up" style={{ animationDelay: "0.05s" }}>
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-2xl">{levelInfo.emoji}</span>
+              <span className="text-white/70 text-xs font-bold uppercase">Level</span>
+            </div>
+            <div className="text-3xl font-black text-white">{level}</div>
+            <div className="text-xs text-purple-400 mt-1">{levelInfo.label}</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-2xl">⚡</span>
+              <span className="text-white/70 text-xs font-bold uppercase">Avg WPM</span>
+            </div>
+            <div className="text-3xl font-black text-white">{student.progress?.avgWpm ? Math.round(student.progress.avgWpm) : "--"}</div>
+            <div className="text-xs text-purple-400 mt-1">words/minute</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-2xl">🎯</span>
+              <span className="text-white/70 text-xs font-bold uppercase">Accuracy</span>
+            </div>
+            <div className="text-3xl font-black text-white">{student.progress?.avgAccuracy ? Math.round(student.progress.avgAccuracy) : "--"}%</div>
+            <div className="text-xs text-purple-400 mt-1">reading score</div>
+          </div>
+        </div>
+
+        {/* Level Progress Card */}
+        <div className={`bg-gradient-to-br ${levelInfo.color} rounded-3xl p-6 mb-8 text-white shadow-2xl animate-slide-up`} style={{ animationDelay: "0.1s" }}>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-white/80 text-sm font-bold uppercase mb-2">Progress to Next Level</p>
+              <div className="bg-white/20 rounded-full h-5 w-64">
+                <div className="bg-white rounded-full h-5 transition-all duration-700"
+                  style={{ width: `${Math.min(passedSessions / PASSES_TO_LEVEL_UP * 100, 100)}%` }} />
+              </div>
+              <p className="text-white/90 text-sm font-semibold mt-2">
+                {level < 3 ? `${passedSessions}/${PASSES_TO_LEVEL_UP} passes to level up` : "Max Level Reached! You're Amazing! 🌟"}
+              </p>
+            </div>
+            <div className="text-7xl opacity-20">{levelInfo.emoji}</div>
+          </div>
+        </div>
+
+        {/* Hero CTA Section - Read & Speak */}
+        <div className="grid grid-cols-2 gap-4 mb-8 animate-slide-up" style={{ animationDelay: "0.15s" }}>
+          <button onClick={() => router.push("/student/session")}
+            className="relative group rounded-3xl overflow-hidden shadow-2xl transition-all hover:shadow-3xl hover:scale-[1.02] active:scale-95"
+            style={{ background: "linear-gradient(135deg, #FF6B35 0%, #F7931E 100%)" }}>
+            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
+            <div className="p-8 text-center text-white relative z-10">
+              <div className="text-7xl mb-4 animate-bounce">📖</div>
+              <h2 className="text-4xl font-black mb-2">Read</h2>
+              <p className="text-lg font-semibold text-white/90">Unlock new passages & earn stars</p>
+              <div className="mt-4 inline-block bg-white/20 px-4 py-2 rounded-xl text-sm font-bold">
+                Tap to start
+              </div>
+            </div>
+          </button>
+
+          <button onClick={() => router.push("/student/speaking")}
+            className="relative group rounded-3xl overflow-hidden shadow-2xl transition-all hover:shadow-3xl hover:scale-[1.02] active:scale-95"
+            style={{ background: "linear-gradient(135deg, #7C3AED 0%, #DB2777 100%)" }}>
+            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
+            <div className="p-8 text-center text-white relative z-10">
+              <div className="text-7xl mb-4 animate-bounce" style={{ animationDelay: "0.2s" }}>🎤</div>
+              <h2 className="text-4xl font-black mb-2">Speak</h2>
+              <p className="text-lg font-semibold text-white/90">Chat with AI & boost fluency</p>
+              <div className="mt-4 inline-block bg-white/20 px-4 py-2 rounded-xl text-sm font-bold">
+                Tap to start
+              </div>
+            </div>
+          </button>
+        </div>
+
+        {/* Achievements Section */}
+        <div className="grid grid-cols-2 gap-8 animate-slide-up" style={{ animationDelay: "0.2s" }}>
+          {/* Badges */}
+          <div>
+            <h3 className="text-purple-300 text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
+              <span className="text-xl">🏆</span> Your Achievements
+            </h3>
+            {student.badges.length === 0 ? (
+              <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/10">
+                <div className="text-4xl mb-2">🎯</div>
+                <p className="text-purple-300 text-sm font-semibold">Earn badges as you progress!</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                {student.badges.map((badge) => {
+                  const meta = BADGE_META[badge.type];
+                  if (!meta) return null;
+                  return (
+                    <div key={badge.type}
+                      className={`bg-gradient-to-br ${meta.color} rounded-2xl p-4 text-center shadow-lg hover:shadow-xl transition-all hover:scale-105`}>
+                      <div className="text-5xl mb-2">{meta.emoji}</div>
+                      <p className="text-white font-black text-sm">{meta.label}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {student.certificates.length > 0 && (
+              <a
+                href={`/certificate/${student.certificates[0].verifyCode}`}
+                target="_blank"
+                className="mt-3 block text-center text-xs text-emerald-400 hover:text-emerald-300 font-bold underline"
+              >
+                📜 View Certificate
+              </a>
+            )}
+          </div>
+
+          {/* Recent Sessions */}
+          <div>
+            <h3 className="text-purple-300 text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
+              <span className="text-xl">📚</span> Recent Adventures
+            </h3>
+            {student.sessions.length === 0 ? (
+              <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/10">
+                <div className="text-4xl mb-2">✨</div>
+                <p className="text-purple-300 text-sm font-semibold">No adventures yet!</p>
+                <p className="text-purple-400 text-xs mt-1">Click Read or Speak to get started</p>
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {student.sessions.slice(0, 6).map((s) => {
+                  const stars = !s.wpm ? 0 : s.accuracy! >= 90 ? 3 : s.accuracy! >= 80 ? 2 : 1;
+                  return (
+                    <div key={s.id}
+                      className="bg-white/10 backdrop-blur-sm rounded-xl px-3 py-3 border border-white/10 hover:bg-white/15 transition-colors">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-xl">{TOPIC_EMOJI[s.passage?.title] ?? "📖"}</span>
+                          <div className="min-w-0">
+                            <p className="text-white font-semibold text-sm truncate">{s.passage.title}</p>
+                            <p className="text-purple-400 text-xs">Lvl {s.passage.level}</p>
+                          </div>
+                        </div>
+                        {s.wpm ? (
+                          <div className="text-right flex-shrink-0">
+                            <div className="flex gap-0.5">
+                              {[...Array(3)].map((_, i) => (
+                                <span key={i} className={i < stars ? "text-lg" : "text-lg opacity-30"}>⭐</span>
+                              ))}
+                            </div>
+                            <p className="text-purple-300 text-xs font-semibold mt-0.5">{Math.round(s.wpm)} WPM</p>
+                          </div>
+                        ) : (
+                          <span className="text-xs bg-amber-500/30 text-amber-300 px-2 py-1 rounded-full flex-shrink-0">In Progress</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+      </main>
+    </div>
+  );
+}
 
             {/* Hero card */}
             <div className={`relative rounded-3xl p-8 text-white overflow-hidden bg-gradient-to-br ${levelInfo.color} shadow-2xl animate-slide-up`}>
