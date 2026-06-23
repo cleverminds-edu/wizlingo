@@ -1,4 +1,4 @@
-import { getSession } from "@/lib/auth";
+import { getAuth, getStudentIdFromAuth } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
 import { BadgeType } from "@/app/generated/prisma/client";
 
@@ -6,15 +6,15 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ studentId: string }> }
 ) {
-  const authSession = await getSession();
-  if (!authSession) {
+  const auth = await getAuth(request);
+  if (!auth) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { studentId } = await params;
 
   // Authorization: only the student themselves or a teacher/admin can view
-  if (authSession.role === "student" && authSession.id !== studentId) {
+  if (auth.role === "student" && getStudentIdFromAuth(auth) !== studentId) {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 

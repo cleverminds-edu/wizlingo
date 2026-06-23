@@ -1,17 +1,18 @@
-import { getSession } from "@/lib/auth";
+import { getAuth, getStudentIdFromAuth } from "@/lib/auth-utils";
 import { prisma } from "@/lib/prisma";
 import { gradeToBand } from "@/lib/scoring";
 import { ageBandToGradeBand } from "@/lib/age-band-mapping";
 import { selectReadingPassage } from "@/lib/content-selection";
 
-export async function GET() {
-  const session = await getSession();
-  if (!session || session.role !== "student") {
+export async function GET(request: Request) {
+  const auth = await getAuth(request);
+  if (!auth || auth.role !== "student") {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const studentId = getStudentIdFromAuth(auth);
   const student = await prisma.student.findUnique({
-    where: { id: session.id },
+    where: { id: studentId },
     include: { class: true, progress: true },
   });
   if (!student) return Response.json({ error: "Student not found" }, { status: 404 });
