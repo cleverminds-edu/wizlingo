@@ -302,11 +302,11 @@ export default function StudentDashboard() {
       </header>
 
       {/* Main content */}
-      <main className="flex-1 px-8 py-6 max-w-7xl w-full mx-auto">
-        <div className="grid grid-cols-3 gap-6 h-full">
+      <main className="flex-1 px-6 py-4 max-w-7xl w-full mx-auto">
+        <div className="grid grid-cols-3 gap-4 h-full">
 
           {/* Left column: hero + CTA */}
-          <div className="col-span-2 flex flex-col gap-6">
+          <div className="col-span-2 flex flex-col gap-4">
 
             {/* Hero card */}
             <div className={`relative rounded-3xl p-8 text-white overflow-hidden bg-gradient-to-br ${levelInfo.color} shadow-2xl animate-slide-up`}>
@@ -342,26 +342,26 @@ export default function StudentDashboard() {
             </div>
 
             {/* Stats row */}
-            <div className="grid grid-cols-3 gap-4 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+            <div className="grid grid-cols-3 gap-3 animate-slide-up" style={{ animationDelay: "0.1s" }}>
               {[
                 { icon: "🔥", value: totalSessions, label: "Total Sessions", sub: "completed" },
                 { icon: "⚡", value: student.progress?.avgWpm ? Math.round(student.progress.avgWpm) : "--", label: "Avg WPM", sub: "words per minute" },
                 { icon: "🎯", value: student.progress?.avgAccuracy ? `${Math.round(student.progress.avgAccuracy)}%` : "--", label: "Accuracy", sub: "reading score" },
               ].map(({ icon, value, label, sub }) => (
                 <div key={label}
-                  className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/10 hover:bg-white/15 transition-colors">
-                  <div className="text-4xl mb-2">{icon}</div>
-                  <p className="text-white font-black text-4xl">{value}</p>
-                  <p className="text-white/80 font-semibold mt-1">{label}</p>
-                  <p className="text-purple-400 text-sm">{sub}</p>
+                  className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center border border-white/10 hover:bg-white/15 transition-colors">
+                  <div className="text-3xl mb-1">{icon}</div>
+                  <p className="text-white font-black text-3xl">{value}</p>
+                  <p className="text-white/80 font-semibold text-sm mt-1">{label}</p>
+                  <p className="text-purple-400 text-xs">{sub}</p>
                 </div>
               ))}
             </div>
 
             {/* Wizard Badges */}
             {student.badges.length > 0 && (
-              <div className="animate-slide-up bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10" style={{ animationDelay: "0.15s" }}>
-                <div className="flex items-center justify-between mb-4">
+              <div className="animate-slide-up bg-white/10 backdrop-blur-sm rounded-2xl p-3 border border-white/10" style={{ animationDelay: "0.15s" }}>
+                <div className="flex items-center justify-between mb-2">
                   <p className="text-purple-300 text-xs font-bold uppercase tracking-widest">🧙 Wizard Badges</p>
                   {student.certificates.length > 0 && (
                     <a
@@ -390,8 +390,8 @@ export default function StudentDashboard() {
             )}
 
             {/* Module CTAs */}
-            <div className="animate-slide-up grid grid-cols-2 gap-4" style={{ animationDelay: "0.2s" }}>
-              <div className="flex flex-col gap-2">
+            <div className="animate-slide-up grid grid-cols-2 gap-3" style={{ animationDelay: "0.2s" }}>
+              <div className="flex flex-col gap-1">
                 <button onClick={() => router.push("/student/session")}
                   className="relative w-full py-6 rounded-3xl font-black text-2xl text-white shadow-2xl overflow-hidden transition-transform hover:scale-[1.02] active:scale-95"
                   style={{ background: "linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)" }}>
@@ -420,19 +420,19 @@ export default function StudentDashboard() {
           </div>
 
           {/* Right column: recent sessions */}
-          <div className="flex flex-col gap-4 animate-slide-up" style={{ animationDelay: "0.3s" }}>
-            <h3 className="text-purple-300 text-sm font-bold uppercase tracking-widest px-1">
+          <div className="flex flex-col gap-3 animate-slide-up" style={{ animationDelay: "0.3s" }}>
+            <h3 className="text-purple-300 text-xs font-bold uppercase tracking-widest px-1">
               Recent Adventures
             </h3>
 
             {student.sessions.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-center py-10 bg-white/5 rounded-3xl border border-white/10">
-                <div className="text-6xl mb-4 animate-float">🌟</div>
-                <p className="text-purple-200 font-semibold text-lg">No adventures yet!</p>
-                <p className="text-purple-400 mt-1">Start your first reading session.</p>
+              <div className="flex-1 flex flex-col items-center justify-center text-center py-8 bg-white/5 rounded-2xl border border-white/10">
+                <div className="text-5xl mb-2 animate-float">🌟</div>
+                <p className="text-purple-200 font-semibold text-sm">No adventures yet!</p>
+                <p className="text-purple-400 text-xs mt-1">Start your first reading session.</p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {student.sessions.slice(0, 8).map((s, idx) => {
                   const stars = !s.wpm ? 0 : s.accuracy! >= 90 ? 3 : s.accuracy! >= 80 ? 2 : 1;
                   return (
