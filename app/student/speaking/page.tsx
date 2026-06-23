@@ -64,8 +64,8 @@ const TOPIC_EMOJIS: Record<string, string> = {
   "Democracy, Youth, and Civic Life": "🗳️",
 };
 
-const FEMALE_CHARACTERS = ["Meera", "Priya"];
-const MALE_CHARACTERS   = ["Arjun", "Rohan"];
+const FEMALE_CHARACTERS = ["Mom", "Sarah", "Emma", "Aisha", "Teacher", "Chef", "Librarian", "Maya", "Eco"];
+const MALE_CHARACTERS   = ["Alex", "Jamie", "Ravi", "Marco", "Professor", "Mentor", "Coach", "Tech", "Sage", "Explorer"];
 
 export default function SpeakingHomePage() {
   const router = useRouter();
