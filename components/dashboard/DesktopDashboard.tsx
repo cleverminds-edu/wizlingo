@@ -419,8 +419,15 @@ export default function DesktopDashboard({ student, onLogout }: { student: Stude
                   <span className="text-right">Score</span>
                 </div>
                 <div className="space-y-1">
-                  {student.sessions.slice(0, 7).map((s) => {
+                  {student.sessions.slice(0, 7).map((s: any) => {
+                    const isReading = !s.type || s.type === 'READING';
+                    const title = isReading ? s.passage?.title : s.topic?.title;
+                    const level = isReading ? s.passage?.level : s.topic?.level;
+                    const levelEmoji = level === 1 ? "🌱" : level === 2 ? "🚀" : "🏆";
                     const stars = !s.wpm ? 0 : (s.accuracy ?? 0) >= 90 ? 3 : (s.accuracy ?? 0) >= 80 ? 2 : 1;
+                    const metric = isReading ? (s.wpm ? `${Math.round(s.wpm)} wpm` : "Pending") : (s.fluencyScore ? `${Math.round(s.fluencyScore)}% fluency` : "Pending");
+                    const metricColor = "#a5b4fc";
+
                     return (
                       <div key={s.id}
                         className="grid grid-cols-4 items-center px-3 py-3 rounded-xl transition-colors"
@@ -430,21 +437,21 @@ export default function DesktopDashboard({ student, onLogout }: { student: Stude
                         <div className="col-span-2 flex items-center gap-3 min-w-0">
                           <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs flex-shrink-0"
                             style={{ background: "rgba(99,102,241,0.2)" }}>
-                            {s.passage.level === 1 ? "🌱" : s.passage.level === 2 ? "🚀" : "🏆"}
+                            {isReading ? levelEmoji : "🎤"}
                           </div>
                           <div className="min-w-0">
-                            <p className="text-white text-sm font-medium truncate">{s.passage.title}</p>
-                            <p className="text-xs" style={{ color: "rgba(255,255,255,0.28)" }}>Level {s.passage.level}</p>
+                            <p className="text-white text-sm font-medium truncate">{title}</p>
+                            <p className="text-xs" style={{ color: "rgba(255,255,255,0.28)" }}>Level {level} {isReading ? "📖" : "🎤"}</p>
                           </div>
                         </div>
                         <div className="text-center">
-                          {s.wpm
-                            ? <span className="text-sm font-bold" style={{ color: "#a5b4fc" }}>{Math.round(s.wpm)} <span className="text-xs font-normal" style={{ color: "rgba(255,255,255,0.3)" }}>wpm</span></span>
+                          {s.wpm || s.fluencyScore
+                            ? <span className="text-sm font-bold" style={{ color: metricColor }}>{metric}</span>
                             : <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(245,158,11,0.15)", color: "#fbbf24" }}>Pending</span>
                           }
                         </div>
                         <div className="flex justify-end gap-0.5">
-                          {s.wpm
+                          {s.wpm || s.fluencyScore
                             ? [1,2,3].map(i => <span key={i} className={`text-sm ${i <= stars ? "opacity-100" : "opacity-15"}`}>⭐</span>)
                             : null
                           }

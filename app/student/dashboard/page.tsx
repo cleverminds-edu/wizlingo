@@ -450,27 +450,33 @@ export default function StudentDashboard() {
               </div>
             ) : (
               <div className="space-y-2 max-h-64 overflow-y-auto">
-                {student.sessions.slice(0, 6).map((s) => {
+                {student.sessions.slice(0, 6).map((s: any) => {
+                  const isReading = !s.type || s.type === 'READING';
+                  const title = isReading ? s.passage?.title : s.topic?.title;
+                  const level = isReading ? s.passage?.level : s.topic?.level;
+                  const emoji = isReading ? (TOPIC_EMOJI[title] ?? "📖") : "🎤";
                   const stars = !s.wpm ? 0 : s.accuracy! >= 90 ? 3 : s.accuracy! >= 80 ? 2 : 1;
+                  const metric = isReading ? `${Math.round(s.wpm)} WPM` : `${Math.round(s.fluencyScore ?? 0)}% Fluency`;
+
                   return (
                     <div key={s.id}
                       className="bg-white/10 backdrop-blur-sm rounded-xl px-3 py-3 border border-white/10 hover:bg-white/15 transition-colors">
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 min-w-0">
-                          <span className="text-xl">{TOPIC_EMOJI[s.passage?.title] ?? "📖"}</span>
+                          <span className="text-xl">{emoji}</span>
                           <div className="min-w-0">
-                            <p className="text-white font-semibold text-sm truncate">{s.passage.title}</p>
-                            <p className="text-purple-400 text-xs">Lvl {s.passage.level}</p>
+                            <p className="text-white font-semibold text-sm truncate">{title}</p>
+                            <p className="text-purple-400 text-xs">Lvl {level} {isReading ? '📖' : '🎤'}</p>
                           </div>
                         </div>
-                        {s.wpm ? (
+                        {s.wpm || s.fluencyScore ? (
                           <div className="text-right flex-shrink-0">
                             <div className="flex gap-0.5">
                               {[...Array(3)].map((_, i) => (
                                 <span key={i} className={i < stars ? "text-lg" : "text-lg opacity-30"}>⭐</span>
                               ))}
                             </div>
-                            <p className="text-purple-300 text-xs font-semibold mt-0.5">{Math.round(s.wpm)} WPM</p>
+                            <p className="text-purple-300 text-xs font-semibold mt-0.5">{metric}</p>
                           </div>
                         ) : (
                           <span className="text-xs bg-amber-500/30 text-amber-300 px-2 py-1 rounded-full flex-shrink-0">In Progress</span>

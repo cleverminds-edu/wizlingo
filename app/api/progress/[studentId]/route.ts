@@ -99,15 +99,41 @@ export async function GET(
       }
     }
 
-    // Fetch sessions safely
-    let sessions = [];
+    // Fetch sessions (both reading and speaking) safely
+    let sessions: any[] = [];
     try {
-      sessions = await prisma.readingSession.findMany({
+      // Fetch reading sessions
+      const readingSessions = await prisma.readingSession.findMany({
         where: { studentId },
         orderBy: { createdAt: "desc" },
         take: 20,
         include: { passage: { select: { title: true, level: true } } },
       });
+      
+      // Fetch speaking sessions
+      const speakingSessions = await prisma.speakingSession.findMany({
+        where: { studentId },
+        orderBy: { createdAt: "desc" },
+        take: 20,
+        include: { topic: { select: { title: true, level: true } } },
+      });
+
+      // Combine and sort by date (most recent first)
+      sessions = [
+        ...readingSessions.map((s: any) => ({
+          ...s,
+          type: 'READING',
+          passage: s.passage,
+          topic: undefined,
+        })),
+        ...speakingSessions.map((s: any) => ({
+          ...s,
+          type: 'SPEAKING',
+          passage: undefined,
+          topic: s.topic,
+        })),
+      ].sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+       .slice(0, 20);
     } catch (e) {
       console.log('Sessions unavailable');
     }
