@@ -92,10 +92,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create JWT token
+    // Create JWT token with role for auth checks
     const secret = process.env.JWT_SECRET || 'secret';
     const token = jwt.sign(
-      { studentId: student.id, phone: student.phone },
+      { studentId: student.id, phone: student.phone, role: 'student' },
       secret,
       { expiresIn: '30d' }
     );
