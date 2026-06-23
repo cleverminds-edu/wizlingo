@@ -86,7 +86,6 @@ export async function POST(request: NextRequest) {
         name,
         phone,
         dateOfBirth: new Date(dateOfBirth),
-        grade: gradeNum,
         passwordHash: hashedPassword,
         classId: defaultClass.id,
         accountType: "PUBLIC",
