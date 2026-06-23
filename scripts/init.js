@@ -45,21 +45,8 @@ try {
     console.log('⚠️  Prisma generate had issues (continuing anyway)');
   }
 
-  console.log('\nStep 4️⃣  - Seeding content...');
-  try {
-    console.log('Attempting direct SQL seeding...');
-    execSync('node scripts/direct-seed.js', {
-      stdio: 'inherit',
-      env: { ...process.env, DATABASE_URL: dbUrl }
-    });
-    console.log('✅ Seeding completed');
-  } catch (e) {
-    console.error('❌ Direct seeding failed:', e.message);
-    console.log('⚠️  Some content may not be available');
-  }
-
   console.log('\n════════════════════════════════════════════════════════════');
-  console.log('✅ Database initialization complete');
+  console.log('✅ Database migration steps complete');
   console.log('════════════════════════════════════════════════════════════\n');
 
 } catch (error) {
@@ -80,4 +67,16 @@ try {
     console.log('⚠️  The app may not work if tables are missing');
     console.log('════════════════════════════════════════════════════════════\n');
   }
+}
+
+// Always try to seed, even if migrations failed
+try {
+  console.log('Step 5️⃣  - Ensuring content is seeded...');
+  execSync('node scripts/seed-direct.js', {
+    stdio: 'inherit',
+    env: { ...process.env, DATABASE_URL: dbUrl }
+  });
+} catch (e) {
+  console.error('⚠️  Seeding issue:', e.message);
+  console.log('⚠️  App will auto-seed on first request');
 }
