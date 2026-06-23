@@ -6,8 +6,8 @@ import { z } from 'zod';
 import jwt from 'jsonwebtoken';
 
 const loginPasswordSchema = z.object({
-  phone: z.string().regex(/^\d{10}$/, 'Phone must be 10 digits'),
-  password: z.string().min(6, 'Password required'),
+  username: z.string().min(2, 'UserID or phone required'), // Either UserID (WL001) or phone
+  password: z.string().min(1, 'Password required'),
 });
 
 export async function POST(request: NextRequest) {
@@ -20,18 +20,41 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { phone, password } = validation.data;
+    const { username, password } = validation.data;
 
-    // Find student by phone
-    const student = await prisma.student.findUnique({
-      where: { phone },
-      select: { id: true, phone: true, passwordHash: true },
-    });
+    let student = null;
 
-    if (!student) {
+    // Check if it's a UserID (starts with WL) or phone number
+    if (username.startsWith('WL') || username.startsWith('wl')) {
+      // B2C login with UserID
+      student = await prisma.student.findUnique({
+        where: { userId: username.toUpperCase() },
+        include: { progress: true }
+      });
+
+      if (!student) {
+        return NextResponse.json(
+          { error: 'UserID not found' },
+          { status: 401 }
+        );
+      }
+    } else if (/^\d{10}$/.test(username)) {
+      // School login with phone
+      student = await prisma.student.findUnique({
+        where: { phone: username },
+        select: { id: true, phone: true, passwordHash: true, progress: true }
+      });
+
+      if (!student) {
+        return NextResponse.json(
+          { error: 'Phone number not found' },
+          { status: 401 }
+        );
+      }
+    } else {
       return NextResponse.json(
-        { error: 'Phone number not found' },
-        { status: 401 }
+        { error: 'Invalid UserID or phone format' },
+        { status: 400 }
       );
     }
 
@@ -46,8 +69,20 @@ export async function POST(request: NextRequest) {
     const isPasswordValid = await compare(password, student.passwordHash);
     if (!isPasswordValid) {
       return NextResponse.json(
-        { error: 'Invalid phone number or password' },
+        { error: 'Invalid credentials' },
         { status: 401 }
+      );
+    }
+
+    // Force password change on first login for B2C users (PHONE_ID)
+    if (student.loginType === 'PHONE_ID' && !student.passwordChangedAt) {
+      return NextResponse.json(
+        {
+          status: 'FORCE_PASSWORD_CHANGE',
+          studentId: student.id,
+          message: 'Please set a new password before accessing the app'
+        },
+        { status: 200 }
       );
     }
 

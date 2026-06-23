@@ -63,14 +63,17 @@ model Student {
   name                 String?
   dateOfBirth          DateTime?
   admissionNumber      String?                  @unique
+  userId               String?                  @unique
   pin                  String?
-  phone                String?                  @unique
+  phone                String?
   passwordHash         String?
   classId              String?
   accountType          AccountType              @default(SCHOOL)
+  loginType            String?                  // SCHOOL or PHONE_ID for B2C
   gender               Gender?
   parentEmail          String?
   hasSeenOnboarding    Boolean                  @default(false)
+  passwordChangedAt    DateTime?
   createdAt            DateTime                 @default(now())
   badges               Badge[]
   certificates         Certificate[]
@@ -85,7 +88,10 @@ model Student {
   referralsReceived    Referral[]              @relation("ReferredRelation")
   referralReward       ReferralReward?
   betaFeedback         BetaFeedback[]
-  speakingPreference   SpeakingPreference?     // NEW: Character gender preference
+  speakingPreference   SpeakingPreference?
+
+  @@index([userId])
+  @@index([phone])
 }
 
 model StudentProgress {
