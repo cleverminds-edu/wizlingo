@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { validateBody } from '@/lib/validation';
 import { z } from 'zod';
 import jwt from 'jsonwebtoken';
+import { makeAuthCookie } from '@/lib/auth';
 
 const loginPasswordSchema = z.object({
   username: z.string().min(2, 'UserID or phone required'), // Either UserID (WL001) or phone
@@ -100,10 +101,21 @@ export async function POST(request: NextRequest) {
       { expiresIn: '30d' }
     );
 
-    return NextResponse.json(
+    // Also set session cookie for fallback auth
+    const response = NextResponse.json(
       { message: 'Login successful', token, studentId: student.id },
       { status: 200 }
     );
+
+    // Set session cookie as backup auth method
+    const sessionToken = jwt.sign(
+      { id: student.id, phone: student.phone, role: 'student' },
+      secret,
+      { expiresIn: '8h' }
+    );
+    response.headers.append('Set-Cookie', makeAuthCookie(sessionToken));
+
+    return response;
   } catch (error) {
     console.error('Error logging in:', error);
     return NextResponse.json(
