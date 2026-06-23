@@ -57,3 +57,4 @@ try {
     console.log('⚠️  The app may not work if tables are missing');
     console.log('════════════════════════════════════════════════════════════\n');
   }
+}
