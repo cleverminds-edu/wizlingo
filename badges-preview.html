@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WizLingo Badges Preview - Shield Design</title>
+  <title>WizLingo Badges - Modern Design</title>
   <style>
     * {
       margin: 0;
@@ -19,7 +19,7 @@
     }
 
     .container {
-      max-width: 1400px;
+      max-width: 1200px;
       margin: 0 auto;
     }
 
@@ -30,12 +30,10 @@
     }
 
     .header h1 {
-      font-size: 2.5em;
+      font-size: 2.8em;
       margin-bottom: 10px;
-      background: linear-gradient(135deg, #6366f1, #a855f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-weight: 900;
+      letter-spacing: -1px;
     }
 
     .header p {
@@ -48,115 +46,182 @@
     }
 
     .section-title {
-      color: #c7d2fe;
-      font-size: 1.5em;
-      font-weight: bold;
+      color: #e5e7eb;
+      font-size: 1.4em;
+      font-weight: 700;
       margin-bottom: 40px;
       padding-bottom: 15px;
-      border-bottom: 2px solid rgba(167, 139, 250, 0.3);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
     }
 
     .badges-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 50px;
-      padding: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px;
     }
 
     .badge-card {
+      border-radius: 16px;
+      padding: 24px 16px;
       text-align: center;
+      backdrop-filter: blur(10px);
+      border: 2px solid;
+      transition: all 0.3s ease;
       cursor: pointer;
-      transition: transform 0.3s ease;
     }
 
     .badge-card:hover {
-      transform: translateY(-10px);
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     }
 
-    .badge-svg {
-      width: 100%;
-      height: auto;
-      margin-bottom: 20px;
-      filter: drop-shadow(0 12px 24px rgba(0,0,0,0.4));
-      transition: filter 0.3s ease;
+    .badge-card.unlocked {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
-    .badge-card:hover .badge-svg {
-      filter: drop-shadow(0 16px 32px rgba(0,0,0,0.5));
+    .badge-card.locked {
+      background: rgba(100, 100, 100, 0.1);
+      border-color: rgba(150, 150, 150, 0.2);
+      opacity: 0.65;
     }
 
-    .badge-card.locked .badge-svg {
-      filter: drop-shadow(0 12px 24px rgba(0,0,0,0.4)) grayscale(80%) brightness(0.7);
+    .badge-card.spark { border-color: rgba(255, 107, 107, 0.4); background: rgba(255, 232, 232, 0.1); }
+    .badge-card.word { border-color: rgba(139, 92, 246, 0.4); background: rgba(243, 232, 255, 0.1); }
+    .badge-card.voice { border-color: rgba(236, 72, 153, 0.4); background: rgba(252, 231, 243, 0.1); }
+    .badge-card.language { border-color: rgba(99, 102, 241, 0.4); background: rgba(224, 231, 255, 0.1); }
+    .badge-card.grand { border-color: rgba(245, 158, 11, 0.4); background: rgba(254, 243, 199, 0.1); }
+    .badge-card.week { border-color: rgba(255, 127, 80, 0.4); background: rgba(255, 224, 204, 0.1); }
+    .badge-card.month { border-color: rgba(255, 215, 0, 0.4); background: rgba(255, 250, 205, 0.1); }
+
+    .lock-icon {
+      position: absolute;
+      top: -12px;
+      right: -12px;
+      background: #6b7280;
+      color: white;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
     }
 
-    .badge-message {
-      color: #d1d5db;
-      font-size: 13px;
-      font-style: italic;
-      margin-bottom: 12px;
-      line-height: 1.4;
-      padding: 0 10px;
+    .stars {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 16px;
     }
 
-    .badge-status {
-      font-size: 12px;
-      font-weight: bold;
-      padding: 8px 0;
+    .stars span {
+      font-size: 14px;
     }
 
-    .badge-status.unlocked {
-      color: #4ade80;
+    .day-number {
+      font-size: 48px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 4px;
     }
 
-    .badge-status.locked {
-      color: #fbbf24;
-    }
-
-    .progress-bar-wrapper {
-      margin-top: 15px;
-      padding: 0 10px;
-    }
-
-    .progress-label {
+    .day-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
       color: #9ca3af;
-      font-size: 12px;
-      margin-bottom: 6px;
+      margin-bottom: 12px;
+    }
+
+    .emoji {
+      font-size: 48px;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .name {
+      font-weight: 900;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: white;
+      margin-bottom: 12px;
+    }
+
+    .divider {
+      height: 2px;
+      width: 48px;
+      margin: 0 auto 12px;
+      border-radius: 1px;
+      background: currentColor;
+    }
+
+    .status {
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .progress-wrapper {
+      margin-top: 16px;
     }
 
     .progress-bar {
       width: 100%;
-      height: 4px;
+      height: 6px;
       background: rgba(255, 255, 255, 0.1);
-      border-radius: 2px;
+      border-radius: 3px;
       overflow: hidden;
+      margin-bottom: 8px;
     }
 
     .progress-fill {
       height: 100%;
-      background: rgba(255, 255, 255, 0.6);
+      border-radius: 3px;
       transition: width 0.5s ease;
     }
 
-    .badge-name {
-      color: #f3f4f6;
-      font-size: 14px;
-      font-weight: 600;
-      margin-top: 12px;
+    .progress-text {
+      font-size: 11px;
+      color: #9ca3af;
     }
 
-    .info-box {
+    .info-section {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 12px;
-      padding: 20px;
+      padding: 24px;
       margin-top: 60px;
       color: #d1d5db;
-      font-size: 0.95em;
-      line-height: 1.6;
+      line-height: 1.7;
     }
 
-    .info-box strong {
+    .info-section h2 {
       color: #f3f4f6;
+      margin-bottom: 16px;
+      font-size: 1.2em;
+    }
+
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .feature {
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border-left: 3px solid rgba(99, 102, 241, 0.5);
+      border-radius: 4px;
+    }
+
+    .feature strong {
+      color: #f3f4f6;
+      display: block;
+      margin-bottom: 4px;
     }
 
     @media (max-width: 768px) {
@@ -165,8 +230,20 @@
       }
 
       .badges-grid {
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 35px;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 20px;
+      }
+
+      .badge-card {
+        padding: 20px 12px;
+      }
+
+      .day-number {
+        font-size: 40px;
+      }
+
+      .emoji {
+        font-size: 40px;
       }
     }
   </style>
@@ -175,326 +252,189 @@
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <h1>🎖️ WizLingo Shield Badges</h1>
-      <p>Premium Day-Based Achievement System</p>
+      <h1>🏆 WizLingo Badges</h1>
+      <p>Modern Achievement System - Day-Based Progression</p>
     </div>
 
     <!-- Unlocked Badges -->
     <div class="section">
-      <div class="section-title">✨ Unlocked Badges - Day Milestones</div>
+      <div class="section-title">✨ Unlocked Achievements</div>
       <div class="badges-grid">
-        <!-- Spark Day 1 -->
-        <div class="badge-card unlocked">
-          <svg viewBox="0 0 240 280" class="badge-svg">
-            <defs>
-              <linearGradient id="grad-spark" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#FF6B6B" stopOpacity="0.95" />
-                <stop offset="50%" stopColor="#FF6B6B" stopOpacity="0.85" />
-                <stop offset="100%" stopColor="#FFA500" stopOpacity="0.95" />
-              </linearGradient>
-              <linearGradient id="shine-spark" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="white" stopOpacity="0.25" />
-                <stop offset="50%" stopColor="white" stopOpacity="0" />
-                <stop offset="100%" stopColor="black" stopOpacity="0.1" />
-              </linearGradient>
-              <filter id="glow-spark" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <path d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z" fill="#FF6B6B" opacity="0.2" filter="url(#glow-spark)" />
-            <path d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z" fill="url(#grad-spark)" stroke="#FFD700" strokeWidth="3" />
-            <path d="M 120,30 L 190,70 L 190,135 Q 190,210 120,260 Q 50,210 50,135 L 50,70 Z" fill="url(#shine-spark)" />
-            <path d="M 120,35 L 185,72 L 185,130 Q 185,205 120,255 Q 55,205 55,130 L 55,72 Z" stroke="#FFD700" strokeWidth="1.5" fill="none" opacity="0.4" />
-            <text x="120" y="95" fontSize="52" fontWeight="900" textAnchor="middle" dominantBaseline="middle" fill="white" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.4))">1</text>
-            <text x="120" y="125" fontSize="14" fontWeight="bold" textAnchor="middle" dominantBaseline="middle" fill="#FFD700" letterSpacing="2">DAY</text>
-            <text x="120" y="190" fontSize="16" textAnchor="middle" fill="#FFD700">⭐</text>
-            <text x="120" y="245" fontSize="32" textAnchor="middle" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.3))">✨</text>
-          </svg>
-          <p class="badge-message">"Every journey starts with a single step"</p>
-          <p class="badge-status unlocked">✓ DAY 1 COMPLETED</p>
-          <p class="badge-name">Spark</p>
+        <!-- Spark -->
+        <div class="badge-card unlocked spark">
+          <div class="stars">
+            <span>⭐</span>
+          </div>
+          <div class="day-number" style="color: #FF6B6B;">1</div>
+          <div class="day-label">Day</div>
+          <div class="emoji">✨</div>
+          <div class="name">Spark</div>
+          <div class="divider" style="background-color: #FF6B6B;"></div>
+          <div class="status" style="color: #FF6B6B;">✓ Unlocked</div>
         </div>
 
-        <!-- Word Wizard Day 10 -->
-        <div class="badge-card unlocked">
-          <svg viewBox="0 0 240 280" class="badge-svg">
-            <defs>
-              <linearGradient id="grad-word" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.95" />
-                <stop offset="50%" stopColor="#8B5CF6" stopOpacity="0.85" />
-                <stop offset="100%" stopColor="#DDD6FE" stopOpacity="0.95" />
-              </linearGradient>
-              <linearGradient id="shine-word" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="white" stopOpacity="0.25" />
-                <stop offset="50%" stopColor="white" stopOpacity="0" />
-                <stop offset="100%" stopColor="black" stopOpacity="0.1" />
-              </linearGradient>
-              <filter id="glow-word" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <path d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z" fill="#8B5CF6" opacity="0.2" filter="url(#glow-word)" />
-            <path d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z" fill="url(#grad-word)" stroke="#C4B5FD" strokeWidth="3" />
-            <path d="M 120,30 L 190,70 L 190,135 Q 190,210 120,260 Q 50,210 50,135 L 50,70 Z" fill="url(#shine-word)" />
-            <path d="M 120,35 L 185,72 L 185,130 Q 185,205 120,255 Q 55,205 55,130 L 55,72 Z" stroke="#C4B5FD" strokeWidth="1.5" fill="none" opacity="0.4" />
-            <text x="120" y="95" fontSize="52" fontWeight="900" textAnchor="middle" dominantBaseline="middle" fill="white" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.4))">10</text>
-            <text x="120" y="125" fontSize="14" fontWeight="bold" textAnchor="middle" dominantBaseline="middle" fill="#C4B5FD" letterSpacing="2">DAY</text>
-            <text x="100" y="190" fontSize="16" textAnchor="middle" fill="#C4B5FD">⭐</text>
-            <text x="120" y="190" fontSize="16" textAnchor="middle" fill="#C4B5FD">⭐</text>
-            <text x="140" y="190" fontSize="16" textAnchor="middle" fill="#C4B5FD">⭐</text>
-            <text x="120" y="245" fontSize="32" textAnchor="middle" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.3))">📚</text>
-          </svg>
-          <p class="badge-message">"Reading opens infinite worlds"</p>
-          <p class="badge-status unlocked">✓ DAY 10 COMPLETED</p>
-          <p class="badge-name">Word Wizard</p>
+        <!-- Word Wizard -->
+        <div class="badge-card unlocked word">
+          <div class="stars">
+            <span>⭐</span>
+            <span>⭐</span>
+            <span>⭐</span>
+          </div>
+          <div class="day-number" style="color: #8B5CF6;">10</div>
+          <div class="day-label">Day</div>
+          <div class="emoji">📚</div>
+          <div class="name">Word Wizard</div>
+          <div class="divider" style="background-color: #8B5CF6;"></div>
+          <div class="status" style="color: #8B5CF6;">✓ Unlocked</div>
         </div>
 
-        <!-- Voice Wizard Day 15 -->
-        <div class="badge-card unlocked">
-          <svg viewBox="0 0 240 280" class="badge-svg">
-            <defs>
-              <linearGradient id="grad-voice" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#EC4899" stopOpacity="0.95" />
-                <stop offset="50%" stopColor="#EC4899" stopOpacity="0.85" />
-                <stop offset="100%" stopColor="#FBE9F3" stopOpacity="0.95" />
-              </linearGradient>
-              <linearGradient id="shine-voice" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="white" stopOpacity="0.25" />
-                <stop offset="50%" stopColor="white" stopOpacity="0" />
-                <stop offset="100%" stopColor="black" stopOpacity="0.1" />
-              </linearGradient>
-              <filter id="glow-voice" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <path d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z" fill="#EC4899" opacity="0.2" filter="url(#glow-voice)" />
-            <path d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z" fill="url(#grad-voice)" stroke="#F472B6" strokeWidth="3" />
-            <path d="M 120,30 L 190,70 L 190,135 Q 190,210 120,260 Q 50,210 50,135 L 50,70 Z" fill="url(#shine-voice)" />
-            <path d="M 120,35 L 185,72 L 185,130 Q 185,205 120,255 Q 55,205 55,130 L 55,72 Z" stroke="#F472B6" strokeWidth="1.5" fill="none" opacity="0.4" />
-            <text x="120" y="95" fontSize="52" fontWeight="900" textAnchor="middle" dominantBaseline="middle" fill="white" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.4))">15</text>
-            <text x="120" y="125" fontSize="14" fontWeight="bold" textAnchor="middle" dominantBaseline="middle" fill="#F472B6" letterSpacing="2">DAY</text>
-            <text x="100" y="190" fontSize="16" textAnchor="middle" fill="#F472B6">⭐</text>
-            <text x="120" y="190" fontSize="16" textAnchor="middle" fill="#F472B6">⭐</text>
-            <text x="140" y="190" fontSize="16" textAnchor="middle" fill="#F472B6">⭐</text>
-            <text x="120" y="245" fontSize="32" textAnchor="middle" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.3))">🎤</text>
-          </svg>
-          <p class="badge-message">"Your voice matters and inspires"</p>
-          <p class="badge-status unlocked">✓ DAY 15 COMPLETED</p>
-          <p class="badge-name">Voice Wizard</p>
+        <!-- Voice Wizard -->
+        <div class="badge-card unlocked voice">
+          <div class="stars">
+            <span>⭐</span>
+            <span>⭐</span>
+            <span>⭐</span>
+          </div>
+          <div class="day-number" style="color: #EC4899;">15</div>
+          <div class="day-label">Day</div>
+          <div class="emoji">🎤</div>
+          <div class="name">Voice Wizard</div>
+          <div class="divider" style="background-color: #EC4899;"></div>
+          <div class="status" style="color: #EC4899;">✓ Unlocked</div>
         </div>
 
-        <!-- Language Wizard Day 20 -->
-        <div class="badge-card unlocked">
-          <svg viewBox="0 0 240 280" class="badge-svg">
-            <defs>
-              <linearGradient id="grad-lang" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#6366F1" stopOpacity="0.95" />
-                <stop offset="50%" stopColor="#6366F1" stopOpacity="0.85" />
-                <stop offset="100%" stopColor="#E0E7FF" stopOpacity="0.95" />
-              </linearGradient>
-              <linearGradient id="shine-lang" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="white" stopOpacity="0.25" />
-                <stop offset="50%" stopColor="white" stopOpacity="0" />
-                <stop offset="100%" stopColor="black" stopOpacity="0.1" />
-              </linearGradient>
-              <filter id="glow-lang" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <path d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z" fill="#6366F1" opacity="0.2" filter="url(#glow-lang)" />
-            <path d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z" fill="url(#grad-lang)" stroke="#818CF8" strokeWidth="3" />
-            <path d="M 120,30 L 190,70 L 190,135 Q 190,210 120,260 Q 50,210 50,135 L 50,70 Z" fill="url(#shine-lang)" />
-            <path d="M 120,35 L 185,72 L 185,130 Q 185,205 120,255 Q 55,205 55,130 L 55,72 Z" stroke="#818CF8" strokeWidth="1.5" fill="none" opacity="0.4" />
-            <text x="120" y="95" fontSize="52" fontWeight="900" textAnchor="middle" dominantBaseline="middle" fill="white" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.4))">20</text>
-            <text x="120" y="125" fontSize="14" fontWeight="bold" textAnchor="middle" dominantBaseline="middle" fill="#818CF8" letterSpacing="2">DAY</text>
-            <text x="100" y="190" fontSize="16" textAnchor="middle" fill="#818CF8">⭐</text>
-            <text x="120" y="190" fontSize="16" textAnchor="middle" fill="#818CF8">⭐</text>
-            <text x="140" y="190" fontSize="16" textAnchor="middle" fill="#818CF8">⭐</text>
-            <text x="120" y="245" fontSize="32" textAnchor="middle" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.3))">🧙</text>
-          </svg>
-          <p class="badge-message">"Fluency comes from consistent effort"</p>
-          <p class="badge-status unlocked">✓ DAY 20 COMPLETED</p>
-          <p class="badge-name">Language Wizard</p>
+        <!-- Language Wizard -->
+        <div class="badge-card unlocked language">
+          <div class="stars">
+            <span>⭐</span>
+            <span>⭐</span>
+            <span>⭐</span>
+          </div>
+          <div class="day-number" style="color: #6366F1;">20</div>
+          <div class="day-label">Day</div>
+          <div class="emoji">🧙</div>
+          <div class="name">Language Wizard</div>
+          <div class="divider" style="background-color: #6366F1;"></div>
+          <div class="status" style="color: #6366F1;">✓ Unlocked</div>
         </div>
       </div>
     </div>
 
     <!-- Locked Badges -->
     <div class="section">
-      <div class="section-title">🔒 Locked Badges - Work Towards Them!</div>
+      <div class="section-title">🔒 Locked - Keep Practicing!</div>
       <div class="badges-grid">
-        <!-- Grand Wizard - Locked -->
-        <div class="badge-card locked">
-          <svg viewBox="0 0 240 280" class="badge-svg">
-            <defs>
-              <linearGradient id="grad-grand" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#D97706" stopOpacity="0.95" />
-                <stop offset="50%" stopColor="#D97706" stopOpacity="0.85" />
-                <stop offset="100%" stopColor="#FEF3C7" stopOpacity="0.95" />
-              </linearGradient>
-              <linearGradient id="shine-grand" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="white" stopOpacity="0.25" />
-                <stop offset="50%" stopColor="white" stopOpacity="0" />
-                <stop offset="100%" stopColor="black" stopOpacity="0.1" />
-              </linearGradient>
-              <filter id="glow-grand" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <path d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z" fill="#D97706" opacity="0.2" filter="url(#glow-grand)" />
-            <path d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z" fill="url(#grad-grand)" stroke="#FCD34D" strokeWidth="3" />
-            <path d="M 120,30 L 190,70 L 190,135 Q 190,210 120,260 Q 50,210 50,135 L 50,70 Z" fill="url(#shine-grand)" />
-            <path d="M 120,35 L 185,72 L 185,130 Q 185,205 120,255 Q 55,205 55,130 L 55,72 Z" stroke="#FCD34D" strokeWidth="1.5" fill="none" opacity="0.4" />
-            <text x="120" y="95" fontSize="52" fontWeight="900" textAnchor="middle" dominantBaseline="middle" fill="white" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.4))">?</text>
-            <text x="120" y="125" fontSize="14" fontWeight="bold" textAnchor="middle" dominantBaseline="middle" fill="#FCD34D" letterSpacing="2">DAY</text>
-            <text x="100" y="190" fontSize="16" textAnchor="middle" fill="#FCD34D">⭐</text>
-            <text x="120" y="190" fontSize="16" textAnchor="middle" fill="#FCD34D">⭐</text>
-            <text x="140" y="190" fontSize="16" textAnchor="middle" fill="#FCD34D">⭐</text>
-            <text x="120" y="245" fontSize="32" textAnchor="middle" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.3))">👑</text>
-          </svg>
-          <p class="badge-message">"Earn all 4 badges to unlock mastery"</p>
-          <p class="badge-status locked">🔒 LOCKED</p>
-          <div class="progress-bar-wrapper">
-            <div class="progress-label">2/4 badges earned</div>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: 50%;"></div>
-            </div>
+        <!-- Grand Wizard -->
+        <div class="badge-card locked grand">
+          <div class="lock-icon">🔒</div>
+          <div class="stars">
+            <span>⭐</span>
+            <span>⭐</span>
+            <span>⭐</span>
+            <span>⭐</span>
           </div>
-          <p class="badge-name">Grand Wizard</p>
+          <div class="day-number" style="color: #F59E0B;">?</div>
+          <div class="day-label">Day</div>
+          <div class="emoji">👑</div>
+          <div class="name">Grand Wizard</div>
+          <div class="divider" style="background-color: #F59E0B;"></div>
+          <div class="status" style="color: #F59E0B;">🔒 Locked</div>
+          <div class="progress-wrapper">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 50%; background-color: #F59E0B;"></div>
+            </div>
+            <div class="progress-text">2/4 badges earned</div>
+          </div>
         </div>
 
-        <!-- Week Warrior - Locked -->
-        <div class="badge-card locked">
-          <svg viewBox="0 0 240 280" class="badge-svg">
-            <defs>
-              <linearGradient id="grad-week" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#FF7F50" stopOpacity="0.95" />
-                <stop offset="50%" stopColor="#FF7F50" stopOpacity="0.85" />
-                <stop offset="100%" stopColor="#FFE0CC" stopOpacity="0.95" />
-              </linearGradient>
-              <linearGradient id="shine-week" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="white" stopOpacity="0.25" />
-                <stop offset="50%" stopColor="white" stopOpacity="0" />
-                <stop offset="100%" stopColor="black" stopOpacity="0.1" />
-              </linearGradient>
-              <filter id="glow-week" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <path d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z" fill="#FF7F50" opacity="0.2" filter="url(#glow-week)" />
-            <path d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z" fill="url(#grad-week)" stroke="#FFAD5A" strokeWidth="3" />
-            <path d="M 120,30 L 190,70 L 190,135 Q 190,210 120,260 Q 50,210 50,135 L 50,70 Z" fill="url(#shine-week)" />
-            <path d="M 120,35 L 185,72 L 185,130 Q 185,205 120,255 Q 55,205 55,130 L 55,72 Z" stroke="#FFAD5A" strokeWidth="1.5" fill="none" opacity="0.4" />
-            <text x="120" y="95" fontSize="52" fontWeight="900" textAnchor="middle" dominantBaseline="middle" fill="white" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.4))">?</text>
-            <text x="120" y="125" fontSize="14" fontWeight="bold" textAnchor="middle" dominantBaseline="middle" fill="#FFAD5A" letterSpacing="2">DAY</text>
-            <text x="100" y="190" fontSize="16" textAnchor="middle" fill="#FFAD5A">⭐</text>
-            <text x="120" y="190" fontSize="16" textAnchor="middle" fill="#FFAD5A">⭐</text>
-            <text x="120" y="245" fontSize="32" textAnchor="middle" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.3))">🔥</text>
-          </svg>
-          <p class="badge-message">"7 days of consistent practice"</p>
-          <p class="badge-status locked">🔒 LOCKED</p>
-          <div class="progress-bar-wrapper">
-            <div class="progress-label">4/7 days completed</div>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: 57%;"></div>
-            </div>
+        <!-- Week Warrior -->
+        <div class="badge-card locked week">
+          <div class="lock-icon">🔒</div>
+          <div class="stars">
+            <span>⭐</span>
+            <span>⭐</span>
           </div>
-          <p class="badge-name">Week Warrior</p>
+          <div class="day-number" style="color: #FF7F50;">?</div>
+          <div class="day-label">Day</div>
+          <div class="emoji">🔥</div>
+          <div class="name">Week Warrior</div>
+          <div class="divider" style="background-color: #FF7F50;"></div>
+          <div class="status" style="color: #FF7F50;">🔒 Locked</div>
+          <div class="progress-wrapper">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 57%; background-color: #FF7F50;"></div>
+            </div>
+            <div class="progress-text">4/7 days completed</div>
+          </div>
         </div>
 
-        <!-- Month Master - Locked -->
-        <div class="badge-card locked">
-          <svg viewBox="0 0 240 280" class="badge-svg">
-            <defs>
-              <linearGradient id="grad-month" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#FFD700" stopOpacity="0.95" />
-                <stop offset="50%" stopColor="#FFD700" stopOpacity="0.85" />
-                <stop offset="100%" stopColor="#FFFACD" stopOpacity="0.95" />
-              </linearGradient>
-              <linearGradient id="shine-month" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="white" stopOpacity="0.25" />
-                <stop offset="50%" stopColor="white" stopOpacity="0" />
-                <stop offset="100%" stopColor="black" stopOpacity="0.1" />
-              </linearGradient>
-              <filter id="glow-month" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <path d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z" fill="#FFD700" opacity="0.2" filter="url(#glow-month)" />
-            <path d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z" fill="url(#grad-month)" stroke="#FFF44F" strokeWidth="3" />
-            <path d="M 120,30 L 190,70 L 190,135 Q 190,210 120,260 Q 50,210 50,135 L 50,70 Z" fill="url(#shine-month)" />
-            <path d="M 120,35 L 185,72 L 185,130 Q 185,205 120,255 Q 55,205 55,130 L 55,72 Z" stroke="#FFF44F" strokeWidth="1.5" fill="none" opacity="0.4" />
-            <text x="120" y="95" fontSize="52" fontWeight="900" textAnchor="middle" dominantBaseline="middle" fill="white" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.4))">?</text>
-            <text x="120" y="125" fontSize="14" fontWeight="bold" textAnchor="middle" dominantBaseline="middle" fill="#FFF44F" letterSpacing="2">DAY</text>
-            <text x="100" y="190" fontSize="16" textAnchor="middle" fill="#FFF44F">⭐</text>
-            <text x="120" y="190" fontSize="16" textAnchor="middle" fill="#FFF44F">⭐</text>
-            <text x="120" y="245" fontSize="32" textAnchor="middle" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.3))">⚡</text>
-          </svg>
-          <p class="badge-message">"30 days of dedication unlocks mastery"</p>
-          <p class="badge-status locked">🔒 LOCKED</p>
-          <div class="progress-bar-wrapper">
-            <div class="progress-label">15/30 days completed</div>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: 50%;"></div>
-            </div>
+        <!-- Month Master -->
+        <div class="badge-card locked month">
+          <div class="lock-icon">🔒</div>
+          <div class="stars">
+            <span>⭐</span>
+            <span>⭐</span>
           </div>
-          <p class="badge-name">Month Master</p>
+          <div class="day-number" style="color: #FFD700;">?</div>
+          <div class="day-label">Day</div>
+          <div class="emoji">⚡</div>
+          <div class="name">Month Master</div>
+          <div class="divider" style="background-color: #FFD700;"></div>
+          <div class="status" style="color: #FFD700;">🔒 Locked</div>
+          <div class="progress-wrapper">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 50%; background-color: #FFD700;"></div>
+            </div>
+            <div class="progress-text">15/30 days completed</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Info Box -->
-    <div class="info-box">
-      <strong>🎖️ Shield Badge Design Features:</strong><br><br>
-      ✓ <strong>Shield Shape</strong> - Ornate crest design matching reference image<br>
-      ✓ <strong>Day Counter</strong> - Large prominent day number in center (1-30)<br>
-      ✓ <strong>Gradient Colors</strong> - Vibrant unique gradients per badge type<br>
-      ✓ <strong>Rarity Stars</strong> - Bottom positioned stars (1-4) showing difficulty<br>
-      ✓ <strong>Decorative Laurel Wreaths</strong> - Ornamental side elements<br>
-      ✓ <strong>Shine/Gloss Effect</strong> - Premium 3D appearance<br>
-      ✓ <strong>Motivational Messages</strong> - Inspirational text below badge<br>
-      ✓ <strong>Status Indicators</strong> - Clear locked/unlocked states<br>
-      ✓ <strong>Progress Tracking</strong> - Progress bars for locked badges<br><br>
-      <strong>💫 Design Inspiration:</strong> Based on achievement/streak tracking system where users earn day-based milestones by maintaining consistent daily practice. The shield shape conveys premium status and protection of their learning journey!
+    <!-- Info Section -->
+    <div class="info-section">
+      <h2>🎨 Modern Design Principles</h2>
+      <p>This redesign focuses on simplicity, clarity, and shareability - perfect for social media and mobile screens.</p>
+
+      <div class="feature-list">
+        <div class="feature">
+          <strong>✓ Minimal & Clean</strong>
+          Removed ornate elements. Clear visual hierarchy with day number as hero.
+        </div>
+        <div class="feature">
+          <strong>✓ Color-Coded</strong>
+          Each badge has a unique accent color for instant recognition and visual appeal.
+        </div>
+        <div class="feature">
+          <strong>✓ Mobile-First</strong>
+          Optimized for small screens. Works perfectly as a screenshot for social sharing.
+        </div>
+        <div class="feature">
+          <strong>✓ Shareable</strong>
+          Clean card design is perfect for sharing on WhatsApp, Instagram, etc.
+        </div>
+        <div class="feature">
+          <strong>✓ Clear Status</strong>
+          Locked/Unlocked clearly indicated with icon and color. Progress visible at a glance.
+        </div>
+        <div class="feature">
+          <strong>✓ Modern Typography</strong>
+          Bold, contemporary fonts. Strong hierarchy between day, name, and emoji.
+        </div>
+        <div class="feature">
+          <strong>✓ Day-Based System</strong>
+          Focus on consistent daily practice. Users see their day milestone prominently.
+        </div>
+        <div class="feature">
+          <strong>✓ Progress Tracking</strong>
+          Visible progress bars for locked badges keep users motivated.
+        </div>
+      </div>
+
+      <p style="margin-top: 20px; color: #9ca3af;">
+        <strong>Key Improvements:</strong> Removed competing visual elements. Simplified color palette. Better contrast. Emoji integrated naturally. Status clear at first glance. Perfect for mobile screenshots and social sharing. Modern, professional appearance that feels premium without being over-designed.
+      </p>
     </div>
   </div>
-
-  <script>
-    document.querySelectorAll('.badge-card').forEach(card => {
-      card.addEventListener('click', function() {
-        const badge = this.querySelector('.badge-name').textContent;
-        const message = this.querySelector('.badge-message').textContent;
-        alert(`${badge}\n\n${message}`);
-      });
-    });
-  </script>
 </body>
 </html>
