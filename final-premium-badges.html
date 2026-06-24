@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WizLingo Premium Achievement Badges</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 80px 20px;
+    }
+
+    .container { max-width: 2000px; margin: 0 auto; }
+
+    .header {
+      text-align: center;
+      margin-bottom: 100px;
+    }
+
+    .header h1 {
+      font-size: 4.5em;
+      margin-bottom: 15px;
+      color: white;
+      font-weight: 900;
+      letter-spacing: -2px;
+    }
+
+    .header .subtitle {
+      font-size: 1.3em;
+      color: #FFD700;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      color: #999;
+      font-size: 1.05em;
+    }
+
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 80px;
+      margin-bottom: 120px;
+    }
+
+    .badge-wrapper {
+      perspective: 1500px;
+    }
+
+    .badge-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 50px;
+      padding: 50px 35px;
+      text-align: center;
+      backdrop-filter: blur(20px);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+
+    .badge-card:hover {
+      transform: translateY(-25px);
+      background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 100%);
+      border-color: rgba(255,215,0,0.4);
+      box-shadow: 0 25px 60px rgba(255,215,0,0.25);
+    }
+
+    .badge-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid rgba(255,215,0,0.3);
+    }
+
+    .badge-logo {
+      font-size: 24px;
+    }
+
+    .badge-brand {
+      color: #FFD700;
+      font-weight: 900;
+      font-size: 14px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .shield-display {
+      margin: 40px 0 50px 0;
+      min-height: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .shield-svg {
+      width: 100%;
+      height: auto;
+      max-width: 360px;
+      filter: drop-shadow(0 30px 70px rgba(0,0,0,0.7));
+      transition: all 0.4s ease;
+    }
+
+    .badge-card:hover .shield-svg {
+      filter: drop-shadow(0 40px 100px rgba(0,0,0,0.9));
+      transform: scale(1.12);
+    }
+
+    .badge-info {
+      margin-top: 40px;
+    }
+
+    .badge-title {
+      font-size: 32px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .badge-subtitle {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+
+    .badge-achievement {
+      font-size: 16px;
+      color: #FFD700;
+      font-weight: 700;
+      margin-bottom: 20px;
+      padding: 12px 20px;
+      background: rgba(255,215,0,0.1);
+      border-radius: 25px;
+      display: inline-block;
+      border: 1px solid rgba(255,215,0,0.3);
+    }
+
+    .badge-cta {
+      background: linear-gradient(135deg, #FFD700 0%, #FF6F00 100%);
+      color: #000;
+      border: none;
+      padding: 14px 40px;
+      border-radius: 50px;
+      font-weight: 900;
+      cursor: pointer;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+      margin-top: 25px;
+    }
+
+    .badge-cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 50px rgba(255,215,0,0.5);
+    }
+
+    .features {
+      background: linear-gradient(135deg, rgba(255,215,0,0.08) 0%, rgba(255,111,0,0.04) 100%);
+      border: 2px solid rgba(255,215,0,0.2);
+      border-radius: 50px;
+      padding: 100px 60px;
+      text-align: center;
+    }
+
+    .features h2 {
+      font-size: 3.5em;
+      color: white;
+      margin-bottom: 20px;
+      font-weight: 900;
+    }
+
+    .features .subtitle {
+      color: #FFD700;
+      font-size: 1.3em;
+      margin-bottom: 60px;
+      font-weight: 600;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+      margin-top: 50px;
+    }
+
+    .feature-item {
+      background: rgba(255,215,0,0.05);
+      border: 2px solid rgba(255,215,0,0.2);
+      border-radius: 30px;
+      padding: 40px;
+      transition: all 0.3s ease;
+    }
+
+    .feature-item:hover {
+      border-color: rgba(255,215,0,0.5);
+      background: rgba(255,215,0,0.1);
+      transform: translateY(-10px);
+    }
+
+    .feature-icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+
+    .feature-title {
+      color: #FFD700;
+      font-size: 1.3em;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .feature-desc {
+      color: #ddd;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 768px) {
+      .badges-grid { grid-template-columns: 1fr; gap: 50px; }
+      .shield-display { min-height: 350px; }
+      .header h1 { font-size: 2.5em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎓 WizLingo Premium Badges</h1>
+      <p class="subtitle">Award-Winning Achievement System</p>
+      <p>Inspired by premium medal design • Built for sharing</p>
+    </div>
+
+    <div class="badges-grid">
+      <!-- SPARK BADGE -->
+      <div class="badge-wrapper">
+        <div class="badge-card">
+          <div class="badge-header">
+            <span class="badge-logo">🎓</span>
+            <span class="badge-brand">WizLingo</span>
+          </div>
+
+          <div class="shield-display">
+            <svg viewBox="0 0 320 440" class="shield-svg">
+              <defs>
+                <!-- Main gradient - Rich colors -->
+                <linearGradient id="spark-main" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#FF5722" />
+                  <stop offset="40%" stopColor="#FFB74D" />
+                  <stop offset="100%" stopColor="#FF5722" />
+                </linearGradient>
+
+                <!-- Metallic shine -->
+                <radialGradient id="spark-shine" cx="35%" cy="35%">
+                  <stop offset="0%" stopColor="white" stopOpacity="0.6" />
+                  <stop offset="50%" stopColor="white" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="white" stopOpacity="0" />
+                </radialGradient>
+
+                <!-- Inner glow -->
+                <linearGradient id="spark-inner" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#FFD700" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#FFD700" stopOpacity="0" />
+                </linearGradient>
+
+                <!-- Filters -->
+                <filter id="spark-shadow">
+                  <feDropShadow dx="0" dy="6" stdDeviation="8" floodOpacity="0.4" />
+                </filter>
+                <filter id="spark-glow">
+                  <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                  <feMerge>
+                    <feMergeNode in="coloredBlur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <!-- Outer ring glow -->
+              <circle cx="160" cy="160" r="155" fill="none" stroke="#FF5722" strokeWidth="2" opacity="0.2" filter="url(#spark-glow)" />
+
+              <!-- Main shield -->
+              <path d="M 160,20 Q 240,80 240,160 Q 240,280 160,400 Q 80,280 80,160 Q 80,80 160,20 Z"
+                    fill="url(#spark-main)" stroke="#FFD700" strokeWidth="4" filter="url(#spark-shadow)" />
+
+              <!-- Inner shadow for 3D -->
+              <path d="M 160,35 Q 230,85 230,155 Q 230,270 160,385 Q 90,270 90,155 Q 90,85 160,35 Z"
+                    fill="rgba(0,0,0,0.15)" />
+
+              <!-- Metallic shine -->
+              <path d="M 160,25 Q 225,75 225,150 Q 225,260 160,375 Q 95,260 95,150 Q 95,75 160,25 Z"
+                    fill="url(#spark-shine)" />
+
+              <!-- Inner glow -->
+              <path d="M 160,40 Q 220,85 220,155 Q 220,265 160,375 Q 100,265 100,155 Q 100,85 160,40 Z"
+                    fill="url(#spark-inner)" />
+
+              <!-- Decorative top element -->
+              <circle cx="160" cy="30" r="12" fill="#FFD700" opacity="0.95" />
+              <circle cx="140" cy="50" r="7" fill="#FFD700" opacity="0.8" />
+              <circle cx="180" cy="50" r="7" fill="#FFD700" opacity="0.8" />
+
+              <!-- Ornamental sides -->
+              <path d="M 85,140 Q 75,160 85,180" stroke="#FFD700" strokeWidth="2" fill="none" opacity="0.6" />
+              <path d="M 235,140 Q 245,160 235,180" stroke="#FFD700" strokeWidth="2" fill="none" opacity="0.6" />
+
+              <!-- Day number - Large and bold -->
+              <text x="160" y="160" fontSize="130" fontWeight="900" textAnchor="middle" dominantBaseline="middle"
+                    fill="#FFD700" style="text-shadow: 0 4px 12px rgba(0,0,0,0.5);">1</text>
+
+              <!-- DAY label -->
+              <text x="160" y="250" fontSize="32" fontWeight="bold" textAnchor="middle" fill="white" letterSpacing="4">DAY</text>
+
+              <!-- Rarity star -->
+              <text x="160" y="295" fontSize="26" textAnchor="middle">⭐</text>
+
+              <!-- Bottom emoji -->
+              <text x="160" y="360" fontSize="70" textAnchor="middle">✨</text>
+            </svg>
+          </div>
+
+          <div class="badge-info">
+            <div class="badge-title">Spark</div>
+            <div class="badge-subtitle">First Step Achievement</div>
+            <div class="badge-achievement">🌟 Day 1 · Unlocked</div>
+            <button class="badge-cta">🚀 Share Achievement</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- WORD WIZARD BADGE -->
+      <div class="badge-wrapper">
+        <div class="badge-card">
+          <div class="badge-header">
+            <span class="badge-logo">🎓</span>
+            <span class="badge-brand">WizLingo</span>
+          </div>
+
+          <div class="shield-display">
+            <svg viewBox="0 0 320 440" class="shield-svg">
+              <defs>
+                <linearGradient id="word-main" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#3F51B5" />
+                  <stop offset="40%" stopColor="#5C6BC0" />
+                  <stop offset="100%" stopColor="#3F51B5" />
+                </linearGradient>
+                <radialGradient id="word-shine" cx="35%" cy="35%">
+                  <stop offset="0%" stopColor="white" stopOpacity="0.6" />
+                  <stop offset="50%" stopColor="white" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="white" stopOpacity="0" />
+                </radialGradient>
+                <linearGradient id="word-inner" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#FFD700" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#FFD700" stopOpacity="0" />
+                </linearGradient>
+                <filter id="word-shadow">
+                  <feDropShadow dx="0" dy="6" stdDeviation="8" floodOpacity="0.4" />
+                </filter>
+              </defs>
+
+              <circle cx="160" cy="160" r="155" fill="none" stroke="#3F51B5" strokeWidth="2" opacity="0.2" />
+              <path d="M 160,20 Q 240,80 240,160 Q 240,280 160,400 Q 80,280 80,160 Q 80,80 160,20 Z"
+                    fill="url(#word-main)" stroke="#FFD700" strokeWidth="4" filter="url(#word-shadow)" />
+              <path d="M 160,35 Q 230,85 230,155 Q 230,270 160,385 Q 90,270 90,155 Q 90,85 160,35 Z"
+                    fill="rgba(0,0,0,0.15)" />
+              <path d="M 160,25 Q 225,75 225,150 Q 225,260 160,375 Q 95,260 95,150 Q 95,75 160,25 Z"
+                    fill="url(#word-shine)" />
+              <path d="M 160,40 Q 220,85 220,155 Q 220,265 160,375 Q 100,265 100,155 Q 100,85 160,40 Z"
+                    fill="url(#word-inner)" />
+
+              <circle cx="160" cy="30" r="12" fill="#FFD700" opacity="0.95" />
+              <circle cx="140" cy="50" r="7" fill="#FFD700" opacity="0.8" />
+              <circle cx="180" cy="50" r="7" fill="#FFD700" opacity="0.8" />
+              <path d="M 85,140 Q 75,160 85,180" stroke="#FFD700" strokeWidth="2" fill="none" opacity="0.6" />
+              <path d="M 235,140 Q 245,160 235,180" stroke="#FFD700" strokeWidth="2" fill="none" opacity="0.6" />
+
+              <text x="160" y="160" fontSize="130" fontWeight="900" textAnchor="middle" dominantBaseline="middle"
+                    fill="#FFD700">10</text>
+              <text x="160" y="250" fontSize="32" fontWeight="bold" textAnchor="middle" fill="white" letterSpacing="4">DAY</text>
+              <text x="120" y="295" fontSize="26" textAnchor="middle">⭐</text>
+              <text x="160" y="295" fontSize="26" textAnchor="middle">⭐</text>
+              <text x="200" y="295" fontSize="26" textAnchor="middle">⭐</text>
+              <text x="160" y="360" fontSize="70" textAnchor="middle">📚</text>
+            </svg>
+          </div>
+
+          <div class="badge-info">
+            <div class="badge-title">Word Wizard</div>
+            <div class="badge-subtitle">Reading Master</div>
+            <div class="badge-achievement">📚 Day 10 · Unlocked</div>
+            <button class="badge-cta">🚀 Share Achievement</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VOICE WIZARD BADGE -->
+      <div class="badge-wrapper">
+        <div class="badge-card">
+          <div class="badge-header">
+            <span class="badge-logo">🎓</span>
+            <span class="badge-brand">WizLingo</span>
+          </div>
+
+          <div class="shield-display">
+            <svg viewBox="0 0 320 440" class="shield-svg">
+              <defs>
+                <linearGradient id="voice-main" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#7B1FA2" />
+                  <stop offset="40%" stopColor="#9C27B0" />
+                  <stop offset="100%" stopColor="#7B1FA2" />
+                </linearGradient>
+                <radialGradient id="voice-shine" cx="35%" cy="35%">
+                  <stop offset="0%" stopColor="white" stopOpacity="0.6" />
+                  <stop offset="50%" stopColor="white" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="white" stopOpacity="0" />
+                </radialGradient>
+                <linearGradient id="voice-inner" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#FF1493" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#FF1493" stopOpacity="0" />
+                </linearGradient>
+                <filter id="voice-shadow">
+                  <feDropShadow dx="0" dy="6" stdDeviation="8" floodOpacity="0.4" />
+                </filter>
+              </defs>
+
+              <circle cx="160" cy="160" r="155" fill="none" stroke="#7B1FA2" strokeWidth="2" opacity="0.2" />
+              <path d="M 160,20 Q 240,80 240,160 Q 240,280 160,400 Q 80,280 80,160 Q 80,80 160,20 Z"
+                    fill="url(#voice-main)" stroke="#FF1493" strokeWidth="4" filter="url(#voice-shadow)" />
+              <path d="M 160,35 Q 230,85 230,155 Q 230,270 160,385 Q 90,270 90,155 Q 90,85 160,35 Z"
+                    fill="rgba(0,0,0,0.15)" />
+              <path d="M 160,25 Q 225,75 225,150 Q 225,260 160,375 Q 95,260 95,150 Q 95,75 160,25 Z"
+                    fill="url(#voice-shine)" />
+              <path d="M 160,40 Q 220,85 220,155 Q 220,265 160,375 Q 100,265 100,155 Q 100,85 160,40 Z"
+                    fill="url(#voice-inner)" />
+
+              <circle cx="160" cy="30" r="12" fill="#FF1493" opacity="0.95" />
+              <circle cx="140" cy="50" r="7" fill="#FF1493" opacity="0.8" />
+              <circle cx="180" cy="50" r="7" fill="#FF1493" opacity="0.8" />
+              <path d="M 85,140 Q 75,160 85,180" stroke="#FF1493" strokeWidth="2" fill="none" opacity="0.6" />
+              <path d="M 235,140 Q 245,160 235,180" stroke="#FF1493" strokeWidth="2" fill="none" opacity="0.6" />
+
+              <text x="160" y="160" fontSize="130" fontWeight="900" textAnchor="middle" dominantBaseline="middle"
+                    fill="#FF1493">15</text>
+              <text x="160" y="250" fontSize="32" fontWeight="bold" textAnchor="middle" fill="white" letterSpacing="4">DAY</text>
+              <text x="120" y="295" fontSize="26" textAnchor="middle">⭐</text>
+              <text x="160" y="295" fontSize="26" textAnchor="middle">⭐</text>
+              <text x="200" y="295" fontSize="26" textAnchor="middle">⭐</text>
+              <text x="160" y="360" fontSize="70" textAnchor="middle">🎤</text>
+            </svg>
+          </div>
+
+          <div class="badge-info">
+            <div class="badge-title">Voice Wizard</div>
+            <div class="badge-subtitle">Speaking Master</div>
+            <div class="badge-achievement">🎤 Day 15 · Unlocked</div>
+            <button class="badge-cta">🚀 Share Achievement</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRAND WIZARD BADGE -->
+      <div class="badge-wrapper">
+        <div class="badge-card">
+          <div class="badge-header">
+            <span class="badge-logo">🎓</span>
+            <span class="badge-brand">WizLingo</span>
+          </div>
+
+          <div class="shield-display">
+            <svg viewBox="0 0 320 440" class="shield-svg">
+              <defs>
+                <linearGradient id="grand-main" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#D84315" />
+                  <stop offset="40%" stopColor="#FF6F00" />
+                  <stop offset="100%" stopColor="#D84315" />
+                </linearGradient>
+                <radialGradient id="grand-shine" cx="35%" cy="35%">
+                  <stop offset="0%" stopColor="white" stopOpacity="0.6" />
+                  <stop offset="50%" stopColor="white" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="white" stopOpacity="0" />
+                </radialGradient>
+                <linearGradient id="grand-inner" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#FFD700" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="#FFD700" stopOpacity="0" />
+                </linearGradient>
+                <filter id="grand-shadow">
+                  <feDropShadow dx="0" dy="6" stdDeviation="8" floodOpacity="0.4" />
+                </filter>
+              </defs>
+
+              <circle cx="160" cy="160" r="155" fill="none" stroke="#D84315" strokeWidth="2" opacity="0.2" />
+              <path d="M 160,20 Q 240,80 240,160 Q 240,280 160,400 Q 80,280 80,160 Q 80,80 160,20 Z"
+                    fill="url(#grand-main)" stroke="#FFD700" strokeWidth="4" filter="url(#grand-shadow)" />
+              <path d="M 160,35 Q 230,85 230,155 Q 230,270 160,385 Q 90,270 90,155 Q 90,85 160,35 Z"
+                    fill="rgba(0,0,0,0.15)" />
+              <path d="M 160,25 Q 225,75 225,150 Q 225,260 160,375 Q 95,260 95,150 Q 95,75 160,25 Z"
+                    fill="url(#grand-shine)" />
+              <path d="M 160,40 Q 220,85 220,155 Q 220,265 160,375 Q 100,265 100,155 Q 100,85 160,40 Z"
+                    fill="url(#grand-inner)" />
+
+              <circle cx="160" cy="30" r="12" fill="#FFD700" opacity="0.95" />
+              <circle cx="140" cy="50" r="7" fill="#FFD700" opacity="0.8" />
+              <circle cx="180" cy="50" r="7" fill="#FFD700" opacity="0.8" />
+              <path d="M 85,140 Q 75,160 85,180" stroke="#FFD700" strokeWidth="2" fill="none" opacity="0.6" />
+              <path d="M 235,140 Q 245,160 235,180" stroke="#FFD700" strokeWidth="2" fill="none" opacity="0.6" />
+
+              <text x="160" y="160" fontSize="130" fontWeight="900" textAnchor="middle" dominantBaseline="middle"
+                    fill="#FFD700">30</text>
+              <text x="160" y="250" fontSize="32" fontWeight="bold" textAnchor="middle" fill="white" letterSpacing="4">DAY</text>
+              <text x="110" y="295" fontSize="26" textAnchor="middle">⭐</text>
+              <text x="145" y="295" fontSize="26" textAnchor="middle">⭐</text>
+              <text x="180" y="295" fontSize="26" textAnchor="middle">⭐</text>
+              <text x="215" y="295" fontSize="26" textAnchor="middle">⭐</text>
+              <text x="160" y="360" fontSize="70" textAnchor="middle">👑</text>
+            </svg>
+          </div>
+
+          <div class="badge-info">
+            <div class="badge-title">Grand Wizard</div>
+            <div class="badge-subtitle">Ultimate Master</div>
+            <div class="badge-achievement">👑 Day 30 · Unlocked</div>
+            <button class="badge-cta">🚀 Share Achievement</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features">
+      <h2>✨ Premium Design Excellence</h2>
+      <p class="subtitle">Award-Winning Badge Aesthetics</p>
+
+      <div class="feature-grid">
+        <div class="feature-item">
+          <div class="feature-icon">🛡️</div>
+          <div class="feature-title">Ornate Shield Design</div>
+          <div class="feature-desc">Decorative borders, metallic accents, and professional medal-like styling create premium appearance</div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">✨</div>
+          <div class="feature-title">Metallic Effects</div>
+          <div class="feature-desc">Radial shine, inner glows, and depth shadows create genuine 3D appearance worthy of framing</div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">🎨</div>
+          <div class="feature-title">Bold Colors</div>
+          <div class="feature-desc">Rich, saturated gradients with gold accents photograph beautifully on social media</div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">📱</div>
+          <div class="feature-title">Instant Shareability</div>
+          <div class="feature-desc">One-click WhatsApp share creates organic viral loop - parents naturally celebrate achievements</div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">👨‍👩‍👧</div>
+          <div class="feature-title">Parent-Approved Design</div>
+          <div class="feature-desc">Premium aesthetic makes parents proud to share - not just a digital sticker, but a real achievement</div>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-icon">🚀</div>
+          <div class="feature-title">Viral Growth Engine</div>
+          <div class="feature-desc">Impressive visuals + proper branding = exponential growth through parent-to-parent recommendations</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
