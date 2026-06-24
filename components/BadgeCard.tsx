@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 
 interface BadgeCardProps {
   type: 'SPARK' | 'WORD_WIZARD' | 'VOICE_WIZARD' | 'LANGUAGE_WIZARD' | 'GRAND_WIZARD' | 'WEEK_WARRIOR' | 'MONTH_MASTER';
@@ -9,7 +9,8 @@ interface BadgeCardProps {
   maxProgress?: number;
   showProgress?: boolean;
   onClick?: () => void;
-  studentName?: string;
+  dayNumber?: number;
+  motivationalMessage?: string;
 }
 
 const BADGE_CONFIG = {
@@ -17,9 +18,9 @@ const BADGE_CONFIG = {
     emoji: '✨',
     name: 'Spark',
     rarity: 1,
-    color: '#FF6B6B',
-    gradientStart: '#FFE66D',
-    gradientEnd: '#FF6B6B',
+    primaryColor: '#FF6B6B',
+    accentColor: '#FFD700',
+    secondaryColor: '#FFA500',
     description: 'First step',
     requirement: 'Complete 1 reading session',
     unlockMessage: 'Your first step into reading!'
@@ -28,9 +29,9 @@ const BADGE_CONFIG = {
     emoji: '📚',
     name: 'Word Wizard',
     rarity: 3,
-    color: '#9333EA',
-    gradientStart: '#C084FC',
-    gradientEnd: '#9333EA',
+    primaryColor: '#8B5CF6',
+    accentColor: '#C4B5FD',
+    secondaryColor: '#DDD6FE',
     description: 'Reading master',
     requirement: 'Achieve 80%+ accuracy in reading',
     unlockMessage: 'You\'re a master of reading comprehension!'
@@ -39,9 +40,9 @@ const BADGE_CONFIG = {
     emoji: '🎤',
     name: 'Voice Wizard',
     rarity: 3,
-    color: '#EC4899',
-    gradientStart: '#F472B6',
-    gradientEnd: '#EC4899',
+    primaryColor: '#EC4899',
+    accentColor: '#F472B6',
+    secondaryColor: '#FBE9F3',
     description: 'Speaking master',
     requirement: 'Achieve 75%+ fluency in speaking',
     unlockMessage: 'Your pronunciation is excellent!'
@@ -50,9 +51,9 @@ const BADGE_CONFIG = {
     emoji: '🧙',
     name: 'Language Wizard',
     rarity: 3,
-    color: '#6366F1',
-    gradientStart: '#818CF8',
-    gradientEnd: '#6366F1',
+    primaryColor: '#6366F1',
+    accentColor: '#818CF8',
+    secondaryColor: '#E0E7FF',
     description: 'Committed learner',
     requirement: 'Complete 10 reading or speaking sessions',
     unlockMessage: 'Your dedication is incredible!'
@@ -61,9 +62,9 @@ const BADGE_CONFIG = {
     emoji: '👑',
     name: 'Grand Wizard',
     rarity: 4,
-    color: '#FCD34D',
-    gradientStart: '#FEF3C7',
-    gradientEnd: '#FCD34D',
+    primaryColor: '#D97706',
+    accentColor: '#FCD34D',
+    secondaryColor: '#FEF3C7',
     description: 'Ultimate master',
     requirement: 'Earn all 4 badges above',
     unlockMessage: 'You\'ve mastered WizLingo!'
@@ -72,9 +73,9 @@ const BADGE_CONFIG = {
     emoji: '🔥',
     name: 'Week Warrior',
     rarity: 2,
-    color: '#FF7F50',
-    gradientStart: '#FFAD5A',
-    gradientEnd: '#FF7F50',
+    primaryColor: '#FF7F50',
+    accentColor: '#FFAD5A',
+    secondaryColor: '#FFE0CC',
     description: '7-day streak',
     requirement: 'Practice 7 consecutive days',
     unlockMessage: 'Your consistency is amazing!'
@@ -83,9 +84,9 @@ const BADGE_CONFIG = {
     emoji: '⚡',
     name: 'Month Master',
     rarity: 2,
-    color: '#FFD700',
-    gradientStart: '#FFF44F',
-    gradientEnd: '#FFD700',
+    primaryColor: '#FFD700',
+    accentColor: '#FFF44F',
+    secondaryColor: '#FFFACD',
     description: '30-day streak',
     requirement: 'Practice 30 consecutive days',
     unlockMessage: 'You\'re a learning legend!'
@@ -99,14 +100,13 @@ export default function BadgeCard({
   maxProgress = 10,
   showProgress = true,
   onClick,
-  studentName = 'Friend'
+  dayNumber = 10,
+  motivationalMessage = "I'm proud of today's commitment"
 }: BadgeCardProps) {
   const config = BADGE_CONFIG[type];
   const isLocked = status === 'locked';
   const progressPercent = maxProgress ? (progress / maxProgress) * 100 : 0;
   const [showTooltip, setShowTooltip] = useState(false);
-  const [showShareMenu, setShowShareMenu] = useState(false);
-  const shareCanvasRef = useRef<HTMLCanvasElement>(null);
 
   const handleShare = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -122,209 +122,206 @@ export default function BadgeCard({
     }
   };
 
-  const generateShareImage = async () => {
-    const canvas = shareCanvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Set canvas size (Instagram square)
-    canvas.width = 1080;
-    canvas.height = 1080;
-
-    // Gradient background
-    const gradient = ctx.createLinearGradient(0, 0, 1080, 1080);
-    gradient.addColorStop(0, '#0f0c29');
-    gradient.addColorStop(0.5, '#302b63');
-    gradient.addColorStop(1, '#24243e');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 1080, 1080);
-
-    // Badge circle
-    const centerX = 540;
-    const centerY = 420;
-    const radius = 200;
-
-    // Outer glow
-    ctx.fillStyle = `${config.color}40`;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius + 40, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Badge gradient circle
-    const badgeGradient = ctx.createRadialGradient(centerX - 50, centerY - 50, 0, centerX, centerY, radius);
-    badgeGradient.addColorStop(0, config.gradientStart);
-    badgeGradient.addColorStop(1, config.gradientEnd);
-    ctx.fillStyle = badgeGradient;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Border
-    ctx.strokeStyle = '#FFFFFF';
-    ctx.lineWidth = 8;
-    ctx.stroke();
-
-    // Shine effect
-    const shineGradient = ctx.createLinearGradient(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
-    shineGradient.addColorStop(0, 'rgba(255,255,255,0.4)');
-    shineGradient.addColorStop(0.5, 'rgba(255,255,255,0)');
-    shineGradient.addColorStop(1, 'rgba(255,255,255,0.1)');
-    ctx.fillStyle = shineGradient;
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Emoji
-    ctx.font = 'bold 180px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = 'white';
-    ctx.filter = 'drop-shadow(0px 4px 8px rgba(0,0,0,0.5))';
-    ctx.fillText(config.emoji, centerX, centerY - 30);
-
-    // Reset filter
-    ctx.filter = 'none';
-
-    // Badge name
-    ctx.font = 'bold 72px Arial';
-    ctx.fillStyle = 'white';
-    ctx.fillText(config.name, centerX, centerY + 120);
-
-    // Stars
-    ctx.font = '60px Arial';
-    ctx.textAlign = 'center';
-    let starX = centerX - (config.rarity * 35);
-    for (let i = 0; i < config.rarity; i++) {
-      ctx.fillText('⭐', starX + i * 70, centerY + 220);
-    }
-
-    // WizLingo text
-    ctx.font = 'bold 48px Arial';
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.fillText('WizLingo', centerX, 950);
-
-    // Download image
-    canvas.toBlob((blob) => {
-      if (blob) {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${config.name}-badge-${studentName}.png`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
-    });
-  };
-
   return (
-    <div className="relative">
-      <canvas ref={shareCanvasRef} className="hidden" />
+    <div
+      className={`
+        relative w-full max-w-[220px]
+        transition-all duration-300 hover:scale-105
+        cursor-pointer group
+        ${isLocked ? 'opacity-60' : 'opacity-100'}
+      `}
+      onClick={onClick}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      {/* Tooltip */}
+      {showTooltip && (
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white text-xs rounded-lg p-3 w-48 shadow-2xl border border-white/20">
+          <p className="font-bold mb-1">{config.name}</p>
+          <p className="text-gray-300 text-xs mb-2">{config.requirement}</p>
+          {!isLocked && (
+            <button
+              onClick={handleShare}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold py-1 rounded mt-2 transition-colors"
+            >
+              📤 Share
+            </button>
+          )}
+        </div>
+      )}
 
-      <div
-        className={`
-          relative w-full aspect-square max-w-[160px] sm:max-w-[180px]
-          transition-all duration-300 hover:scale-105 active:scale-95
-          cursor-pointer group
-          ${isLocked ? 'opacity-60' : 'opacity-100'}
-        `}
-        onClick={onClick}
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => { setShowTooltip(false); setShowShareMenu(false); }}
-      >
-        {/* Tooltip */}
-        {showTooltip && (
-          <div className="absolute -top-40 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white text-xs rounded-xl p-4 w-48 shadow-2xl border border-white/20">
-            <p className="font-bold mb-1 text-sm">{config.name}</p>
-            <p className="text-gray-300 text-xs mb-3">{config.requirement}</p>
-            <div className="flex gap-2">
-              {!isLocked && (
-                <>
-                  <button
-                    onClick={handleShare}
-                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold py-1.5 rounded-lg transition-colors"
-                  >
-                    📤 Share
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      generateShareImage();
-                    }}
-                    className="flex-1 bg-purple-500 hover:bg-purple-600 text-white text-xs font-bold py-1.5 rounded-lg transition-colors"
-                  >
-                    🖼️ Image
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Main badge circle */}
-        <div
-          className="relative w-full h-full rounded-full shadow-2xl transition-all group-hover:shadow-2xl group-hover:drop-shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+      {/* Main Badge Container - Shield Shape with SVG */}
+      <div className="relative" style={{ perspective: '1200px' }}>
+        <svg
+          viewBox="0 0 240 280"
+          className="w-full drop-shadow-2xl group-hover:drop-shadow-none transition-all"
           style={{
-            background: `linear-gradient(135deg, ${config.gradientStart}, ${config.gradientEnd})`,
-            filter: isLocked ? 'grayscale(80%) brightness(0.6)' : 'drop-shadow(0 8px 20px rgba(0,0,0,0.3))',
+            filter: isLocked ? 'grayscale(80%) brightness(0.7)' : 'drop-shadow(0 12px 24px rgba(0,0,0,0.4))',
           }}
         >
-          {/* Shine/gloss overlay */}
-          <div className="absolute inset-0 rounded-full opacity-30 pointer-events-none"
-            style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 100%)'
-            }}
+          <defs>
+            {/* Main gradient */}
+            <linearGradient id={`grad-${type}`} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={config.primaryColor} stopOpacity="0.95" />
+              <stop offset="50%" stopColor={config.primaryColor} stopOpacity="0.85" />
+              <stop offset="100%" stopColor={config.secondaryColor} stopOpacity="0.95" />
+            </linearGradient>
+
+            {/* Shine/highlight gradient */}
+            <linearGradient id={`shine-${type}`} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="white" stopOpacity="0.25" />
+              <stop offset="50%" stopColor="white" stopOpacity="0" />
+              <stop offset="100%" stopColor="black" stopOpacity="0.1" />
+            </linearGradient>
+
+            {/* Glow filter */}
+            <filter id={`glow-${type}`} x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+              <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Outer glow shadow */}
+          <path
+            d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z"
+            fill={config.primaryColor}
+            opacity="0.2"
+            filter={`url(#glow-${type})`}
           />
 
-          {/* Lock overlay */}
-          {isLocked && (
-            <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center z-10">
-              <div className="text-5xl">🔒</div>
-            </div>
-          )}
+          {/* Main shield body */}
+          <path
+            d="M 120,20 L 200,65 L 200,140 Q 200,220 120,270 Q 40,220 40,140 L 40,65 Z"
+            fill={`url(#grad-${type})`}
+            stroke={config.accentColor}
+            strokeWidth="3"
+          />
 
-          {/* Content */}
-          <div className="relative z-5 w-full h-full flex flex-col items-center justify-center p-3">
-            {/* Rarity stars - top */}
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 flex gap-1">
-              {[...Array(config.rarity)].map((_, i) => (
-                <span key={i} className="text-xs">⭐</span>
-              ))}
-            </div>
+          {/* Shield shine/inner highlight */}
+          <path
+            d="M 120,30 L 190,70 L 190,135 Q 190,210 120,260 Q 50,210 50,135 L 50,70 Z"
+            fill={`url(#shine-${type})`}
+          />
 
-            {/* Main emoji */}
-            <span className="text-5xl sm:text-6xl drop-shadow-lg leading-none">
-              {config.emoji}
-            </span>
+          {/* Inner border (darker) */}
+          <path
+            d="M 120,35 L 185,72 L 185,130 Q 185,205 120,255 Q 55,205 55,130 L 55,72 Z"
+            stroke={config.accentColor}
+            strokeWidth="1.5"
+            fill="none"
+            opacity="0.4"
+          />
 
-            {/* Badge name */}
-            <p className="text-white font-black text-xs sm:text-sm uppercase tracking-tight mt-2 text-center line-clamp-2">
-              {config.name}
-            </p>
-          </div>
-        </div>
+          {/* Decorative laurel wreaths - left */}
+          <g opacity="0.6">
+            <path d="M 80,90 Q 75,100 80,110" stroke={config.accentColor} strokeWidth="1.5" fill="none" />
+            <circle cx="80" cy="95" r="2" fill={config.accentColor} />
+            <circle cx="78" cy="105" r="2" fill={config.accentColor} />
+          </g>
 
-        {/* Status badge bottom */}
-        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white/95 text-gray-900 text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-          {isLocked ? '🔒 Locked' : '✨ Unlocked'}
-        </div>
+          {/* Decorative laurel wreaths - right */}
+          <g opacity="0.6">
+            <path d="M 160,90 Q 165,100 160,110" stroke={config.accentColor} strokeWidth="1.5" fill="none" />
+            <circle cx="160" cy="95" r="2" fill={config.accentColor} />
+            <circle cx="162" cy="105" r="2" fill={config.accentColor} />
+          </g>
 
-        {/* Progress bar for locked */}
-        {isLocked && showProgress && (
-          <div className="absolute -bottom-8 left-0 right-0 px-2">
-            <div className="bg-white/20 rounded-full h-1 overflow-hidden">
-              <div
-                className="bg-white h-full transition-all duration-500"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
-            <p className="text-white/70 text-xs text-center mt-1">
-              {progress}/{maxProgress}
-            </p>
+          {/* DAY NUMBER - Large and prominent */}
+          <text
+            x="120"
+            y="95"
+            fontSize="52"
+            fontWeight="900"
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill="white"
+            filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.4))"
+          >
+            {dayNumber}
+          </text>
+
+          {/* "DAY" label */}
+          <text
+            x="120"
+            y="125"
+            fontSize="14"
+            fontWeight="bold"
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill={config.accentColor}
+            letterSpacing="2"
+          >
+            DAY
+          </text>
+
+          {/* Rarity stars - positioned at bottom of shield */}
+          <g>
+            {[...Array(config.rarity)].map((_, i) => (
+              <text
+                key={i}
+                x={95 + i * 25}
+                y="190"
+                fontSize="16"
+                textAnchor="middle"
+                fill={config.accentColor}
+              >
+                ⭐
+              </text>
+            ))}
+          </g>
+
+          {/* Emoji at very bottom */}
+          <text
+            x="120"
+            y="245"
+            fontSize="32"
+            textAnchor="middle"
+            filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.3))"
+          >
+            {config.emoji}
+          </text>
+        </svg>
+
+        {/* Lock overlay for locked badges */}
+        {isLocked && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-5xl">🔒</div>
           </div>
         )}
       </div>
+
+      {/* Motivational message below badge */}
+      <div className="mt-4 px-2 text-center">
+        <p className="text-white/80 text-xs italic leading-snug">
+          "{motivationalMessage}"
+        </p>
+      </div>
+
+      {/* Status indicators row - like reference */}
+      {!isLocked && (
+        <div className="mt-3 px-2">
+          <p className="text-green-400 text-xs font-bold text-center">
+            ✓ DAY {dayNumber} COMPLETED
+          </p>
+        </div>
+      )}
+
+      {isLocked && showProgress && (
+        <div className="mt-3 px-2">
+          <div className="bg-white/10 rounded-full h-1.5 overflow-hidden mb-2">
+            <div
+              className="bg-white/60 h-full transition-all duration-500"
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+          <p className="text-purple-300 text-xs text-center">
+            {progress}/{maxProgress} sessions
+          </p>
+        </div>
+      )}
     </div>
   );
 }
