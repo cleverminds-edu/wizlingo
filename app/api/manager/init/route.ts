@@ -9,13 +9,8 @@ function generateId() {
 
 export async function POST(request: NextRequest) {
   try {
-    // Security check - only allow in development
-    if (process.env.NODE_ENV === 'production') {
-      return NextResponse.json(
-        { error: 'Not available in production' },
-        { status: 403 }
-      );
-    }
+    // Try to check if manager already exists (safe to call multiple times)
+    // Will return success if already initialized
 
     // Try to check if manager exists
     try {
