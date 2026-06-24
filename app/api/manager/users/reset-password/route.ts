@@ -52,26 +52,32 @@ export async function POST(request: NextRequest) {
 
     // Find student by ID or userId
     let student = null;
+    let searchedById = false;
 
     // Try by internal ID first
     try {
       student = await prisma.student.findUnique({
         where: { id: studentId }
       });
+      searchedById = true;
     } catch (e) {
-      // If not found, try by userId
+      // Ignore error, try userId next
     }
 
     // If not found by ID, try by userId (e.g., WL194299)
-    if (!student) {
-      student = await prisma.student.findUnique({
-        where: { userId: studentId }
-      });
+    if (!student && !searchedById) {
+      try {
+        student = await prisma.student.findFirst({
+          where: { userId: studentId }
+        });
+      } catch (e) {
+        // Ignore error
+      }
     }
 
     if (!student) {
       return NextResponse.json(
-        { error: `Student not found. Please use a valid Student ID or User ID (e.g., WL194299)` },
+        { error: `Student not found. Please use a valid User ID (e.g., WL194299)` },
         { status: 404 }
       );
     }
@@ -81,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     // Update password
     await prisma.student.update({
-      where: { id: studentId },
+      where: { id: student.id },
       data: {
         passwordHash: hashedPassword,
         passwordChangedAt: new Date()
@@ -91,14 +97,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: `Password reset for user ${student.userId || student.id}`
+        message: `✅ Password reset successfully for ${student.userId || student.name || student.id}`
       },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Password reset error:', error);
     return NextResponse.json(
-      { error: 'Failed to reset password' },
+      {
+        error: 'Failed to reset password',
+        details: error.message,
+        code: error.code
+      },
       { status: 500 }
     );
   }
