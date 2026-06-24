@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { LogOut, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { BadgeCelebration } from "@/components/badges/BadgeCelebration";
@@ -94,6 +94,7 @@ export default function StudentDashboard() {
   const [showWelcome, setShowWelcome] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [earnedBadge, setEarnedBadge] = useState<BadgeType | null>(null);
+  const [showRecentSessions, setShowRecentSessions] = useState(false);
 
   useEffect(() => {
     // Get auth headers - try localStorage token first, fall back to cookie-based auth
@@ -437,54 +438,63 @@ export default function StudentDashboard() {
             )}
           </div>
 
-          {/* Recent Sessions */}
+          {/* Recent Sessions Dropdown */}
           <div>
-            <h3 className="text-purple-300 text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
-              <span className="text-xl">📚</span> Recent Adventures
-            </h3>
-            {student.sessions.length === 0 ? (
-              <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/10">
-                <div className="text-4xl mb-2">✨</div>
-                <p className="text-purple-300 text-sm font-semibold">No adventures yet!</p>
-                <p className="text-purple-400 text-xs mt-1">Click Read or Speak to get started</p>
-              </div>
-            ) : (
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {student.sessions.slice(0, 6).map((s: any) => {
-                  const isReading = !s.type || s.type === 'READING';
-                  const title = isReading ? s.passage?.title : s.topic?.title;
-                  const level = isReading ? s.passage?.level : s.topic?.level;
-                  const emoji = isReading ? (TOPIC_EMOJI[title] ?? "📖") : "🎤";
-                  const stars = !s.wpm ? 0 : s.accuracy! >= 90 ? 3 : s.accuracy! >= 80 ? 2 : 1;
-                  const metric = isReading ? `${Math.round(s.wpm)} WPM` : `${Math.round(s.fluencyScore ?? 0)}% Fluency`;
+            <button
+              onClick={() => setShowRecentSessions(!showRecentSessions)}
+              className="w-full mb-4 flex items-center justify-between text-purple-300 text-xs font-black uppercase tracking-widest hover:text-white transition-colors">
+              <span className="flex items-center gap-2">
+                <span className="text-xl">📚</span> Recent Adventures
+              </span>
+              <ChevronDown size={16} className={`transition-transform ${showRecentSessions ? 'rotate-180' : ''}`} />
+            </button>
 
-                  return (
-                    <div key={s.id}
-                      className="bg-white/10 backdrop-blur-sm rounded-xl px-3 py-3 border border-white/10 hover:bg-white/15 transition-colors">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="text-xl">{emoji}</span>
-                          <div className="min-w-0">
-                            <p className="text-white font-semibold text-sm truncate">{title}</p>
-                            <p className="text-purple-400 text-xs">Lvl {level} {isReading ? '📖' : '🎤'}</p>
-                          </div>
-                        </div>
-                        {s.wpm || s.fluencyScore ? (
-                          <div className="text-right flex-shrink-0">
-                            <div className="flex gap-0.5">
-                              {[...Array(3)].map((_, i) => (
-                                <span key={i} className={i < stars ? "text-lg" : "text-lg opacity-30"}>⭐</span>
-                              ))}
+            {showRecentSessions && (
+              <div>
+                {(() => {
+                  const completedSessions = student.sessions.filter((s: any) => s.wpm || s.fluencyScore);
+                  return completedSessions.length === 0 ? (
+                    <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/10">
+                      <div className="text-4xl mb-2">✨</div>
+                      <p className="text-purple-300 text-sm font-semibold">No completed adventures yet!</p>
+                      <p className="text-purple-400 text-xs mt-1">Click Read or Speak to get started</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {completedSessions.slice(0, 6).map((s: any) => {
+                        const isReading = !s.type || s.type === 'READING';
+                        const title = isReading ? s.passage?.title : s.topic?.title;
+                        const level = isReading ? s.passage?.level : s.topic?.level;
+                        const emoji = isReading ? (TOPIC_EMOJI[title] ?? "📖") : "🎤";
+                        const stars = s.accuracy! >= 90 ? 3 : s.accuracy! >= 80 ? 2 : 1;
+                        const metric = isReading ? `${Math.round(s.wpm)} WPM` : `${Math.round(s.fluencyScore ?? 0)}% Fluency`;
+
+                        return (
+                          <div key={s.id}
+                            className="bg-white/10 backdrop-blur-sm rounded-xl px-3 py-3 border border-white/10 hover:bg-white/15 transition-colors">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <span className="text-xl">{emoji}</span>
+                                <div className="min-w-0">
+                                  <p className="text-white font-semibold text-sm truncate">{title}</p>
+                                  <p className="text-purple-400 text-xs">Lvl {level} {isReading ? '📖' : '🎤'}</p>
+                                </div>
+                              </div>
+                              <div className="text-right flex-shrink-0">
+                                <div className="flex gap-0.5">
+                                  {[...Array(3)].map((_, i) => (
+                                    <span key={i} className={i < stars ? "text-lg" : "text-lg opacity-30"}>⭐</span>
+                                  ))}
+                                </div>
+                                <p className="text-purple-300 text-xs font-semibold mt-0.5">{metric}</p>
+                              </div>
                             </div>
-                            <p className="text-purple-300 text-xs font-semibold mt-0.5">{metric}</p>
                           </div>
-                        ) : (
-                          <span className="text-xs bg-amber-500/30 text-amber-300 px-2 py-1 rounded-full flex-shrink-0">In Progress</span>
-                        )}
-                      </div>
+                        );
+                      })}
                     </div>
                   );
-                })}
+                })()}
               </div>
             )}
           </div>
