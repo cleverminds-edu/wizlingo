@@ -215,27 +215,27 @@ export default function SessionPage() {
       )}
 
       {/* Header */}
-      <header className="flex items-center justify-between px-8 py-4 border-b border-white/10">
+      <header className="flex items-center justify-between px-4 sm:px-8 py-4 border-b border-white/10">
         <button onClick={() => router.push("/student/dashboard")}
           className="flex items-center gap-2 text-purple-300 hover:text-white transition-colors">
-          <ArrowLeft size={22} />
-          <span className="font-medium text-lg">Dashboard</span>
+          <ArrowLeft size={20} />
+          <span className="font-medium text-sm sm:text-base">Back</span>
         </button>
         {passage && (
-          <div className="flex items-center gap-3 bg-white/10 px-5 py-2 rounded-full border border-white/20">
-            <span className="text-yellow-400 text-xl">⭐</span>
-            <span className="text-white font-bold text-lg">
-              Level {passage.level} · {passage.topic}
+          <div className="hidden sm:flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/20 text-xs sm:text-sm">
+            <span className="text-yellow-400">⭐</span>
+            <span className="text-white font-bold">
+              Lvl {passage.level} · {passage.topic}
             </span>
           </div>
         )}
         <div className="text-xs text-purple-300 whitespace-nowrap">
-          Powered by <span className="text-orange-400 font-bold">Edvanta AI</span>
+          <span className="text-orange-400 font-bold">WizLingo</span>
         </div>
       </header>
 
       {/* Session area */}
-      <div className="flex-1 px-8 py-6 max-w-7xl w-full mx-auto">
+      <div className="flex-1 px-4 sm:px-8 py-4 sm:py-6 max-w-7xl w-full mx-auto">
         {passage && sessionId && (
           <ReadingSession
             passage={passage}

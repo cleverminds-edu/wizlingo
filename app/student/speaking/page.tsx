@@ -130,32 +130,32 @@ export default function SpeakingHomePage() {
       style={{ background: "linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%)" }}>
 
       {/* Header */}
-      <header className="flex items-center justify-between px-8 py-4 border-b border-white/10">
+      <header className="flex items-center justify-between px-4 sm:px-8 py-4 border-b border-white/10">
         <button onClick={() => router.push("/student/dashboard")}
           className="flex items-center gap-2 text-purple-300 hover:text-white transition-colors">
-          <ArrowLeft size={22} />
-          <span className="font-medium">Dashboard</span>
+          <ArrowLeft size={20} />
+          <span className="font-medium text-sm sm:text-base">Back</span>
         </button>
         <div className="flex items-center gap-2">
-          <Image src="/edvanta-logo1.png" alt="Edvanta" width={100} height={28}
-            className="brightness-0 invert opacity-70" />
+          <Image src="/wiziingo-logo.svg" alt="WizLingo" width={100} height={28}
+            className="brightness-0 invert opacity-70 h-7 w-auto" />
         </div>
-        <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/20">
-          <span className="text-lg">{levelInfo.emoji}</span>
-          <span className="text-white font-bold text-sm">Level {level} {levelInfo.label}</span>
+        <div className="hidden sm:flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/20">
+          <span>{levelInfo.emoji}</span>
+          <span className="text-white font-bold text-xs">Level {level} {levelInfo.label}</span>
         </div>
       </header>
 
-      <main className="flex-1 px-8 py-8 max-w-4xl w-full mx-auto">
+      <main className="flex-1 px-4 sm:px-8 py-4 sm:py-8 max-w-4xl w-full mx-auto">
 
         {/* Hero */}
-        <div className={`rounded-3xl p-8 mb-8 text-white bg-gradient-to-br ${levelInfo.color} shadow-2xl relative overflow-hidden`}>
-          <div className="absolute -right-8 -top-8 text-[150px] leading-none opacity-10 select-none">🎤</div>
+        <div className={`rounded-2xl sm:rounded-3xl p-4 sm:p-8 mb-6 sm:mb-8 text-white bg-gradient-to-br ${levelInfo.color} shadow-2xl relative overflow-hidden`}>
+          <div className="absolute -right-8 -top-8 text-[100px] sm:text-[150px] leading-none opacity-10 select-none">🎤</div>
           <div className="relative z-10">
-            <p className="text-white/70 text-sm font-semibold uppercase tracking-widest mb-2">WizLingo · Conversation Practice</p>
-            <h1 className="text-4xl font-black mb-2">Choose a Topic</h1>
-            <p className="text-white/80 text-lg">
-              Pick something you like — then have a real conversation with your practice partner!
+            <p className="text-white/70 text-xs sm:text-sm font-semibold uppercase tracking-widest mb-2">WizLingo · Practice</p>
+            <h1 className="text-2xl sm:text-4xl font-black mb-2">Choose a Topic</h1>
+            <p className="text-white/80 text-sm sm:text-base">
+              Pick something you like and have a real conversation!
             </p>
           </div>
         </div>
