@@ -16,7 +16,8 @@ const BADGE_CONFIG = {
     emoji: '✨',
     name: 'Spark',
     rarity: 1,
-    gradient: 'from-orange-400 to-yellow-500',
+    metalColor: '#FFD700',
+    metalSecondary: '#FFA500',
     description: 'First step',
     requirement: 'Complete 1 reading session',
     unlockMessage: 'Your first step into reading!'
@@ -25,7 +26,8 @@ const BADGE_CONFIG = {
     emoji: '📚',
     name: 'Word Wizard',
     rarity: 3,
-    gradient: 'from-purple-500 to-indigo-600',
+    metalColor: '#9333EA',
+    metalSecondary: '#A855F7',
     description: 'Reading master',
     requirement: 'Achieve 80%+ accuracy in reading',
     unlockMessage: 'You\'re a master of reading comprehension!'
@@ -34,7 +36,8 @@ const BADGE_CONFIG = {
     emoji: '🎤',
     name: 'Voice Wizard',
     rarity: 3,
-    gradient: 'from-pink-500 to-rose-600',
+    metalColor: '#EC4899',
+    metalSecondary: '#F472B6',
     description: 'Speaking master',
     requirement: 'Achieve 75%+ fluency in speaking',
     unlockMessage: 'Your pronunciation is excellent!'
@@ -43,7 +46,8 @@ const BADGE_CONFIG = {
     emoji: '🧙',
     name: 'Language Wizard',
     rarity: 3,
-    gradient: 'from-indigo-500 to-purple-600',
+    metalColor: '#6366F1',
+    metalSecondary: '#818CF8',
     description: 'Committed learner',
     requirement: 'Complete 10 reading or speaking sessions',
     unlockMessage: 'Your dedication is incredible!'
@@ -52,7 +56,8 @@ const BADGE_CONFIG = {
     emoji: '👑',
     name: 'Grand Wizard',
     rarity: 4,
-    gradient: 'from-yellow-400 via-orange-500 to-red-500',
+    metalColor: '#FFD700',
+    metalSecondary: '#FFA500',
     description: 'Ultimate master',
     requirement: 'Earn all 4 badges above',
     unlockMessage: 'You\'ve mastered WizLingo!'
@@ -61,7 +66,8 @@ const BADGE_CONFIG = {
     emoji: '🔥',
     name: 'Week Warrior',
     rarity: 2,
-    gradient: 'from-orange-400 to-orange-500',
+    metalColor: '#E5E4E2',
+    metalSecondary: '#C0C0C0',
     description: '7-day streak',
     requirement: 'Practice 7 consecutive days',
     unlockMessage: 'Your consistency is amazing!'
@@ -70,7 +76,8 @@ const BADGE_CONFIG = {
     emoji: '⚡',
     name: 'Month Master',
     rarity: 2,
-    gradient: 'from-yellow-400 to-orange-500',
+    metalColor: '#FFD700',
+    metalSecondary: '#FFA500',
     description: '30-day streak',
     requirement: 'Practice 30 consecutive days',
     unlockMessage: 'You\'re a learning legend!'
@@ -107,11 +114,10 @@ export default function BadgeCard({
   return (
     <div
       className={`
-        relative w-full aspect-square max-w-[200px]
-        rounded-3xl overflow-hidden
+        relative w-full max-w-[200px] h-[240px]
         transition-all duration-300 hover:scale-110
         cursor-pointer group
-        ${isLocked ? 'opacity-60' : 'opacity-100'}
+        ${isLocked ? 'opacity-70' : 'opacity-100'}
       `}
       onClick={onClick}
       onMouseEnter={() => setShowTooltip(true)}
@@ -132,69 +138,146 @@ export default function BadgeCard({
           )}
         </div>
       )}
-      {/* Badge background with gradient */}
-      <div className={`
-        absolute inset-0
-        bg-gradient-to-br ${config.gradient}
-        shadow-xl group-hover:shadow-2xl
-        border-2 border-white/20
-        group-hover:border-white/40
-        transition-all
-      `} />
 
-      {/* Glow effect */}
-      <div className={`
-        absolute inset-0
-        bg-white/10 opacity-0 group-hover:opacity-20
-        transition-opacity
-      `} />
+      {/* SVG Shield Badge Container */}
+      <svg
+        viewBox="0 0 200 240"
+        className="w-full h-full drop-shadow-2xl group-hover:drop-shadow-none transition-all"
+        style={{
+          filter: isLocked ? 'grayscale(80%) brightness(0.7)' : 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))',
+        }}
+      >
+        {/* Shield shape with metallic gradient */}
+        <defs>
+          <linearGradient id={`shield-${type}`} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor={config.metalColor} stopOpacity="0.9" />
+            <stop offset="50%" stopColor={config.metalSecondary} stopOpacity="0.8" />
+            <stop offset="100%" stopColor={config.metalColor} stopOpacity="0.95" />
+          </linearGradient>
+          <filter id={`glow-${type}`}>
+            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
 
-      {/* Lock overlay for locked badges */}
-      {isLocked && (
-        <div className="absolute inset-0 bg-black/30 z-30 flex items-center justify-center">
-          <div className="text-4xl">🔒</div>
-        </div>
-      )}
+        {/* Outer border (metallic gold/silver) */}
+        <path
+          d="M 100,20 L 160,60 L 160,120 Q 160,180 100,220 Q 40,180 40,120 L 40,60 Z"
+          fill={config.metalColor}
+          opacity="0.3"
+          filter={`url(#glow-${type})`}
+        />
 
-      {/* Content */}
-      <div className="relative z-10 h-full flex flex-col items-center justify-between p-4">
-        {/* Rarity stars - top right */}
-        <div className="absolute top-3 right-3 flex gap-0.5">
+        {/* Main shield background */}
+        <path
+          d="M 100,25 L 155,55 L 155,115 Q 155,175 100,215 Q 45,175 45,115 L 45,55 Z"
+          fill={`url(#shield-${type})`}
+          stroke={config.metalColor}
+          strokeWidth="2"
+        />
+
+        {/* Inner highlight for 3D effect */}
+        <path
+          d="M 100,35 L 145,60 L 145,110 Q 145,165 100,205 Q 55,165 55,110 L 55,60 Z"
+          fill="white"
+          opacity="0.15"
+        />
+
+        {/* Rarity stars - positioned at top */}
+        <g>
           {[...Array(config.rarity)].map((_, i) => (
-            <span key={i} className="text-lg">⭐</span>
+            <text
+              key={i}
+              x={75 + i * 18}
+              y="50"
+              fontSize="16"
+              textAnchor="middle"
+              dominantBaseline="middle"
+            >
+              ⭐
+            </text>
           ))}
-        </div>
+        </g>
 
-        {/* Emoji - center */}
-        <div className="flex-1 flex items-center justify-center">
-          <span className="text-6xl drop-shadow-lg">{config.emoji}</span>
-        </div>
+        {/* Large emoji - center */}
+        <text
+          x="100"
+          y="110"
+          fontSize="60"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          className="drop-shadow-lg"
+        >
+          {config.emoji}
+        </text>
 
-        {/* Badge name and status - bottom */}
-        <div className="text-center w-full">
-          <h3 className="text-white font-black text-sm uppercase tracking-tight mb-1">
-            {config.name}
-          </h3>
-          <p className="text-white/90 text-xs font-semibold">
-            {isLocked ? '🔒 Locked' : '🌟 Unlocked!'}
-          </p>
+        {/* Badge name - bottom */}
+        <text
+          x="100"
+          y="165"
+          fontSize="13"
+          fontWeight="900"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill="white"
+          textTransform="uppercase"
+          letterSpacing="1"
+        >
+          {config.name}
+        </text>
 
-          {/* Progress bar for locked badges */}
-          {isLocked && showProgress && (
-            <div className="mt-2 w-full">
-              <div className="bg-white/20 rounded-full h-1.5 overflow-hidden">
-                <div
-                  className="bg-white/80 h-full transition-all duration-500"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-              <p className="text-white/80 text-xs mt-1">
-                {progress}/{maxProgress}
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
+        {/* Status - very bottom */}
+        <text
+          x="100"
+          y="185"
+          fontSize="11"
+          fontWeight="bold"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill="rgba(255,255,255,0.9)"
+        >
+          {isLocked ? '🔒 Locked' : '🌟 Unlocked'}
+        </text>
+
+        {/* Progress bar for locked badges */}
+        {isLocked && showProgress && (
+          <>
+            {/* Progress bar background */}
+            <rect
+              x="40"
+              y="200"
+              width="120"
+              height="6"
+              fill="rgba(255,255,255,0.2)"
+              rx="3"
+            />
+            {/* Progress fill */}
+            <rect
+              x="40"
+              y="200"
+              width={120 * (progressPercent / 100)}
+              height="6"
+              fill="rgba(255,255,255,0.8)"
+              rx="3"
+              style={{ transition: 'width 0.5s ease' }}
+            />
+            {/* Progress text */}
+            <text
+              x="100"
+              y="222"
+              fontSize="10"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="rgba(255,255,255,0.8)"
+            >
+              {progress}/{maxProgress}
+            </text>
+          </>
+        )}
+      </svg>
     </div>
   );
 }
