@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 interface BadgeCardProps {
   type: 'SPARK' | 'WORD_WIZARD' | 'VOICE_WIZARD' | 'LANGUAGE_WIZARD' | 'GRAND_WIZARD' | 'WEEK_WARRIOR' | 'MONTH_MASTER';
@@ -10,6 +10,7 @@ interface BadgeCardProps {
   showProgress?: boolean;
   onClick?: () => void;
   dayNumber?: number;
+  studentName?: string;
 }
 
 const BADGE_CONFIG = {
@@ -86,15 +87,128 @@ export default function BadgeCard({
   showProgress = true,
   onClick,
   dayNumber = 10,
+  studentName = 'My child',
 }: BadgeCardProps) {
   const config = BADGE_CONFIG[type];
   const isLocked = status === 'locked';
   const progressPercent = maxProgress ? (progress / maxProgress) * 100 : 0;
   const [showTooltip, setShowTooltip] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const handleShare = (e: React.MouseEvent) => {
+  const generateShareImage = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Instagram square size (1080x1080)
+    canvas.width = 1080;
+    canvas.height = 1080;
+
+    // Background gradient
+    const bgGradient = ctx.createLinearGradient(0, 0, 1080, 1080);
+    bgGradient.addColorStop(0, '#0f0c29');
+    bgGradient.addColorStop(0.5, '#302b63');
+    bgGradient.addColorStop(1, '#24243e');
+    ctx.fillStyle = bgGradient;
+    ctx.fillRect(0, 0, 1080, 1080);
+
+    // Badge card area
+    const cardX = 100;
+    const cardY = 200;
+    const cardWidth = 880;
+    const cardHeight = 500;
+    const cardRadius = 30;
+
+    // Card background with color
+    ctx.fillStyle = `${config.lightBg}40`;
+    ctx.fillRect(cardX, cardY, cardWidth, cardHeight);
+
+    // Card border
+    ctx.strokeStyle = `${config.color}80`;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
+    ctx.stroke();
+
+    // Left section - Large emoji and day
+    const leftX = cardX + 80;
+    const centerY = cardY + cardHeight / 2;
+
+    // Day number
+    ctx.font = 'bold 200px Arial';
+    ctx.fillStyle = config.color;
+    ctx.textAlign = 'center';
+    ctx.fillText(isLocked ? '?' : dayNumber, leftX + 100, centerY - 50);
+
+    // Day label
+    ctx.font = 'bold 32px Arial';
+    ctx.fillStyle = '#999';
+    ctx.fillText('DAY', leftX + 100, centerY + 80);
+
+    // Right section - Badge info
+    const rightX = cardX + 350;
+
+    // Stars
+    ctx.font = '36px Arial';
+    ctx.textAlign = 'left';
+    let starText = '';
+    for (let i = 0; i < config.rarity; i++) starText += '⭐ ';
+    ctx.fillText(starText, rightX, centerY - 80);
+
+    // Badge name
+    ctx.font = 'bold 64px Arial';
+    ctx.fillStyle = 'white';
+    ctx.fillText(config.name, rightX, centerY);
+
+    // Student name or message
+    ctx.font = '32px Arial';
+    ctx.fillStyle = '#ccc';
+    ctx.fillText(`${studentName} unlocked!`, rightX, centerY + 70);
+
+    // Bottom section - WizLingo branding and CTA
+    const bottomY = cardY + cardHeight + 80;
+
+    // WizLingo logo text
+    ctx.font = 'bold 48px Arial';
+    ctx.fillStyle = '#6366F1';
+    ctx.textAlign = 'center';
+    ctx.fillText('🎓 WizLingo', 540, bottomY);
+
+    // Call to action
+    ctx.font = '32px Arial';
+    ctx.fillStyle = '#9ca3af';
+    ctx.fillText('Learning Made Fun & Interactive', 540, bottomY + 60);
+
+    // Join message
+    ctx.font = 'bold 28px Arial';
+    ctx.fillStyle = '#4ade80';
+    ctx.fillText('Join Now & Start Your Learning Journey', 540, bottomY + 130);
+
+    // Download image
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${config.name}-day-${dayNumber}-wizlingo.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    });
+  };
+
+  const shareToWhatsApp = () => {
+    const text = `🎉 My child ${studentName} just reached Day ${dayNumber} on ${config.name}! 🏆 ${config.emoji}\n\nJoin WizLingo - Making learning fun with reading & speaking practice.\n\nhttps://wizlingo.app`;
+    const encoded = encodeURIComponent(text);
+    window.open(`https://wa.me/?text=${encoded}`, '_blank');
+  };
+
+  const shareToOthers = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const shareText = `I've reached Day ${dayNumber} in my ${config.name} learning streak! 🎉 ${config.emoji}`;
+    const shareText = `🎉 My child ${studentName} just reached Day ${dayNumber} on ${config.name}! 🏆 ${config.emoji}\n\nWizLingo - Learning Made Fun!\nJoin our community of learning families.`;
     if (navigator.share) {
       navigator.share({
         title: 'WizLingo Achievement',
@@ -102,7 +216,7 @@ export default function BadgeCard({
       });
     } else {
       navigator.clipboard.writeText(shareText);
-      alert('Badge achievement copied! Share it with friends 🌟');
+      alert('Copied! Share with family and friends 🌟');
     }
   };
 
@@ -115,18 +229,53 @@ export default function BadgeCard({
       `}
       onClick={onClick}
       onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
+      onMouseLeave={() => { setShowTooltip(false); setShowShareMenu(false); }}
     >
+      <canvas ref={canvasRef} className="hidden" />
+
+      {/* Share Menu */}
+      {showShareMenu && (
+        <div className="absolute -top-48 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white rounded-xl p-4 w-56 shadow-2xl border border-white/20 backdrop-blur-sm">
+          <p className="font-bold mb-4 text-center text-sm">Share Achievement</p>
+          <div className="space-y-2">
+            <button
+              onClick={shareToWhatsApp}
+              className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              💬 WhatsApp Status
+            </button>
+            <button
+              onClick={() => generateShareImage()}
+              className="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              📸 Download Image
+            </button>
+            <button
+              onClick={shareToOthers}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              📤 Share Elsewhere
+            </button>
+          </div>
+          <p className="text-xs text-gray-400 mt-4 text-center">
+            Other parents will be curious! 👀
+          </p>
+        </div>
+      )}
+
       {/* Tooltip */}
       {showTooltip && !isLocked && (
-        <div className="absolute -top-36 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white text-xs rounded-lg p-3 w-44 shadow-2xl border border-white/20">
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white text-xs rounded-lg p-3 w-48 shadow-2xl border border-white/20">
           <p className="font-bold mb-2">{config.name}</p>
           <p className="text-gray-300 text-xs mb-3">{config.requirement}</p>
           <button
-            onClick={handleShare}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold py-2 rounded transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowShareMenu(true);
+            }}
+            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-xs font-bold py-2 rounded transition-colors"
           >
-            📤 Share Achievement
+            🚀 Share Achievement
           </button>
         </div>
       )}
@@ -185,6 +334,23 @@ export default function BadgeCard({
         <p className="text-xs font-semibold" style={{ color: config.color }}>
           {isLocked ? '🔒 Locked' : '✓ Unlocked'}
         </p>
+
+        {/* Share Button for Unlocked */}
+        {!isLocked && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowShareMenu(!showShareMenu);
+            }}
+            className="mt-3 w-full py-1.5 text-xs font-bold text-white rounded transition-all"
+            style={{
+              background: `linear-gradient(135deg, ${config.color}, ${config.color}dd)`,
+              opacity: showShareMenu ? 1 : 0.8,
+            }}
+          >
+            🚀 Share
+          </button>
+        )}
       </div>
 
       {/* Progress Bar - Locked Only */}
