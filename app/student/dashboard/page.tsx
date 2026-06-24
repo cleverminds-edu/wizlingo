@@ -306,20 +306,20 @@ export default function StudentDashboard() {
       <main className="flex-1 px-6 py-6 max-w-6xl w-full mx-auto">
 
         {/* Hero Welcome Section */}
-        <div className="mb-8 animate-slide-up">
+        <div className="mb-6 animate-slide-up">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h1 className="text-5xl font-black text-white mb-2">
+              <h1 className="text-3xl font-black text-white mb-1">
                 Hey {firstName}! 👋
               </h1>
-              <p className="text-purple-300 text-lg font-semibold">
+              <p className="text-purple-300 text-sm font-semibold">
                 {level < 3 ? `You're a ${levelInfo.label}! Keep going! 🚀` : "You're a Champion! Keep it up! 🏆"}
               </p>
             </div>
-            <div className="bg-gradient-to-br from-orange-400 to-pink-500 rounded-3xl p-6 text-center shadow-2xl min-w-max">
-              <div className="text-xs text-white/80 font-bold uppercase mb-1">Current Streak</div>
-              <div className="text-5xl font-black text-white">🔥 {totalSessions}</div>
-              <div className="text-sm text-white/90 font-semibold mt-1">sessions done</div>
+            <div className="bg-gradient-to-br from-orange-400 to-pink-500 rounded-2xl p-4 text-center shadow-lg min-w-max">
+              <div className="text-xs text-white/80 font-bold uppercase mb-0.5">Streak</div>
+              <div className="text-3xl font-black text-white">🔥 {totalSessions}</div>
+              <div className="text-xs text-white/90 font-semibold mt-0.5">sessions</div>
             </div>
           </div>
         </div>
