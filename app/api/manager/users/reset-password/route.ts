@@ -50,14 +50,28 @@ export async function POST(request: NextRequest) {
 
     const { studentId, newPassword } = validation.data;
 
-    // Find student
-    const student = await prisma.student.findUnique({
-      where: { id: studentId }
-    });
+    // Find student by ID or userId
+    let student = null;
+
+    // Try by internal ID first
+    try {
+      student = await prisma.student.findUnique({
+        where: { id: studentId }
+      });
+    } catch (e) {
+      // If not found, try by userId
+    }
+
+    // If not found by ID, try by userId (e.g., WL194299)
+    if (!student) {
+      student = await prisma.student.findUnique({
+        where: { userId: studentId }
+      });
+    }
 
     if (!student) {
       return NextResponse.json(
-        { error: 'Student not found' },
+        { error: `Student not found. Please use a valid Student ID or User ID (e.g., WL194299)` },
         { status: 404 }
       );
     }
