@@ -1,5 +1,7 @@
-import { hash } from 'bcryptjs';
-import { prisma } from '@/lib/prisma';
+const { hash } = require('bcryptjs');
+const { PrismaClient } = require('@prisma/client');
+
+const prisma = new PrismaClient();
 
 async function setupManager() {
   try {
