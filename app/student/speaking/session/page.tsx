@@ -161,24 +161,24 @@ function SessionPageInner() {
       style={{ background: "linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%)" }}>
 
       {/* Header */}
-      <header className="flex items-center justify-between px-8 py-4 border-b border-white/10">
+      <header className="flex items-center justify-between px-4 sm:px-8 py-4 border-b border-white/10">
         <button onClick={() => router.push("/student/speaking")}
           className="flex items-center gap-2 text-purple-300 hover:text-white transition-colors">
-          <ArrowLeft size={22} />
-          <span className="font-medium">Topics</span>
+          <ArrowLeft size={20} />
+          <span className="font-medium text-sm sm:text-base">Back</span>
         </button>
         {topic && (
-          <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/20">
+          <div className="hidden sm:flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/20">
             <span>{char?.emoji}</span>
             <span className="text-white font-bold text-sm">{topic.title}</span>
           </div>
         )}
         <div className="text-xs text-purple-300 whitespace-nowrap">
-          Powered by <span className="text-orange-400 font-bold">Edvanta AI</span>
+          <span className="text-orange-400 font-bold">WizLingo</span>
         </div>
       </header>
 
-      <div className="flex-1 px-8 py-6 max-w-3xl w-full mx-auto">
+      <div className="flex-1 px-4 sm:px-8 py-4 sm:py-6 max-w-3xl w-full mx-auto">
 
         {/* Score card after done */}
         {phase === "done" && result && topic && (

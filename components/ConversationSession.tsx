@@ -348,8 +348,19 @@ export default function ConversationSession({
         isLastTurn,
       }),
     })
-      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(r => {
+        if (!r.ok) {
+          console.error('AI turn API error:', r.status);
+          throw new Error(`API error: ${r.status}`);
+        }
+        return r.json();
+      })
       .then(({ text: aiResponse }: { text: string }) => {
+        if (!aiResponse || typeof aiResponse !== 'string') {
+          console.error('Invalid AI response:', aiResponse);
+          throw new Error('Invalid response format');
+        }
+        console.log('✅ AI response received:', aiResponse.substring(0, 50));
         const newHistory: ConversationTurn[] = [
           ...historyRef.current,
           { role: "ai", text: aiResponse },
@@ -362,12 +373,14 @@ export default function ConversationSession({
         setPhase("ai-speaking");
         speakText(aiResponse, () => startStudentTurnRef.current());
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error('❌ AI turn error, continuing with fallback:', err);
         // Fallback: skip AI response and go straight to next student turn
+        setCurrentAiText("(Your turn to respond)");
         setTranscript("");
         setInterimText("");
         setPhase("student-speaking");
-        startStudentTurnRef.current();
+        setTimeout(() => startStudentTurnRef.current(), 500);
       });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [character, topicTitle, gradeBand, maxTurns, onComplete, currentAiText, speakText]);
@@ -520,28 +533,28 @@ export default function ConversationSession({
     <div className="flex flex-col gap-6">
 
       {/* Character card */}
-      <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-3xl p-5 border border-white/20">
-        <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-4xl bg-white/10 border border-white/20 shrink-0">
+      <div className="flex items-center gap-3 sm:gap-4 bg-white/10 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-white/20">
+        <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-2xl sm:text-4xl bg-white/10 border border-white/20 shrink-0">
           {charInfo.emoji}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-white font-black text-lg">{character}</p>
-          <p className="text-purple-300 text-sm">{charInfo.from}</p>
-          <p className="text-purple-400 text-xs mt-0.5 italic">{charInfo.tagline}</p>
+          <p className="text-white font-black text-base sm:text-lg">{character}</p>
+          <p className="text-purple-300 text-xs sm:text-sm">{charInfo.from}</p>
+          <p className="text-purple-400 text-xs mt-0.5 italic hidden sm:block">{charInfo.tagline}</p>
         </div>
         {/* Turn progress */}
         <div className="text-right shrink-0">
-          <p className="text-white/60 text-xs mb-1">Turn {Math.min(studentTurnCount + 1, maxTurns)} of {maxTurns}</p>
-          <div className="w-24 bg-white/10 rounded-full h-2">
-            <div className="bg-purple-400 h-2 rounded-full transition-all duration-500" style={{ width: `${progressPct}%` }} />
+          <p className="text-white/60 text-xs mb-1">Turn {Math.min(studentTurnCount + 1, maxTurns)}/{maxTurns}</p>
+          <div className="w-20 sm:w-24 bg-white/10 rounded-full h-1.5">
+            <div className="bg-purple-400 h-1.5 rounded-full transition-all duration-500" style={{ width: `${progressPct}%` }} />
           </div>
         </div>
       </div>
 
       {/* Intro — start button */}
       {phase === "intro" && (
-        <div className="text-center py-6">
-          <p className="text-purple-200 text-lg mb-6">
+        <div className="text-center py-4 sm:py-6">
+          <p className="text-purple-200 text-sm sm:text-lg mb-4 sm:mb-6">
             {character} wants to chat with you about <span className="text-white font-bold">"{topicTitle}"</span>!
           </p>
           <button
@@ -549,7 +562,7 @@ export default function ConversationSession({
               setPhase("ai-speaking");
               speakText(openingLine, () => startStudentTurnRef.current());
             }}
-            className="px-10 py-4 rounded-2xl font-black text-white text-xl shadow-2xl transition-transform hover:scale-105 active:scale-95"
+            className="px-6 sm:px-10 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold sm:font-black text-white text-base sm:text-xl shadow-2xl transition-transform hover:scale-105 active:scale-95"
             style={{ background: "linear-gradient(135deg, #6366f1, #a855f7)" }}
           >
             Start Talking! 🎤
@@ -559,24 +572,24 @@ export default function ConversationSession({
 
       {/* AI speaking */}
       {(phase === "ai-speaking" || phase === "between-turns") && (
-        <div className="bg-white/10 rounded-3xl p-6 border border-white/20">
+        <div className="bg-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-white/20">
           <div className="flex items-start gap-3">
-            <span className="text-3xl shrink-0">{charInfo.emoji}</span>
-            <div className="flex-1">
+            <span className="text-2xl sm:text-3xl shrink-0">{charInfo.emoji}</span>
+            <div className="flex-1 min-w-0">
               <p className="text-purple-300 text-xs font-semibold uppercase tracking-wider mb-2">{character} says</p>
-              <p className="text-white text-lg leading-relaxed">{currentAiText}</p>
+              <p className="text-white text-base sm:text-lg leading-relaxed">{currentAiText}</p>
             </div>
           </div>
           {phase === "ai-speaking" && (
-            <div className="mt-4 flex items-center justify-between">
+            <div className="mt-3 sm:mt-4 flex items-center justify-between">
               <div className="flex gap-1">
                 {[0, 1, 2].map(i => (
                   <div key={i} className="w-2 h-2 rounded-full bg-purple-400 wave-bar" style={{ animationDelay: `${i * 0.15}s` }} />
                 ))}
-                <span className="text-purple-400 text-sm ml-2">Speaking…</span>
+                <span className="text-purple-400 text-xs sm:text-sm ml-2">Speaking…</span>
               </div>
               <button onClick={() => { window.speechSynthesis?.cancel(); finishSpeakRef.current?.(); }}
-                className="text-xs text-purple-500 hover:text-purple-300 underline transition-colors">
+                className="text-xs text-purple-500 hover:text-purple-300 underline transition-colors whitespace-nowrap ml-2">
                 Skip →
               </button>
             </div>
@@ -596,39 +609,41 @@ export default function ConversationSession({
 
       {/* Student speaking */}
       {phase === "student-speaking" && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3 sm:gap-4">
           {/* What the character said (context reminder) */}
-          <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+          <div className="bg-white/5 rounded-2xl p-3 sm:p-4 border border-white/10">
             <p className="text-purple-400 text-xs font-semibold mb-1">{character} asked:</p>
-            <p className="text-purple-200 text-sm italic">{currentAiText}</p>
+            <p className="text-purple-200 text-sm italic line-clamp-2">{currentAiText}</p>
           </div>
 
           {/* Live transcript */}
-          <div className="bg-black/30 rounded-2xl p-4 min-h-[90px] border border-white/10">
-            <div className="flex items-center gap-2 mb-2">
-              {micReady
-                ? <><span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" /><span className="text-green-400 text-xs font-medium">Mic active — speak now</span></>
-                : <><span className="w-2 h-2 rounded-full bg-yellow-400" /><span className="text-yellow-400 text-xs">Starting mic…</span></>
-              }
+          <div className="bg-black/30 rounded-2xl p-3 sm:p-4 min-h-[80px] sm:min-h-[90px] border border-white/10 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                {micReady
+                  ? <><span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" /><span className="text-green-400 text-xs font-medium">Mic active — speak now</span></>
+                  : <><span className="w-2 h-2 rounded-full bg-yellow-400" /><span className="text-yellow-400 text-xs">Starting mic…</span></>
+                }
+              </div>
+              <p className="text-white/90 text-sm sm:text-base leading-relaxed">
+                {transcript}
+                <span className="text-purple-400/70 italic">{interimText}</span>
+                {!transcript && !interimText && micReady && (
+                  <span className="text-purple-500">Start speaking…</span>
+                )}
+              </p>
             </div>
-            <p className="text-white/90 text-base leading-relaxed">
-              {transcript}
-              <span className="text-purple-400/70 italic">{interimText}</span>
-              {!transcript && !interimText && micReady && (
-                <span className="text-purple-500">Start speaking…</span>
-              )}
-            </p>
           </div>
 
-          {micError && <p className="text-red-400 text-sm text-center">{micError}</p>}
+          {micError && <p className="text-red-400 text-xs sm:text-sm text-center">{micError}</p>}
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3 bg-red-500/20 border border-red-500/40 px-4 py-3 rounded-2xl">
-              <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-red-300 font-mono font-bold text-lg">{timeLeft}s</span>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 bg-red-500/20 border border-red-500/40 px-3 sm:px-4 py-2 rounded-xl">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-red-300 font-mono font-bold text-sm sm:text-lg">{timeLeft}s</span>
             </div>
             <button onClick={handleDone}
-              className="flex-1 py-3 rounded-2xl font-bold text-white text-lg transition-all hover:opacity-90 active:scale-95"
+              className="flex-1 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold text-white text-sm sm:text-lg transition-all hover:opacity-90 active:scale-95"
               style={{ background: "linear-gradient(135deg, #059669, #10b981)" }}>
               Done ✓
             </button>

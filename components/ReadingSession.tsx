@@ -401,10 +401,10 @@ export default function ReadingSession({ passage, sessionId, timeLimitSec, stude
 
   // ── Reading screen: two-column desktop layout ──
   return (
-    <div className="grid grid-cols-5 gap-6 h-full">
+    <div className="grid grid-cols-1 sm:grid-cols-5 gap-6 auto-rows-max sm:h-full overflow-y-auto sm:overflow-y-hidden">
 
       {/* Left: passage (3/5 width) */}
-      <div className="col-span-3 bg-white rounded-3xl p-8 shadow-2xl flex flex-col">
+      <div className="col-span-1 sm:col-span-3 bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-2xl flex flex-col max-h-[60vh] sm:max-h-full">
         <div className="mb-6">
           <p className="text-sm font-bold text-indigo-400 uppercase tracking-widest">
             Level {passage.level} · {passage.topic}
@@ -426,7 +426,7 @@ export default function ReadingSession({ passage, sessionId, timeLimitSec, stude
       </div>
 
       {/* Right: controls (2/5 width) */}
-      <div className="col-span-2 flex flex-col gap-5">
+      <div className="col-span-1 sm:col-span-2 flex flex-col gap-5">
 
         {/* Timer + wave (recording state) */}
         {phase === "recording" && (
