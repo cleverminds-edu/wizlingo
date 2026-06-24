@@ -27,6 +27,12 @@ export default function ManagerLoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
+        // Check if setup is needed
+        if (data.hint?.includes('manager/init')) {
+          setError('System not initialized. Redirecting to setup...');
+          setTimeout(() => router.push('/manager/setup'), 1500);
+          return;
+        }
         setError(data.error || 'Login failed');
         setLoading(false);
         return;
@@ -36,6 +42,19 @@ export default function ManagerLoginPage() {
     } catch (err) {
       setError('An error occurred. Please try again.');
       setLoading(false);
+    }
+  };
+
+  // Check system status on page load
+  const checkSetup = async () => {
+    try {
+      const res = await fetch('/api/manager/init', { method: 'POST' });
+      const data = await res.json();
+      if (data.hint?.includes('not initialized')) {
+        router.push('/manager/setup');
+      }
+    } catch (err) {
+      // Ignore - might not be needed
     }
   };
 

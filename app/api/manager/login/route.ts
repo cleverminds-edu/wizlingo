@@ -93,10 +93,22 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Manager login error:', error);
+
+    // Check if Manager table doesn't exist
+    if (error.message?.includes('does not exist') || error.code === 'P1010') {
+      return NextResponse.json(
+        {
+          error: 'Manager service not initialized',
+          hint: 'Please visit /api/manager/init to initialize the manager system'
+        },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Login failed' },
+      { error: 'Login failed: ' + (error.message || 'Unknown error') },
       { status: 500 }
     );
   }
