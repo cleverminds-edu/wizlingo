@@ -263,11 +263,11 @@ export default function LoginPage() {
                 <>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      UserID or Phone
+                      UserID
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. WL001234 or 9876543210"
+                      placeholder="e.g. WL001234"
                       value={b2cForm.username}
                       onChange={(e) => setB2CForm({ ...b2cForm, username: e.target.value })}
                       className={INPUT_CLASS}
@@ -374,7 +374,7 @@ export default function LoginPage() {
 
             <p className="mt-4 text-xs text-center text-gray-400">
             {loginType === "b2c"
-              ? "Use your UserID (WL001, WL002, etc.) or phone number to login"
+              ? "Use your UserID (e.g. WL001, WL002) to login"
               : role === "student"
               ? "Your admission number and PIN are provided by your school"
               : "Your employee code and PIN are issued by your school administrator"}
