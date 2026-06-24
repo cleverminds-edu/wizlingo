@@ -9,6 +9,7 @@ import { BadgeCelebration } from "@/components/badges/BadgeCelebration";
 import OnboardingCarousel from "@/components/OnboardingCarousel";
 import { BadgeType } from "@/app/generated/prisma/client";
 import DesktopDashboard from "@/components/dashboard/DesktopDashboard";
+import BadgeCard from "@/components/BadgeCard";
 
 interface StudentData {
   id: string;
@@ -402,36 +403,31 @@ export default function StudentDashboard() {
 
         {/* Compact Achievements Section */}
         <div className="animate-slide-up" style={{ animationDelay: "0.2s" }}>
-          {/* Badges - Premium Display */}
+          {/* Badges - Premium Shield Cards */}
           {student.badges.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-purple-300 text-xs font-black uppercase tracking-widest mb-3 flex items-center gap-2">
-                <span className="text-lg">🏆</span> Your Badges
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                {student.badges.map((badge) => {
-                  const meta = BADGE_META[badge.type];
-                  if (!meta) return null;
-                  return (
-                    <div key={badge.type}
-                      className={`bg-gradient-to-br ${meta.color} rounded-2xl p-4 shadow-xl hover:shadow-2xl transition-all hover:scale-105 border border-white/20 relative overflow-hidden`}
-                      title={meta.label}>
-                      {/* Shield background effect */}
-                      <div className="absolute inset-0 bg-white/5 opacity-0 hover:opacity-10 transition-opacity" />
-                      <div className="relative z-10 text-center">
-                        <div className="text-4xl mb-2">{meta.emoji}</div>
-                        <p className="text-white font-black text-xs uppercase tracking-wider">{meta.label}</p>
-                        <p className="text-white/80 text-xs mt-1">Unlocked! 🌟</p>
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="flex items-center gap-2 mb-4">
+                <h3 className="text-purple-300 text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                  <span className="text-lg">🏆</span> Your Earned Badges
+                </h3>
+                <span className="bg-purple-500/30 text-purple-200 text-xs font-bold px-2 py-1 rounded-full">
+                  {student.badges.length}/5
+                </span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {student.badges.map((badge) => (
+                  <BadgeCard
+                    key={badge.type}
+                    type={badge.type as any}
+                    status="earned"
+                  />
+                ))}
               </div>
               {student.certificates.length > 0 && (
                 <a
                   href={`/certificate/${student.certificates[0].verifyCode}`}
                   target="_blank"
-                  className="mt-3 inline-flex items-center gap-2 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 rounded-lg px-4 py-2 text-emerald-300 text-xs font-bold transition-colors"
+                  className="mt-4 inline-flex items-center gap-2 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 rounded-lg px-4 py-2 text-emerald-300 text-xs font-bold transition-colors"
                 >
                   <span>📜</span> View Certificate
                 </a>
@@ -439,35 +435,59 @@ export default function StudentDashboard() {
             </div>
           )}
 
-          {/* Next Badge Progress */}
+          {/* Locked Badges Section */}
           {(() => {
             const earnedBadgeTypes = student.badges.map(b => b.type);
-            const allBadgeTypes = ['SPARK', 'WORD_WIZARD', 'VOICE_WIZARD', 'LANGUAGE_WIZARD', 'GRAND_WIZARD'];
-            const nextBadge = allBadgeTypes.find(t => !earnedBadgeTypes.includes(t));
+            const allBadgeTypes: Array<'SPARK' | 'WORD_WIZARD' | 'VOICE_WIZARD' | 'LANGUAGE_WIZARD' | 'GRAND_WIZARD' | 'WEEK_WARRIOR' | 'MONTH_MASTER'> =
+              ['SPARK', 'WORD_WIZARD', 'VOICE_WIZARD', 'LANGUAGE_WIZARD', 'GRAND_WIZARD', 'WEEK_WARRIOR', 'MONTH_MASTER'];
+            const lockedBadges = allBadgeTypes.filter(t => !earnedBadgeTypes.includes(t));
 
-            if (nextBadge) {
-              const badgeLabels: Record<string, string> = {
-                'SPARK': 'Spark Badge',
-                'WORD_WIZARD': 'Word Wizard Badge',
-                'VOICE_WIZARD': 'Voice Wizard Badge',
-                'LANGUAGE_WIZARD': 'Language Wizard Badge',
-                'GRAND_WIZARD': 'Grand Wizard Badge'
-              };
-
-              const sessionsNeeded = nextBadge === 'SPARK' ? 3 : nextBadge === 'WORD_WIZARD' ? 10 : 15;
-              const sessionsCompleted = student.progress?.totalSessions ?? 0;
-              const progress = Math.min(sessionsCompleted, sessionsNeeded);
-              const progressPercent = (progress / sessionsNeeded) * 100;
-
+            if (lockedBadges.length > 0) {
               return (
-                <div className="mb-6 bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-400/30 rounded-xl p-4">
-                  <p className="text-amber-300 text-xs font-black uppercase tracking-widest mb-2">🎯 Next Milestone</p>
-                  <p className="text-white font-bold text-sm mb-3">{badgeLabels[nextBadge]}</p>
-                  <div className="bg-white/10 rounded-full h-2 mb-2">
-                    <div className="bg-gradient-to-r from-amber-400 to-orange-400 h-2 rounded-full transition-all duration-700"
-                      style={{ width: `${progressPercent}%` }} />
+                <div className="mb-6">
+                  <h3 className="text-purple-300 text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <span className="text-lg">🎯</span> Work Towards These
+                  </h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {lockedBadges.slice(0, 6).map((badgeType) => {
+                      const sessionsCompleted = student.progress?.totalSessions ?? 0;
+                      const streakDays = student.progress?.totalSessions ?? 0; // Simplified for demo
+
+                      let progress = 0;
+                      let maxProgress = 10;
+
+                      if (badgeType === 'SPARK') {
+                        progress = sessionsCompleted;
+                        maxProgress = 1;
+                      } else if (badgeType === 'WORD_WIZARD') {
+                        progress = Math.min(sessionsCompleted, 10);
+                        maxProgress = 10;
+                      } else if (badgeType === 'VOICE_WIZARD') {
+                        progress = Math.min(sessionsCompleted, 8);
+                        maxProgress = 8;
+                      } else if (badgeType === 'LANGUAGE_WIZARD') {
+                        progress = sessionsCompleted;
+                        maxProgress = 10;
+                      } else if (badgeType === 'WEEK_WARRIOR') {
+                        progress = Math.min(streakDays, 7);
+                        maxProgress = 7;
+                      } else if (badgeType === 'MONTH_MASTER') {
+                        progress = Math.min(streakDays, 30);
+                        maxProgress = 30;
+                      }
+
+                      return (
+                        <BadgeCard
+                          key={badgeType}
+                          type={badgeType}
+                          status="locked"
+                          progress={progress}
+                          maxProgress={maxProgress}
+                          showProgress={true}
+                        />
+                      );
+                    })}
                   </div>
-                  <p className="text-amber-300 text-xs font-semibold">{progress}/{sessionsNeeded} sessions completed</p>
                 </div>
               );
             }
