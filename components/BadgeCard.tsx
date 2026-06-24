@@ -201,7 +201,9 @@ export default function BadgeCard({
   };
 
   const shareToWhatsApp = () => {
-    const text = `🎉 My child ${studentName} just reached Day ${dayNumber} on ${config.name}! 🏆 ${config.emoji}\n\nJoin WizLingo - Making learning fun with reading & speaking practice.\n\nhttps://wizlingo.app`;
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+    const signupUrl = `${baseUrl}/auth/signup?source=badge-share`;
+    const text = `🎉 My child ${studentName} just reached Day ${dayNumber} on ${config.name}! 🏆 ${config.emoji}\n\nJoin WizLingo - Making learning fun with reading & speaking practice.\n\n${signupUrl}`;
     const encoded = encodeURIComponent(text);
     window.open(`https://wa.me/?text=${encoded}`, '_blank');
   };

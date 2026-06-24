@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WizLingo Badges - Social Media Preview</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+      color: #333;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      color: #6366F1;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 1.05em;
+    }
+
+    .platforms {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 40px;
+      margin-bottom: 60px;
+    }
+
+    .platform-section {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .platform-header {
+      background: linear-gradient(135deg, #6366F1, #a855f7);
+      color: white;
+      padding: 16px;
+      font-weight: 700;
+      font-size: 1.1em;
+    }
+
+    .phone-frame {
+      background: #000;
+      padding: 12px;
+      margin: 20px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .phone-screen {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      aspect-ratio: 9 / 16;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* WhatsApp Style */
+    .whatsapp-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #efeae2;
+      padding: 12px;
+    }
+
+    .whatsapp-message {
+      background: white;
+      padding: 12px 16px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      line-height: 1.5;
+      word-wrap: break-word;
+      max-width: 85%;
+      color: #333;
+    }
+
+    .whatsapp-image {
+      width: 100%;
+      border-radius: 8px;
+      margin: 8px 0;
+    }
+
+    .whatsapp-link {
+      color: #0084ff;
+      text-decoration: none;
+    }
+
+    /* Instagram Style */
+    .instagram-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-top: 1px solid #ddd;
+    }
+
+    .instagram-header {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .instagram-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366F1, #a855f7);
+    }
+
+    .instagram-username {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .instagram-image {
+      width: 100%;
+      height: 300px;
+      background: linear-gradient(135deg, #FFE8E8, #E0E7FF);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 80px;
+      font-weight: bold;
+    }
+
+    .instagram-caption {
+      padding: 12px 16px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #333;
+    }
+
+    /* Facebook Style */
+    .facebook-content {
+      flex: 1;
+      background: #fff;
+    }
+
+    .facebook-post {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .facebook-header {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .facebook-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366F1, #a855f7);
+    }
+
+    .facebook-name {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .facebook-time {
+      font-size: 12px;
+      color: #65676b;
+    }
+
+    .facebook-text {
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 12px 0;
+      color: #333;
+    }
+
+    .badge-image {
+      width: 100%;
+      height: 320px;
+      background: linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 100px;
+      border-radius: 8px;
+      margin: 12px 0;
+    }
+
+    /* Badge Card Rendering */
+    .badge-card-visual {
+      background: white;
+      border-radius: 16px;
+      padding: 24px 20px;
+      text-align: center;
+      border: 2px solid rgba(99, 102, 241, 0.3);
+      width: 80%;
+      margin: 0 auto;
+    }
+
+    .badge-day {
+      font-size: 60px;
+      font-weight: 900;
+      color: #6366F1;
+      margin-bottom: 4px;
+    }
+
+    .badge-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .badge-emoji {
+      font-size: 50px;
+      margin: 12px 0;
+    }
+
+    .badge-name {
+      font-weight: 900;
+      font-size: 14px;
+      text-transform: uppercase;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    /* Shared Badge Visual (Instagram) */
+    .shared-badge-image {
+      width: 100%;
+      height: auto;
+      background: linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      padding: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .shared-badge-content {
+      text-align: center;
+      color: white;
+    }
+
+    .shared-badge-large {
+      font-size: 120px;
+      margin: 20px 0;
+    }
+
+    .shared-badge-day {
+      font-size: 80px;
+      font-weight: 900;
+      color: #6366F1;
+      margin: 20px 0;
+    }
+
+    .shared-badge-name {
+      font-size: 32px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin: 20px 0;
+    }
+
+    .shared-badge-branding {
+      font-size: 28px;
+      color: #6366F1;
+      font-weight: bold;
+      margin-top: 40px;
+    }
+
+    .shared-badge-cta {
+      font-size: 18px;
+      color: #4ade80;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .engagement-stats {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      gap: 20px;
+      justify-content: space-around;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .stats-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stats-number {
+      font-size: 18px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    /* Strategy Section */
+    .strategy-section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-top: 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .strategy-section h2 {
+      color: #6366F1;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+    }
+
+    .strategy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .strategy-card {
+      background: linear-gradient(135deg, #f8f9ff, #f5f3ff);
+      padding: 20px;
+      border-radius: 8px;
+      border-left: 4px solid #6366F1;
+    }
+
+    .strategy-card strong {
+      color: #6366F1;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .strategy-card p {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .platforms {
+        grid-template-columns: 1fr;
+      }
+
+      .header h1 {
+        font-size: 2em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🚀 WizLingo Badges on Social Media</h1>
+      <p>How Badges Create Viral Growth Through Parent Sharing</p>
+    </div>
+
+    <!-- Social Media Previews -->
+    <div class="platforms">
+      <!-- WhatsApp -->
+      <div class="platform-section">
+        <div class="platform-header">💬 WhatsApp Status & Groups</div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="whatsapp-content">
+              <div class="whatsapp-message">
+                🎉 My child just reached Day 10 on Word Wizard! 🏆 📚
+              </div>
+
+              <div style="background: linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%); border-radius: 8px; padding: 30px 20px; text-align: center; color: white; margin: 8px 0;">
+                <div style="font-size: 14px; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Day</div>
+                <div style="font-size: 56px; font-weight: 900; color: #8B5CF6; margin-bottom: 8px;">10</div>
+                <div style="font-size: 40px; margin-bottom: 12px;">📚</div>
+                <div style="font-size: 16px; font-weight: 900; text-transform: uppercase;">Word Wizard</div>
+                <div style="height: 2px; width: 40px; background: #8B5CF6; margin: 12px auto; border-radius: 1px;"></div>
+                <div style="font-size: 12px; color: #8B5CF6; font-weight: 700;">✓ Unlocked</div>
+              </div>
+
+              <div class="whatsapp-message">
+                Join WizLingo - Making learning fun with reading & speaking practice.
+              </div>
+
+              <div class="whatsapp-message">
+                <a href="#" class="whatsapp-link">https://app.wizlingo.io/auth/signup</a>
+              </div>
+
+              <div class="engagement-stats">
+                <div class="stats-item">
+                  <div class="stats-number">👁️ 5K</div>
+                  <div>Views</div>
+                </div>
+                <div class="stats-item">
+                  <div class="stats-number">💬 120</div>
+                  <div>Reactions</div>
+                </div>
+                <div class="stats-item">
+                  <div class="stats-number">↗️ 45</div>
+                  <div>Shares</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instagram -->
+      <div class="platform-section">
+        <div class="platform-header">📸 Instagram Post</div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="instagram-content">
+              <div class="instagram-header">
+                <div class="instagram-avatar"></div>
+                <div>
+                  <div class="instagram-username">Parent Name</div>
+                  <div style="font-size: 12px; color: #999;">2 hours ago</div>
+                </div>
+              </div>
+
+              <div style="background: linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%); padding: 40px 20px; text-align: center; color: white;">
+                <div style="font-size: 80px; margin-bottom: 20px;">📚</div>
+                <div style="font-size: 12px; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Day</div>
+                <div style="font-size: 56px; font-weight: 900; color: #8B5CF6;">10</div>
+                <div style="font-size: 16px; font-weight: 900; text-transform: uppercase; margin-top: 16px;">Word Wizard</div>
+                <div style="margin-top: 20px; font-size: 20px; color: #6366F1; font-weight: bold;">🎓 WizLingo</div>
+                <div style="margin-top: 12px; font-size: 14px; color: #4ade80; font-weight: bold;">Join Now & Start Learning!</div>
+              </div>
+
+              <div class="instagram-caption">
+                🎉 My child just unlocked the Word Wizard badge! 10 days of consistent reading practice. So proud! 📚✨ Join us on @wizlingo - Making learning fun & interactive! 🚀 #Education #Learning #WizLingo
+              </div>
+
+              <div class="engagement-stats">
+                <div class="stats-item">
+                  <div class="stats-number">❤️ 234</div>
+                  <div>Likes</div>
+                </div>
+                <div class="stats-item">
+                  <div class="stats-number">💬 48</div>
+                  <div>Comments</div>
+                </div>
+                <div class="stats-item">
+                  <div class="stats-number">↗️ 28</div>
+                  <div>Shares</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Facebook -->
+      <div class="platform-section">
+        <div class="platform-header">👥 Facebook Post</div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="facebook-content">
+              <div class="facebook-post">
+                <div class="facebook-header">
+                  <div class="facebook-avatar"></div>
+                  <div>
+                    <div class="facebook-name">Parent Name</div>
+                    <div class="facebook-time">2 hours ago · 👥 Shared with Friends</div>
+                  </div>
+                </div>
+
+                <div class="facebook-text">
+                  🎉 Proud parent moment! My child just reached Day 10 and unlocked the Word Wizard badge on WizLingo! 📚✨
+                </div>
+
+                <div style="background: linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%); padding: 30px 16px; text-align: center; color: white; border-radius: 6px;">
+                  <div style="font-size: 60px; margin-bottom: 16px;">📚</div>
+                  <div style="font-size: 56px; font-weight: 900; color: #8B5CF6;">10</div>
+                  <div style="font-size: 12px; color: #999; margin: 8px 0;">DAY</div>
+                  <div style="font-size: 16px; font-weight: 900; text-transform: uppercase; margin: 12px 0;">Word Wizard</div>
+                  <div style="margin-top: 16px; font-size: 18px; color: #6366F1; font-weight: bold;">🎓 WizLingo</div>
+                </div>
+
+                <div class="facebook-text" style="margin-top: 12px; color: #666; font-size: 12px;">
+                  Making learning fun with interactive reading & speaking practice. If you're looking for an engaging learning app for your child, definitely check it out!
+                </div>
+              </div>
+
+              <div class="engagement-stats" style="border-top: 1px solid #eee;">
+                <div class="stats-item">
+                  <div class="stats-number">👍 156</div>
+                  <div>Reactions</div>
+                </div>
+                <div class="stats-item">
+                  <div class="stats-number">💬 32</div>
+                  <div>Comments</div>
+                </div>
+                <div class="stats-item">
+                  <div class="stats-number">↗️ 18</div>
+                  <div>Shares</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Strategy Section -->
+    <div class="strategy-section">
+      <h2>📊 Why This Creates Viral Growth</h2>
+      <div class="strategy-grid">
+        <div class="strategy-card">
+          <strong>🎯 Social Proof</strong>
+          <p>Parents see other children achieving milestones, creating desire for their own child to participate and succeed.</p>
+        </div>
+
+        <div class="strategy-card">
+          <strong>🚀 Organic Reach</strong>
+          <p>Natural parent-to-parent sharing on WhatsApp groups, Instagram, and Facebook creates exponential reach without paid ads.</p>
+        </div>
+
+        <div class="strategy-card">
+          <strong>🏆 Achievement Marketing</strong>
+          <p>Every badge is free marketing. Parents naturally celebrate and share their child's achievements with their networks.</p>
+        </div>
+
+        <div class="strategy-card">
+          <strong>💚 FOMO Effect</strong>
+          <p>Seeing badges makes parents wonder "Why isn't my child in WizLingo?" Creating natural curiosity and conversion.</p>
+        </div>
+
+        <div class="strategy-card">
+          <strong>🎨 Brand Visibility</strong>
+          <p>Every shared image includes WizLingo branding, tagline, and call-to-action. Repetitive brand exposure without paid media.</p>
+        </div>
+
+        <div class="strategy-card">
+          <strong>📱 Multi-Platform</strong>
+          <p>Badges work perfectly on WhatsApp, Instagram, Facebook, email, SMS - parents naturally share across all platforms.</p>
+        </div>
+
+        <div class="strategy-card">
+          <strong>👨‍👩‍👧 Parent Community</strong>
+          <p>Creates parent community around education. Parents discuss, share, celebrate together - building loyalty and retention.</p>
+        </div>
+
+        <div class="strategy-card">
+          <strong>🔄 Viral Loop</strong>
+          <p>Child earns badge → Parent shares → Other parents see → Kids join → More badges → More shares. Exponential growth!</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; padding: 20px; background: #f0f4ff; border-left: 4px solid #6366F1; border-radius: 6px;">
+        <strong style="color: #6366F1; font-size: 1.1em;">💡 Growth Metrics Expected:</strong>
+        <ul style="margin-top: 12px; color: #666; line-height: 1.8;">
+          <li>• <strong>Month 1:</strong> 100 parent shares (from 1,000 active users)</li>
+          <li>• <strong>Month 2:</strong> 500+ shares (organic viral growth, 10% conversion rate)</li>
+          <li>• <strong>Month 3:</strong> 2,000+ shares (exponential growth, word-of-mouth dominates)</li>
+          <li>• <strong>Month 6:</strong> Primary customer acquisition channel via parent referrals</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
