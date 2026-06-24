@@ -135,10 +135,9 @@ function ResultScreen({ score, passage, studentName, onTryAgain, onNext }: {
   score: ScoreResult; passage: Passage; studentName: string;
   onTryAgain: () => void; onNext: () => void;
 }) {
-  const wpmPct = score.wpm / score.targetWpm;
-  const accMet = score.accuracy >= score.minAccuracy;
-  const stars = (wpmPct >= 1.0 && score.accuracy >= score.minAccuracy + 5) ? 3
-              : (wpmPct >= 0.9 && accMet) ? 2 : 1;
+  // Stars based on accuracy (primary metric)
+  const stars = score.accuracy >= 90 ? 3
+              : score.accuracy >= 80 ? 2 : 1;
 
   function Bar({ value, target, unit, label }: { value: number; target: number; unit: string; label: string }) {
     const pct = Math.min((value / target) * 100, 100);

@@ -90,12 +90,12 @@ export async function selectReadingPassage(
     );
   }
 
-  // Step 3: Get recently used passages
+  // Step 3: Get recently used passages - use MUCH larger history to avoid repeats
   const recentSessions = await prisma.readingSession.findMany({
     where: { studentId },
     select: { passageId: true },
     orderBy: { createdAt: 'desc' },
-    take: excludeRecentCount,
+    take: Math.max(100, availablePassages.length * 3), // Exclude last 100+ sessions or 3x available passages
   });
   const recentIds = new Set(
     (recentSessions as { passageId: string }[]).map((r) => r.passageId)
@@ -104,7 +104,14 @@ export async function selectReadingPassage(
   // Step 4: Filter to passages not recently used
   let pool = availablePassages.filter((p) => !recentIds.has(p.id));
 
-  // Step 5: If all passages have been used, allow repeats
+  // Step 5: If most passages have been used, exclude only the last 5 sessions
+  if (pool.length === 0) {
+    const last5 = recentSessions.slice(0, 5);
+    const last5Ids = new Set(last5.map((r) => r.passageId));
+    pool = availablePassages.filter((p) => !last5Ids.has(p.id));
+  }
+
+  // Step 6: As absolute fallback, use all passages (shouldn't reach this)
   if (pool.length === 0) {
     pool = availablePassages;
   }
