@@ -18,64 +18,64 @@ const BADGE_CONFIG = {
     emoji: '✨',
     name: 'Spark',
     rarity: 1,
-    color: '#FF6B6B',
-    lightBg: '#FFE8E8',
+    primaryColor: '#F97316',
+    accentColor: '#FFD700',
+    bgLight: '#FFF7ED',
     description: 'First step',
-    requirement: 'Complete 1 reading session',
   },
   WORD_WIZARD: {
     emoji: '📚',
     name: 'Word Wizard',
     rarity: 3,
-    color: '#8B5CF6',
-    lightBg: '#F3E8FF',
+    primaryColor: '#4F46E5',
+    accentColor: '#FFD700',
+    bgLight: '#EEF2FF',
     description: 'Reading master',
-    requirement: 'Achieve 80%+ accuracy in reading',
   },
   VOICE_WIZARD: {
     emoji: '🎤',
     name: 'Voice Wizard',
     rarity: 3,
-    color: '#EC4899',
-    lightBg: '#FCE7F3',
+    primaryColor: '#9333EA',
+    accentColor: '#F43F88',
+    bgLight: '#FAF5FF',
     description: 'Speaking master',
-    requirement: 'Achieve 75%+ fluency in speaking',
   },
   LANGUAGE_WIZARD: {
     emoji: '🧙',
     name: 'Language Wizard',
     rarity: 3,
-    color: '#6366F1',
-    lightBg: '#E0E7FF',
+    primaryColor: '#059669',
+    accentColor: '#FFD700',
+    bgLight: '#ECFDF5',
     description: 'Committed learner',
-    requirement: 'Complete 10 reading or speaking sessions',
   },
   GRAND_WIZARD: {
     emoji: '👑',
     name: 'Grand Wizard',
     rarity: 4,
-    color: '#F59E0B',
-    lightBg: '#FEF3C7',
+    primaryColor: '#D97706',
+    accentColor: '#FFD700',
+    bgLight: '#FFFBEB',
     description: 'Ultimate master',
-    requirement: 'Earn all 4 badges above',
   },
   WEEK_WARRIOR: {
     emoji: '🔥',
     name: 'Week Warrior',
     rarity: 2,
-    color: '#FF7F50',
-    lightBg: '#FFE0CC',
+    primaryColor: '#DC2626',
+    accentColor: '#FFD700',
+    bgLight: '#FEE2E2',
     description: '7-day streak',
-    requirement: 'Practice 7 consecutive days',
   },
   MONTH_MASTER: {
     emoji: '⚡',
     name: 'Month Master',
     rarity: 2,
-    color: '#FFD700',
-    lightBg: '#FFFACD',
+    primaryColor: '#F59E0B',
+    accentColor: '#FFD700',
+    bgLight: '#FFFBEB',
     description: '30-day streak',
-    requirement: 'Practice 30 consecutive days',
   },
 };
 
@@ -92,7 +92,6 @@ export default function BadgeCard({
   const config = BADGE_CONFIG[type];
   const isLocked = status === 'locked';
   const progressPercent = maxProgress ? (progress / maxProgress) * 100 : 0;
-  const [showTooltip, setShowTooltip] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -103,91 +102,104 @@ export default function BadgeCard({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Instagram square size (1080x1080)
+    // Instagram square size
     canvas.width = 1080;
     canvas.height = 1080;
 
-    // Background gradient
+    // Gradient background
     const bgGradient = ctx.createLinearGradient(0, 0, 1080, 1080);
-    bgGradient.addColorStop(0, '#0f0c29');
+    bgGradient.addColorStop(0, '#0F0C29');
     bgGradient.addColorStop(0.5, '#302b63');
     bgGradient.addColorStop(1, '#24243e');
     ctx.fillStyle = bgGradient;
     ctx.fillRect(0, 0, 1080, 1080);
 
-    // Badge card area
-    const cardX = 100;
-    const cardY = 200;
-    const cardWidth = 880;
-    const cardHeight = 500;
-    const cardRadius = 30;
+    // Shield background
+    const shieldX = 200;
+    const shieldY = 250;
+    const shieldW = 680;
+    const shieldH = 520;
 
-    // Card background with color
-    ctx.fillStyle = `${config.lightBg}40`;
-    ctx.fillRect(cardX, cardY, cardWidth, cardHeight);
-
-    // Card border
-    ctx.strokeStyle = `${config.color}80`;
-    ctx.lineWidth = 3;
+    // Shield outer glow
+    ctx.fillStyle = `${config.primaryColor}30`;
     ctx.beginPath();
-    ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
+    ctx.roundRect(shieldX - 40, shieldY - 40, shieldW + 80, shieldH + 80, 50);
+    ctx.fill();
+
+    // Main shield gradient
+    const shieldGrad = ctx.createLinearGradient(shieldX, shieldY, shieldX + shieldW, shieldY + shieldH);
+    shieldGrad.addColorStop(0, config.primaryColor);
+    shieldGrad.addColorStop(1, config.bgLight);
+    ctx.fillStyle = shieldGrad;
+    ctx.beginPath();
+    ctx.roundRect(shieldX, shieldY, shieldW, shieldH, 40);
+    ctx.fill();
+
+    // Shield border
+    ctx.strokeStyle = config.accentColor;
+    ctx.lineWidth = 4;
     ctx.stroke();
 
-    // Left section - Large emoji and day
-    const leftX = cardX + 80;
-    const centerY = cardY + cardHeight / 2;
+    // Inner highlight
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.beginPath();
+    ctx.roundRect(shieldX + 10, shieldY + 10, shieldW - 20, shieldH / 2, 30);
+    ctx.fill();
 
-    // Day number
-    ctx.font = 'bold 200px Arial';
-    ctx.fillStyle = config.color;
+    // Day number - large and gold
+    ctx.font = 'bold 240px Fredoka, Arial';
+    ctx.fillStyle = config.accentColor;
     ctx.textAlign = 'center';
-    ctx.fillText(isLocked ? '?' : dayNumber, leftX + 100, centerY - 50);
+    ctx.textBaseline = 'middle';
+    ctx.fillText(isLocked ? '?' : dayNumber, shieldX + shieldW / 2, shieldY + 180);
 
-    // Day label
-    ctx.font = 'bold 32px Arial';
-    ctx.fillStyle = '#999';
-    ctx.fillText('DAY', leftX + 100, centerY + 80);
+    // "DAY" label
+    ctx.font = 'bold 50px Fredoka, Arial';
+    ctx.fillStyle = config.primaryColor;
+    ctx.fillText('DAY', shieldX + shieldW / 2, shieldY + 280);
 
-    // Right section - Badge info
-    const rightX = cardX + 350;
+    // Rarity stars
+    ctx.font = '50px Arial';
+    ctx.textAlign = 'center';
+    let starX = shieldX + shieldW / 2 - (config.rarity * 40) / 2;
+    for (let i = 0; i < config.rarity; i++) {
+      ctx.fillText('⭐', starX + i * 50, shieldY + 360);
+    }
 
-    // Stars
-    ctx.font = '36px Arial';
-    ctx.textAlign = 'left';
-    let starText = '';
-    for (let i = 0; i < config.rarity; i++) starText += '⭐ ';
-    ctx.fillText(starText, rightX, centerY - 80);
+    // Badge emoji
+    ctx.font = '120px Arial';
+    ctx.fillText(config.emoji, shieldX + shieldW / 2, shieldY + 470);
 
     // Badge name
-    ctx.font = 'bold 64px Arial';
-    ctx.fillStyle = 'white';
-    ctx.fillText(config.name, rightX, centerY);
+    ctx.font = 'bold 60px Fredoka, Arial';
+    ctx.fillStyle = config.primaryColor;
+    ctx.fillText(config.name, shieldX + shieldW / 2, shieldY + 580);
 
-    // Student name or message
+    // Bottom section - WizLingo branding
+    const bottomY = shieldY + shieldH + 100;
+
+    // Motivational message
+    ctx.font = 'italic 36px Arial';
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.fillText(`"${studentName} unlocked achievement!"`, 540, bottomY + 50);
+
+    // WizLingo branding
+    ctx.font = 'bold 48px Fredoka, Arial';
+    ctx.fillStyle = '#9333EA';
+    ctx.fillText('🎓 WizLingo', 540, bottomY + 120);
+
+    // Tagline
     ctx.font = '32px Arial';
     ctx.fillStyle = '#ccc';
-    ctx.fillText(`${studentName} unlocked!`, rightX, centerY + 70);
+    ctx.fillText('Learning Made Fun & Interactive', 540, bottomY + 170);
 
-    // Bottom section - WizLingo branding and CTA
-    const bottomY = cardY + cardHeight + 80;
-
-    // WizLingo logo text
-    ctx.font = 'bold 48px Arial';
-    ctx.fillStyle = '#6366F1';
-    ctx.textAlign = 'center';
-    ctx.fillText('🎓 WizLingo', 540, bottomY);
-
-    // Call to action
-    ctx.font = '32px Arial';
-    ctx.fillStyle = '#9ca3af';
-    ctx.fillText('Learning Made Fun & Interactive', 540, bottomY + 60);
-
-    // Join message
-    ctx.font = 'bold 28px Arial';
+    // CTA
+    ctx.font = 'bold 36px Fredoka, Arial';
     ctx.fillStyle = '#4ade80';
-    ctx.fillText('Join Now & Start Your Learning Journey', 540, bottomY + 130);
+    ctx.fillText('Join Now →', 540, bottomY + 230);
 
-    // Download image
+    // Download
     canvas.toBlob((blob) => {
       if (blob) {
         const url = URL.createObjectURL(blob);
@@ -201,153 +213,121 @@ export default function BadgeCard({
   };
 
   const shareToWhatsApp = () => {
-    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-    const signupUrl = `${baseUrl}/auth/signup?source=badge-share`;
-    const text = `🎉 My child ${studentName} just reached Day ${dayNumber} on ${config.name}! 🏆 ${config.emoji}\n\nJoin WizLingo - Making learning fun with reading & speaking practice.\n\n${signupUrl}`;
+    const text = `🎉 My child ${studentName} just reached Day ${dayNumber} on ${config.name}! 🏆 ${config.emoji}\n\nJoin WizLingo - Making learning fun!\nhttps://wizlingo.edvanta.co.in/login`;
     const encoded = encodeURIComponent(text);
     window.open(`https://wa.me/?text=${encoded}`, '_blank');
   };
 
-  const shareToOthers = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const shareText = `🎉 My child ${studentName} just reached Day ${dayNumber} on ${config.name}! 🏆 ${config.emoji}\n\nWizLingo - Learning Made Fun!\nJoin our community of learning families.`;
-    if (navigator.share) {
-      navigator.share({
-        title: 'WizLingo Achievement',
-        text: shareText,
-      });
-    } else {
-      navigator.clipboard.writeText(shareText);
-      alert('Copied! Share with family and friends 🌟');
-    }
-  };
-
   return (
-    <div
-      className={`
-        relative w-full max-w-[180px]
-        transition-all duration-300 hover:scale-105 active:scale-95
-        cursor-pointer group
-      `}
-      onClick={onClick}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => { setShowTooltip(false); setShowShareMenu(false); }}
-    >
+    <div className="relative w-full max-w-[200px] transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer group">
       <canvas ref={canvasRef} className="hidden" />
 
       {/* Share Menu */}
       {showShareMenu && (
-        <div className="absolute -top-48 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white rounded-xl p-4 w-56 shadow-2xl border border-white/20 backdrop-blur-sm">
+        <div className="absolute -top-52 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white rounded-xl p-4 w-56 shadow-2xl border border-white/20 backdrop-blur-sm">
           <p className="font-bold mb-4 text-center text-sm">Share Achievement</p>
           <div className="space-y-2">
             <button
               onClick={shareToWhatsApp}
-              className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 rounded-lg transition-colors"
             >
-              💬 WhatsApp Status
+              💬 WhatsApp
             </button>
             <button
               onClick={() => generateShareImage()}
-              className="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-2.5 rounded-lg transition-colors"
             >
-              📸 Download Image
-            </button>
-            <button
-              onClick={shareToOthers}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
-            >
-              📤 Share Elsewhere
+              📸 Download
             </button>
           </div>
-          <p className="text-xs text-gray-400 mt-4 text-center">
-            Other parents will be curious! 👀
-          </p>
         </div>
       )}
 
-      {/* Tooltip */}
-      {showTooltip && !isLocked && (
-        <div className="absolute -top-40 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white text-xs rounded-lg p-3 w-48 shadow-2xl border border-white/20">
-          <p className="font-bold mb-2">{config.name}</p>
-          <p className="text-gray-300 text-xs mb-3">{config.requirement}</p>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowShareMenu(true);
-            }}
-            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-xs font-bold py-2 rounded transition-colors"
-          >
-            🚀 Share Achievement
-          </button>
-        </div>
-      )}
-
-      {/* Main Card Container */}
+      {/* Main Badge Container */}
       <div
-        className={`
-          relative rounded-2xl p-6 text-center transition-all
-          border-2 backdrop-blur-sm
-          ${isLocked
-            ? `bg-gray-500/10 border-gray-500/30 opacity-60`
-            : `bg-white/5 border-${config.color === '#FF6B6B' ? 'red' : config.color === '#8B5CF6' ? 'purple' : config.color === '#EC4899' ? 'pink' : config.color === '#6366F1' ? 'indigo' : config.color === '#F59E0B' ? 'amber' : config.color === '#FF7F50' ? 'orange' : 'yellow'}-500/20`
-        }`}
-        style={!isLocked ? {
-          backgroundColor: `${config.lightBg}20`,
-          borderColor: `${config.color}40`,
-        } : {}}
+        className="relative rounded-3xl p-8 text-center transition-all border-4 backdrop-blur-sm shadow-2xl"
+        style={{
+          backgroundColor: config.bgLight,
+          borderColor: config.primaryColor,
+          background: `linear-gradient(135deg, ${config.bgLight} 0%, rgba(255,255,255,0.5) 100%)`,
+        }}
       >
         {/* Lock Icon */}
         {isLocked && (
-          <div className="absolute -top-3 -right-3 bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg">
+          <div className="absolute -top-4 -right-4 bg-gray-600 text-white rounded-full w-10 h-10 flex items-center justify-center text-xl shadow-lg">
             🔒
           </div>
         )}
 
-        {/* Top: Rarity Stars */}
-        <div className="flex justify-center gap-1 mb-3">
-          {[...Array(config.rarity)].map((_, i) => (
-            <span key={i} className="text-sm">⭐</span>
-          ))}
-        </div>
+        {/* Shield Background SVG */}
+        <svg viewBox="0 0 200 220" className="w-full h-auto mb-3" style={{ maxHeight: '120px' }}>
+          <defs>
+            <linearGradient id={`shield-grad-${type}`} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor={config.primaryColor} stopOpacity="1" />
+              <stop offset="100%" stopColor={config.primaryColor} stopOpacity="0.7" />
+            </linearGradient>
+            <filter id={`shadow-${type}`} x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="4" stdDeviation="4" floodOpacity="0.3" />
+            </filter>
+          </defs>
 
-        {/* Day Number - Hero Element */}
-        <div className="mb-2">
-          <div className="text-5xl font-black" style={{ color: config.color }}>
+          {/* Shield shape */}
+          <path
+            d="M 100,10 L 160,40 L 160,100 Q 160,160 100,200 Q 40,160 40,100 L 40,40 Z"
+            fill={`url(#shield-grad-${type})`}
+            stroke={config.accentColor}
+            strokeWidth="2"
+            filter={`url(#shadow-${type})`}
+          />
+
+          {/* Shield highlight */}
+          <path
+            d="M 100,15 L 155,43 L 155,95 Q 155,155 100,195 Q 45,155 45,95 L 45,43 Z"
+            fill="white"
+            opacity="0.2"
+          />
+
+          {/* Day number in shield */}
+          <text x="100" y="85" fontSize="60" fontWeight="900" textAnchor="middle" fill={config.accentColor}>
             {isLocked ? '?' : dayNumber}
-          </div>
-          <p className="text-xs font-bold text-gray-400 tracking-widest uppercase mt-1">Day</p>
-        </div>
+          </text>
 
-        {/* Emoji */}
-        <div className="text-5xl mb-4 drop-shadow-lg">{config.emoji}</div>
+          {/* Stars */}
+          {[...Array(config.rarity)].map((_, i) => (
+            <text key={i} x={80 + i * 20} y="120" fontSize="14" textAnchor="middle">
+              ⭐
+            </text>
+          ))}
+
+          {/* Emoji at bottom */}
+          <text x="100" y="175" fontSize="40" textAnchor="middle">
+            {config.emoji}
+          </text>
+        </svg>
 
         {/* Badge Name */}
-        <h3 className="font-black text-sm uppercase tracking-tight text-white mb-2">
+        <h3 className="font-black text-base uppercase tracking-tight mb-2" style={{ color: config.primaryColor }}>
           {config.name}
         </h3>
 
-        {/* Status - Animated accent line */}
-        <div
-          className="h-1 w-12 mx-auto mb-3 rounded-full transition-all"
-          style={{ backgroundColor: config.color }}
-        />
+        {/* Divider */}
+        <div className="h-1 w-12 mx-auto mb-3 rounded-full" style={{ backgroundColor: config.accentColor }} />
 
-        {/* Status Text */}
-        <p className="text-xs font-semibold" style={{ color: config.color }}>
+        {/* Status */}
+        <p className="text-xs font-bold mb-3" style={{ color: config.primaryColor }}>
           {isLocked ? '🔒 Locked' : '✓ Unlocked'}
         </p>
 
-        {/* Share Button for Unlocked */}
+        {/* Share Button */}
         {!isLocked && (
           <button
             onClick={(e) => {
               e.stopPropagation();
               setShowShareMenu(!showShareMenu);
             }}
-            className="mt-3 w-full py-1.5 text-xs font-bold text-white rounded transition-all"
+            className="w-full py-2 text-xs font-bold text-white rounded-lg transition-all"
             style={{
-              background: `linear-gradient(135deg, ${config.color}, ${config.color}dd)`,
-              opacity: showShareMenu ? 1 : 0.8,
+              background: `linear-gradient(135deg, ${config.primaryColor}, ${config.accentColor})`,
             }}
           >
             🚀 Share
@@ -355,20 +335,17 @@ export default function BadgeCard({
         )}
       </div>
 
-      {/* Progress Bar - Locked Only */}
+      {/* Progress Bar */}
       {isLocked && showProgress && (
         <div className="mt-4 px-1">
           <div className="bg-gray-600/30 rounded-full h-2 overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500"
-              style={{
-                width: `${progressPercent}%`,
-                backgroundColor: config.color,
-              }}
+              style={{ width: `${progressPercent}%`, backgroundColor: config.primaryColor }}
             />
           </div>
           <p className="text-xs text-gray-400 mt-2 text-center">
-            {progress}/{maxProgress} sessions
+            {progress}/{maxProgress}
           </p>
         </div>
       )}
