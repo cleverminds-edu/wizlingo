@@ -25,7 +25,7 @@ const ROLE_LABELS: Record<Role, string> = {
 
 export default function LoginPage() {
   const router = useRouter();
-  const [loginType, setLoginType] = useState<LoginType>("school");
+  const [loginType, setLoginType] = useState<LoginType>("b2c");
   const [role, setRole] = useState<Role>("student");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -230,7 +230,7 @@ export default function LoginPage() {
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
-                  👤 Personal
+                  👤 Individual
                 </button>
               </div>
             </div>
