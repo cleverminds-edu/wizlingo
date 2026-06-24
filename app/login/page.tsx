@@ -374,7 +374,7 @@ export default function LoginPage() {
 
             <p className="mt-4 text-xs text-center text-gray-400">
             {loginType === "b2c"
-              ? "Use your UserID (e.g. WL001, WL002) to login"
+              ? "Enter your UserID and password to login"
               : role === "student"
               ? "Your admission number and PIN are provided by your school"
               : "Your employee code and PIN are issued by your school administrator"}
