@@ -251,85 +251,80 @@ export default function DesktopDashboard({ student, onLogout }: { student: Stude
           </div>
         </div>
 
-        <div className="px-10 py-8 space-y-6">
+        <div className="px-10 py-6 space-y-4">
 
-          {/* ── Row 1: GIANT HERO CTA BUTTONS ─────────────────────────── */}
-          <div className="grid grid-cols-2 gap-6">
+          {/* ── Row 1: Compact Level Progress ─────────────────────────────── */}
+          <div className={`relative rounded-2xl p-4 overflow-hidden shadow-lg`}
+            style={{ background: `linear-gradient(135deg, ${meta.grad[0]}, ${meta.grad[1]})` }}>
+            <div className="relative z-10 flex items-center justify-between gap-4">
+              <div className="flex-1">
+                <p className="text-xs font-bold uppercase tracking-widest mb-2"
+                  style={{ color: "rgba(255,255,255,0.55)" }}>Level {level}</p>
+                {level < 3 ? (
+                  <>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span style={{ color: "rgba(255,255,255,0.6)" }}>Progress</span>
+                      <span className="text-white font-bold">{passes} / {PASSES_TO_LEVEL_UP}</span>
+                    </div>
+                    <div className="rounded-full h-2" style={{ background: "rgba(0,0,0,0.25)" }}>
+                      <div className="h-2 rounded-full transition-all duration-700"
+                        style={{ width: `${Math.min((passes / PASSES_TO_LEVEL_UP) * 100, 100)}%`, background: "rgba(255,255,255,0.85)" }} />
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-white font-bold text-sm">🏆 Max level!</p>
+                )}
+              </div>
+              <div className="text-4xl opacity-20">{meta.emoji}</div>
+            </div>
+          </div>
+
+          {/* ── Row 2: Quick Stats ─────────────────────────────────────────── */}
+          <div className="grid grid-cols-3 gap-3">
             {[
-              { label: "Read", emoji: "📖", grad: ["#FF6B35", "#F7931E"], sub: "Unlock new passages & earn stars", href: "/student/session" },
-              { label: "Speak", emoji: "🎤", grad: ["#7C3AED", "#DB2777"], sub: "Chat with AI & boost fluency", href: "/student/speaking" },
+              { emoji: "🔥", value: String(student.progress?.totalSessions ?? 0), label: "Sessions", sub: "done" },
+              { emoji: "⚡", value: student.progress?.avgWpm ? `${Math.round(student.progress.avgWpm)}` : "—", label: "WPM", sub: "avg" },
+              { emoji: "🎯", value: student.progress?.avgAccuracy ? `${Math.round(student.progress.avgAccuracy)}%` : "—", label: "Acc", sub: "avg" },
+            ].map(({ emoji, value, label, sub }) => (
+              <div key={label} className="rounded-xl px-4 py-3"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-lg">{emoji}</span>
+                  <span className="text-xs font-bold uppercase" style={{ color: "rgba(255,255,255,0.55)" }}>{label}</span>
+                </div>
+                <p className="text-2xl font-black text-white leading-none">{value}</p>
+                <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.25)" }}>{sub}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* ── Row 3: Compact CTA BUTTONS ─────────────────────────────────── */}
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { label: "Read", emoji: "📖", grad: ["#FF6B35", "#F7931E"], sub: "New passages", href: "/student/session" },
+              { label: "Speak", emoji: "🎤", grad: ["#7C3AED", "#DB2777"], sub: "Chat & practice", href: "/student/speaking" },
             ].map(({ label, emoji, grad, sub, href }) => (
               <button key={label} onClick={() => router.push(href)}
-                className="relative group rounded-3xl overflow-hidden shadow-2xl transition-all hover:shadow-3xl hover:scale-[1.02] active:scale-95"
-                style={{ background: `linear-gradient(135deg, ${grad[0]}, ${grad[1]})`, minHeight: "180px" }}>
+                className="relative group rounded-2xl overflow-hidden shadow-lg transition-all hover:shadow-xl hover:scale-[1.02] active:scale-95 py-4"
+                style={{ background: `linear-gradient(135deg, ${grad[0]}, ${grad[1]})` }}>
                 <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
-                <div className="p-8 text-center text-white relative z-10 flex flex-col items-center justify-center h-full">
-                  <div className="text-7xl mb-4 animate-bounce">{emoji}</div>
-                  <h2 className="text-5xl font-black mb-2">{label}</h2>
-                  <p className="text-lg font-semibold text-white/90">{sub}</p>
-                  <div className="mt-4 inline-block bg-white/20 px-4 py-2 rounded-xl text-sm font-bold">
-                    Tap to start
-                  </div>
+                <div className="text-center text-white relative z-10 flex flex-col items-center justify-center">
+                  <div className="text-4xl mb-2 animate-bounce">{emoji}</div>
+                  <h2 className="text-2xl font-black">{label}</h2>
+                  <p className="text-xs font-semibold text-white/90 mt-1">{sub}</p>
                 </div>
               </button>
             ))}
           </div>
 
-          {/* ── Row 2: Quick Stats + Level Progress ─────────────────────── */}
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              { emoji: "🔥", value: String(student.progress?.totalSessions ?? 0), label: "Sessions", sub: "completed" },
-              { emoji: "⚡", value: student.progress?.avgWpm ? `${Math.round(student.progress.avgWpm)}` : "—", label: "Avg WPM", sub: "words/min" },
-              { emoji: "🎯", value: student.progress?.avgAccuracy ? `${Math.round(student.progress.avgAccuracy)}%` : "—", label: "Accuracy", sub: "reading score" },
-            ].map(({ emoji, value, label, sub }) => (
-              <div key={label} className="rounded-2xl px-5 py-4"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-2xl">{emoji}</span>
-                  <span className="text-xs font-bold uppercase" style={{ color: "rgba(255,255,255,0.55)" }}>{label}</span>
-                </div>
-                <p className="text-3xl font-black text-white leading-none">{value}</p>
-                <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.25)" }}>{sub}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* ── Row 3: Level Progress Card ─────────────────────────────────── */}
-          <div className={`relative rounded-3xl p-8 overflow-hidden shadow-2xl`}
-            style={{ background: `linear-gradient(135deg, ${meta.grad[0]}, ${meta.grad[1]})` }}>
-            <div className="absolute -right-6 -top-6 text-[160px] leading-none opacity-[0.08] select-none pointer-events-none">
-              {meta.emoji}
-            </div>
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="flex-1">
-                <p className="text-xs font-bold uppercase tracking-widest mb-3"
-                  style={{ color: "rgba(255,255,255,0.55)" }}>Level {level} · {meta.label}</p>
-                {level < 3 ? (
-                  <>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span style={{ color: "rgba(255,255,255,0.6)" }}>Progress to Level {level + 1}</span>
-                      <span className="text-white font-bold">{passes} / {PASSES_TO_LEVEL_UP}</span>
-                    </div>
-                    <div className="rounded-full h-3" style={{ background: "rgba(0,0,0,0.25)" }}>
-                      <div className="h-3 rounded-full transition-all duration-700"
-                        style={{ width: `${Math.min((passes / PASSES_TO_LEVEL_UP) * 100, 100)}%`, background: "rgba(255,255,255,0.85)" }} />
-                    </div>
-                  </>
-                ) : (
-                  <p className="text-white font-bold text-lg">🏆 Maximum level reached!</p>
-                )}
-              </div>
-            </div>
-          </div>
-
           {/* ── Row 4: WPM chart + accuracy ring + coach ───────────────── */}
-          <div className="grid grid-cols-3 gap-5">
+          <div className="grid grid-cols-3 gap-3">
 
             {/* WPM line chart */}
-            <div className="col-span-2 rounded-3xl p-7"
+            <div className="col-span-2 rounded-2xl p-5"
               style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-              <p className="text-white font-bold text-base mb-1">Reading Speed Trend</p>
-              <p className="text-xs mb-6" style={{ color: "rgba(255,255,255,0.35)" }}>Words per minute across your last sessions</p>
+              <p className="text-white font-bold text-sm mb-1">Reading Speed Trend</p>
+              <p className="text-xs mb-4" style={{ color: "rgba(255,255,255,0.35)" }}>WPM across sessions</p>
               {chartData.length > 1 ? (
                 <ResponsiveContainer width="100%" height={170}>
                   <LineChart data={chartData} margin={{ top: 4, right: 8, left: -24, bottom: 0 }}>
@@ -354,10 +349,10 @@ export default function DesktopDashboard({ student, onLogout }: { student: Stude
             </div>
 
             {/* Accuracy ring + AI coach */}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
 
               {/* Accuracy ring */}
-              <div className="flex-1 rounded-3xl p-6 flex items-center gap-5"
+              <div className="flex-1 rounded-2xl p-4 flex items-center gap-4"
                 style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
                 <div className="relative w-20 h-20 flex-shrink-0">
                   <svg viewBox="0 0 80 80" className="w-20 h-20" style={{ transform: "rotate(-90deg)" }}>
@@ -389,9 +384,9 @@ export default function DesktopDashboard({ student, onLogout }: { student: Stude
               </div>
 
               {/* AI Coach */}
-              <div className="flex-1 rounded-3xl p-6"
+              <div className="flex-1 rounded-2xl p-4"
                 style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)" }}>
-                <p className="text-xs font-bold uppercase tracking-widest mb-3"
+                <p className="text-xs font-bold uppercase tracking-widest mb-2"
                   style={{ color: "#818cf8" }}>🧙 Coach</p>
                 <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
                   {coachMessage(student)}
