@@ -324,169 +324,153 @@ export default function StudentDashboard() {
           </div>
         </div>
 
-        {/* Quick Stats Bar */}
-        <div className="grid grid-cols-3 gap-3 mb-8 animate-slide-up" style={{ animationDelay: "0.05s" }}>
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-2xl">{levelInfo.emoji}</span>
-              <span className="text-white/70 text-xs font-bold uppercase">Level</span>
-            </div>
-            <div className="text-3xl font-black text-white">{level}</div>
-            <div className="text-xs text-purple-400 mt-1">{levelInfo.label}</div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-2xl">⚡</span>
-              <span className="text-white/70 text-xs font-bold uppercase">Avg WPM</span>
-            </div>
-            <div className="text-3xl font-black text-white">{student.progress?.avgWpm ? Math.round(student.progress.avgWpm) : "--"}</div>
-            <div className="text-xs text-purple-400 mt-1">words/minute</div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-2xl">🎯</span>
-              <span className="text-white/70 text-xs font-bold uppercase">Accuracy</span>
-            </div>
-            <div className="text-3xl font-black text-white">{student.progress?.avgAccuracy ? Math.round(student.progress.avgAccuracy) : "--"}%</div>
-            <div className="text-xs text-purple-400 mt-1">reading score</div>
-          </div>
-        </div>
-
-        {/* Level Progress Card */}
-        <div className={`bg-gradient-to-br ${levelInfo.color} rounded-3xl p-6 mb-8 text-white shadow-2xl animate-slide-up`} style={{ animationDelay: "0.1s" }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-white/80 text-sm font-bold uppercase mb-2">Progress to Next Level</p>
-              <div className="bg-white/20 rounded-full h-5 w-64">
-                <div className="bg-white rounded-full h-5 transition-all duration-700"
+        {/* Compact Level Progress Card */}
+        <div className={`bg-gradient-to-br ${levelInfo.color} rounded-2xl p-4 mb-6 text-white shadow-lg animate-slide-up`} style={{ animationDelay: "0.05s" }}>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1">
+              <p className="text-white/80 text-xs font-bold uppercase mb-2">Progress to Next Level</p>
+              <div className="bg-white/20 rounded-full h-3 flex-1">
+                <div className="bg-white rounded-full h-3 transition-all duration-700"
                   style={{ width: `${Math.min(passedSessions / PASSES_TO_LEVEL_UP * 100, 100)}%` }} />
               </div>
-              <p className="text-white/90 text-sm font-semibold mt-2">
-                {level < 3 ? `${passedSessions}/${PASSES_TO_LEVEL_UP} passes to level up` : "Max Level Reached! You're Amazing! 🌟"}
+              <p className="text-white/90 text-xs font-semibold mt-2">
+                {level < 3 ? `${passedSessions}/${PASSES_TO_LEVEL_UP} passes` : "🌟 Max Level!"}
               </p>
             </div>
-            <div className="text-7xl opacity-20">{levelInfo.emoji}</div>
+            <div className="text-5xl opacity-30">{levelInfo.emoji}</div>
           </div>
         </div>
 
-        {/* Hero CTA Section - Read & Speak */}
-        <div className="grid grid-cols-2 gap-4 mb-8 animate-slide-up" style={{ animationDelay: "0.15s" }}>
+        {/* Quick Stats Bar */}
+        <div className="grid grid-cols-3 gap-2 mb-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+            <div className="flex items-center gap-1 mb-1">
+              <span className="text-lg">{levelInfo.emoji}</span>
+              <span className="text-white/70 text-xs font-bold">Level</span>
+            </div>
+            <div className="text-2xl font-black text-white">{level}</div>
+            <div className="text-xs text-purple-400">{levelInfo.label}</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+            <div className="flex items-center gap-1 mb-1">
+              <span className="text-lg">⚡</span>
+              <span className="text-white/70 text-xs font-bold">WPM</span>
+            </div>
+            <div className="text-2xl font-black text-white">{student.progress?.avgWpm ? Math.round(student.progress.avgWpm) : "--"}</div>
+            <div className="text-xs text-purple-400">avg</div>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+            <div className="flex items-center gap-1 mb-1">
+              <span className="text-lg">🎯</span>
+              <span className="text-white/70 text-xs font-bold">Acc</span>
+            </div>
+            <div className="text-2xl font-black text-white">{student.progress?.avgAccuracy ? Math.round(student.progress.avgAccuracy) : "--"}%</div>
+            <div className="text-xs text-purple-400">avg</div>
+          </div>
+        </div>
+
+        {/* Compact Read & Speak CTA */}
+        <div className="grid grid-cols-2 gap-3 mb-6 animate-slide-up" style={{ animationDelay: "0.15s" }}>
           <button onClick={() => router.push("/student/session")}
-            className="relative group rounded-3xl overflow-hidden shadow-2xl transition-all hover:shadow-3xl hover:scale-[1.02] active:scale-95"
+            className="relative group rounded-2xl overflow-hidden shadow-lg transition-all hover:shadow-xl hover:scale-[1.02] active:scale-95 py-4 px-4"
             style={{ background: "linear-gradient(135deg, #FF6B35 0%, #F7931E 100%)" }}>
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
-            <div className="p-8 text-center text-white relative z-10">
-              <div className="text-7xl mb-4 animate-bounce">📖</div>
-              <h2 className="text-4xl font-black mb-2">Read</h2>
-              <p className="text-lg font-semibold text-white/90">Unlock new passages & earn stars</p>
-              <div className="mt-4 inline-block bg-white/20 px-4 py-2 rounded-xl text-sm font-bold">
-                Tap to start
-              </div>
+            <div className="text-center text-white relative z-10">
+              <div className="text-4xl mb-2 animate-bounce">📖</div>
+              <h2 className="text-xl font-black">Read</h2>
+              <p className="text-xs font-semibold text-white/90 mt-1">New passages</p>
             </div>
           </button>
 
           <button onClick={() => router.push("/student/speaking")}
-            className="relative group rounded-3xl overflow-hidden shadow-2xl transition-all hover:shadow-3xl hover:scale-[1.02] active:scale-95"
+            className="relative group rounded-2xl overflow-hidden shadow-lg transition-all hover:shadow-xl hover:scale-[1.02] active:scale-95 py-4 px-4"
             style={{ background: "linear-gradient(135deg, #7C3AED 0%, #DB2777 100%)" }}>
             <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
-            <div className="p-8 text-center text-white relative z-10">
-              <div className="text-7xl mb-4 animate-bounce" style={{ animationDelay: "0.2s" }}>🎤</div>
-              <h2 className="text-4xl font-black mb-2">Speak</h2>
-              <p className="text-lg font-semibold text-white/90">Chat with AI & boost fluency</p>
-              <div className="mt-4 inline-block bg-white/20 px-4 py-2 rounded-xl text-sm font-bold">
-                Tap to start
-              </div>
+            <div className="text-center text-white relative z-10">
+              <div className="text-4xl mb-2 animate-bounce" style={{ animationDelay: "0.2s" }}>🎤</div>
+              <h2 className="text-xl font-black">Speak</h2>
+              <p className="text-xs font-semibold text-white/90 mt-1">Chat & practice</p>
             </div>
           </button>
         </div>
 
-        {/* Achievements Section */}
-        <div className="grid grid-cols-2 gap-8 animate-slide-up" style={{ animationDelay: "0.2s" }}>
-          {/* Badges */}
-          <div>
-            <h3 className="text-purple-300 text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
-              <span className="text-xl">🏆</span> Your Achievements
-            </h3>
-            {student.badges.length === 0 ? (
-              <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/10">
-                <div className="text-4xl mb-2">🎯</div>
-                <p className="text-purple-300 text-sm font-semibold">Earn badges as you progress!</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-3">
+        {/* Compact Achievements Section */}
+        <div className="animate-slide-up" style={{ animationDelay: "0.2s" }}>
+          {/* Badges Horizontal */}
+          {student.badges.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-purple-300 text-xs font-black uppercase tracking-widest mb-3 flex items-center gap-2">
+                <span className="text-lg">🏆</span> Achievements
+              </h3>
+              <div className="flex gap-2 flex-wrap">
                 {student.badges.map((badge) => {
                   const meta = BADGE_META[badge.type];
                   if (!meta) return null;
                   return (
                     <div key={badge.type}
-                      className={`bg-gradient-to-br ${meta.color} rounded-2xl p-4 text-center shadow-lg hover:shadow-xl transition-all hover:scale-105`}>
-                      <div className="text-5xl mb-2">{meta.emoji}</div>
-                      <p className="text-white font-black text-sm">{meta.label}</p>
+                      className={`bg-gradient-to-br ${meta.color} rounded-xl p-2 shadow-lg hover:shadow-xl transition-all hover:scale-110`}
+                      title={meta.label}>
+                      <div className="text-2xl">{meta.emoji}</div>
                     </div>
                   );
                 })}
+                {student.certificates.length > 0 && (
+                  <a
+                    href={`/certificate/${student.certificates[0].verifyCode}`}
+                    target="_blank"
+                    className="flex items-center gap-1 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 rounded-xl px-2 py-2 text-emerald-300 text-xs font-bold transition-colors"
+                  >
+                    📜
+                  </a>
+                )}
               </div>
-            )}
-            {student.certificates.length > 0 && (
-              <a
-                href={`/certificate/${student.certificates[0].verifyCode}`}
-                target="_blank"
-                className="mt-3 block text-center text-xs text-emerald-400 hover:text-emerald-300 font-bold underline"
-              >
-                📜 View Certificate
-              </a>
-            )}
-          </div>
+            </div>
+          )}
 
-          {/* Recent Sessions Dropdown */}
+          {/* Recent Sessions Compact Dropdown */}
           <div>
             <button
               onClick={() => setShowRecentSessions(!showRecentSessions)}
-              className="w-full mb-4 flex items-center justify-between text-purple-300 text-xs font-black uppercase tracking-widest hover:text-white transition-colors">
+              className="w-full flex items-center justify-between text-purple-300 text-xs font-black uppercase tracking-widest hover:text-white transition-colors py-2">
               <span className="flex items-center gap-2">
-                <span className="text-xl">📚</span> Recent Adventures
+                <span className="text-lg">📚</span> Recent Adventures
               </span>
               <ChevronDown size={16} className={`transition-transform ${showRecentSessions ? 'rotate-180' : ''}`} />
             </button>
 
             {showRecentSessions && (
-              <div>
+              <div className="mt-2">
                 {(() => {
                   const completedSessions = student.sessions.filter((s: any) => s.wpm || s.fluencyScore);
                   return completedSessions.length === 0 ? (
-                    <div className="bg-white/5 rounded-2xl p-6 text-center border border-white/10">
-                      <div className="text-4xl mb-2">✨</div>
-                      <p className="text-purple-300 text-sm font-semibold">No completed adventures yet!</p>
-                      <p className="text-purple-400 text-xs mt-1">Click Read or Speak to get started</p>
-                    </div>
+                    <p className="text-purple-400 text-xs text-center py-4">No completed adventures yet</p>
                   ) : (
-                    <div className="space-y-2 max-h-64 overflow-y-auto">
-                      {completedSessions.slice(0, 6).map((s: any) => {
+                    <div className="space-y-1 max-h-48 overflow-y-auto">
+                      {completedSessions.slice(0, 5).map((s: any) => {
                         const isReading = !s.type || s.type === 'READING';
                         const title = isReading ? s.passage?.title : s.topic?.title;
                         const level = isReading ? s.passage?.level : s.topic?.level;
                         const emoji = isReading ? (TOPIC_EMOJI[title] ?? "📖") : "🎤";
                         const stars = s.accuracy! >= 90 ? 3 : s.accuracy! >= 80 ? 2 : 1;
-                        const metric = isReading ? `${Math.round(s.wpm)} WPM` : `${Math.round(s.fluencyScore ?? 0)}% Fluency`;
+                        const metric = isReading ? `${Math.round(s.wpm)} WPM` : `${Math.round(s.fluencyScore ?? 0)}%`;
 
                         return (
                           <div key={s.id}
-                            className="bg-white/10 backdrop-blur-sm rounded-xl px-3 py-3 border border-white/10 hover:bg-white/15 transition-colors">
+                            className="bg-white/10 backdrop-blur-sm rounded-lg px-2 py-2 border border-white/10 hover:bg-white/15 transition-colors text-xs">
                             <div className="flex items-center justify-between gap-2">
-                              <div className="flex items-center gap-2 min-w-0">
-                                <span className="text-xl">{emoji}</span>
+                              <div className="flex items-center gap-2 min-w-0 flex-1">
+                                <span className="text-lg flex-shrink-0">{emoji}</span>
                                 <div className="min-w-0">
-                                  <p className="text-white font-semibold text-sm truncate">{title}</p>
-                                  <p className="text-purple-400 text-xs">Lvl {level} {isReading ? '📖' : '🎤'}</p>
+                                  <p className="text-white font-semibold text-xs truncate">{title}</p>
                                 </div>
                               </div>
-                              <div className="text-right flex-shrink-0">
+                              <div className="text-right flex-shrink-0 flex items-center gap-1">
                                 <div className="flex gap-0.5">
                                   {[...Array(3)].map((_, i) => (
-                                    <span key={i} className={i < stars ? "text-lg" : "text-lg opacity-30"}>⭐</span>
+                                    <span key={i} className={i < stars ? "text-sm" : "text-sm opacity-30"}>⭐</span>
                                   ))}
                                 </div>
-                                <p className="text-purple-300 text-xs font-semibold mt-0.5">{metric}</p>
+                                <span className="text-purple-300 font-semibold">{metric}</span>
                               </div>
                             </div>
                           </div>
