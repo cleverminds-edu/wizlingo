@@ -2,7 +2,7 @@
   "name": "WizLingo - English Learning Platform",
   "short_name": "WizLingo",
   "description": "AI-powered English reading & speaking practice platform for schools",
-  "start_url": "/",
+  "start_url": "/login",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
