@@ -94,11 +94,11 @@ export default function ManagerDashboard() {
     setResetMessage('');
 
     try {
-      const res = await fetch('/api/manager/users/reset-password', {
+      const res = await fetch('/api/manager/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          studentId: resetUserId,
+          userId: resetUserId,
           newPassword: resetPassword
         }),
         credentials: 'include'
@@ -107,7 +107,7 @@ export default function ManagerDashboard() {
       const data = await res.json();
 
       if (res.ok) {
-        setResetMessage(`✅ Password reset successfully for ${resetUserId}`);
+        setResetMessage(`✅ ${data.message}`);
         setResetUserId('');
         setResetPassword('');
       } else {
