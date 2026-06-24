@@ -626,3 +626,30 @@ model SpeakingPreference {
   @@index([characterGenderPref])
   @@index([progressionWeek])
 }
+
+// ════════════════════════════════════════════════════════════════
+// PLATFORM MANAGER (Global admin for B2B/B2C management)
+// ════════════════════════════════════════════════════════════════
+
+model Manager {
+  id              String    @id @default(cuid())
+  name            String
+  email           String    @unique
+  phone           String?
+  passwordHash    String
+  role            ManagerRole @default(MANAGER)
+  organization    String?          // Edvanta / Company name
+  isActive        Boolean   @default(true)
+  lastLogin       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([email])
+  @@index([isActive])
+}
+
+enum ManagerRole {
+  MANAGER
+  ADMIN
+  SUPER_ADMIN
+}
