@@ -1,6 +1,7 @@
 const CACHE_NAME = 'wizlingo-v1';
 const STATIC_ASSETS = [
   '/',
+  '/wizlingo-icon.svg',
   '/wiziingo-logo.svg',
 ];
 
@@ -143,8 +144,8 @@ self.addEventListener('push', (event) => {
   const title = data.title || 'WizLingo';
   const options = {
     body: data.body || 'You have a new notification',
-    icon: '/wiziingo-logo.svg',
-    badge: '/wiziingo-logo.svg',
+    icon: '/wizlingo-icon.svg',
+    badge: '/wizlingo-icon.svg',
     tag: data.tag || 'notification',
     data: data.data || {},
   };
