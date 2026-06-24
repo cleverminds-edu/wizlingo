@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WizLingo Premium 3D Badges</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      padding: 80px 20px;
+    }
+
+    .container { max-width: 1600px; margin: 0 auto; }
+
+    .header {
+      text-align: center;
+      margin-bottom: 100px;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 4em;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #FFD700, #FF6F00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 900;
+    }
+
+    .header p {
+      color: #ccc;
+      font-size: 1.3em;
+      margin-bottom: 10px;
+    }
+
+    .header .subtitle {
+      color: #999;
+      font-size: 1em;
+    }
+
+    .badges-showcase {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 60px;
+      margin-bottom: 100px;
+    }
+
+    .badge-box {
+      text-align: center;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 32px;
+      padding: 40px 30px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .badge-box:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.2);
+      transform: translateY(-20px);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+    }
+
+    .badge-display {
+      width: 100%;
+      height: auto;
+      margin-bottom: 30px;
+      filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+    }
+
+    .badge-name {
+      font-size: 24px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 15px;
+      color: white;
+    }
+
+    .badge-info {
+      font-size: 13px;
+      color: #aaa;
+      margin-top: 10px;
+    }
+
+    .features-section {
+      background: rgba(255,255,255,0.03);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 32px;
+      padding: 60px;
+      margin-bottom: 80px;
+    }
+
+    .features-section h2 {
+      font-size: 2.5em;
+      color: white;
+      margin-bottom: 50px;
+      text-align: center;
+      background: linear-gradient(135deg, #FFD700, #FF6F00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+    }
+
+    .feature-card {
+      background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,111,0,0.05));
+      border: 2px solid rgba(255,215,0,0.3);
+      border-radius: 20px;
+      padding: 35px;
+    }
+
+    .feature-card h3 {
+      font-size: 1.5em;
+      color: #FFD700;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .feature-card p {
+      color: #ddd;
+      line-height: 1.8;
+      font-size: 1.05em;
+      text-align: center;
+    }
+
+    .comparison {
+      background: rgba(255,255,255,0.02);
+      border-radius: 24px;
+      padding: 40px;
+      margin-top: 60px;
+    }
+
+    .comparison h3 {
+      color: white;
+      font-size: 1.8em;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+
+    .comparison-card {
+      background: rgba(255,111,0,0.1);
+      border: 2px solid rgba(255,111,0,0.3);
+      border-radius: 16px;
+      padding: 25px;
+    }
+
+    .comparison-card h4 {
+      color: #FFD700;
+      margin-bottom: 15px;
+      font-size: 1.2em;
+    }
+
+    .comparison-card ul {
+      list-style: none;
+    }
+
+    .comparison-card li {
+      color: #ccc;
+      margin: 12px 0;
+      padding-left: 25px;
+      position: relative;
+    }
+
+    .comparison-card li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #FFD700;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 { font-size: 2.5em; }
+      .badges-showcase { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; }
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎖️ WizLingo Premium 3D Badges</h1>
+      <p>Impressive, Bold, Shareable Achievement System</p>
+      <p class="subtitle">Rich colors • 3D depth • Professional styling • Parent-approved</p>
+    </div>
+
+    <!-- Badge Showcase -->
+    <div class="badges-showcase">
+      <!-- Spark Badge -->
+      <div class="badge-box">
+        <svg viewBox="0 0 240 320" class="badge-display">
+          <defs>
+            <linearGradient id="spark-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FF5722" />
+              <stop offset="50%" stopColor="#FFB74D" />
+              <stop offset="100%" stopColor="#FF5722" />
+            </linearGradient>
+            <linearGradient id="spark-shine" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="white" stopOpacity="0.4" />
+              <stop offset="30%" stopColor="white" stopOpacity="0.1" />
+              <stop offset="100%" stopColor="white" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path d="M 120,15 L 190,55 L 190,140 Q 190,240 120,290 Q 50,240 50,140 L 50,55 Z" fill="url(#spark-grad)" stroke="#FFD700" strokeWidth="3" />
+          <path d="M 120,25 L 180,60 L 180,135 Q 180,235 120,280 Q 60,235 60,135 L 60,60 Z" fill="rgba(0,0,0,0.15)" />
+          <path d="M 120,20 L 175,55 L 175,120 Q 175,210 120,260 Q 65,210 65,120 L 65,55 Z" fill="url(#spark-shine)" />
+          <circle cx="120" cy="25" r="8" fill="#FFD700" opacity="0.9" />
+          <circle cx="105" cy="35" r="5" fill="#FFD700" opacity="0.7" />
+          <circle cx="135" cy="35" r="5" fill="#FFD700" opacity="0.7" />
+          <text x="120" y="115" fontSize="90" fontWeight="900" textAnchor="middle" fill="#FFD700">1</text>
+          <text x="120" y="165" fontSize="20" fontWeight="bold" textAnchor="middle" fill="rgba(255,255,255,0.95)" letterSpacing="2">DAY</text>
+          <text x="120" y="195" fontSize="18" textAnchor="middle">⭐</text>
+          <text x="120" y="245" fontSize="50" textAnchor="middle">✨</text>
+        </svg>
+        <div class="badge-name">Spark</div>
+        <div class="badge-info">Day 1 • 1 Star • Unlocked</div>
+      </div>
+
+      <!-- Word Wizard -->
+      <div class="badge-box">
+        <svg viewBox="0 0 240 320" class="badge-display">
+          <defs>
+            <linearGradient id="word-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#3F51B5" />
+              <stop offset="50%" stopColor="#5C6BC0" />
+              <stop offset="100%" stopColor="#3F51B5" />
+            </linearGradient>
+            <linearGradient id="word-shine" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="white" stopOpacity="0.4" />
+              <stop offset="30%" stopColor="white" stopOpacity="0.1" />
+              <stop offset="100%" stopColor="white" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path d="M 120,15 L 190,55 L 190,140 Q 190,240 120,290 Q 50,240 50,140 L 50,55 Z" fill="url(#word-grad)" stroke="#FFD700" strokeWidth="3" />
+          <path d="M 120,25 L 180,60 L 180,135 Q 180,235 120,280 Q 60,235 60,135 L 60,60 Z" fill="rgba(0,0,0,0.15)" />
+          <path d="M 120,20 L 175,55 L 175,120 Q 175,210 120,260 Q 65,210 65,120 L 65,55 Z" fill="url(#word-shine)" />
+          <circle cx="120" cy="25" r="8" fill="#FFD700" opacity="0.9" />
+          <circle cx="105" cy="35" r="5" fill="#FFD700" opacity="0.7" />
+          <circle cx="135" cy="35" r="5" fill="#FFD700" opacity="0.7" />
+          <text x="120" y="115" fontSize="90" fontWeight="900" textAnchor="middle" fill="#FFD700">10</text>
+          <text x="120" y="165" fontSize="20" fontWeight="bold" textAnchor="middle" fill="rgba(255,255,255,0.95)" letterSpacing="2">DAY</text>
+          <text x="95" y="195" fontSize="18" textAnchor="middle">⭐</text>
+          <text x="120" y="195" fontSize="18" textAnchor="middle">⭐</text>
+          <text x="145" y="195" fontSize="18" textAnchor="middle">⭐</text>
+          <text x="120" y="245" fontSize="50" textAnchor="middle">📚</text>
+        </svg>
+        <div class="badge-name">Word Wizard</div>
+        <div class="badge-info">Day 10 • 3 Stars • Unlocked</div>
+      </div>
+
+      <!-- Voice Wizard -->
+      <div class="badge-box">
+        <svg viewBox="0 0 240 320" class="badge-display">
+          <defs>
+            <linearGradient id="voice-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#7B1FA2" />
+              <stop offset="50%" stopColor="#9C27B0" />
+              <stop offset="100%" stopColor="#7B1FA2" />
+            </linearGradient>
+            <linearGradient id="voice-shine" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="white" stopOpacity="0.4" />
+              <stop offset="30%" stopColor="white" stopOpacity="0.1" />
+              <stop offset="100%" stopColor="white" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path d="M 120,15 L 190,55 L 190,140 Q 190,240 120,290 Q 50,240 50,140 L 50,55 Z" fill="url(#voice-grad)" stroke="#FF1493" strokeWidth="3" />
+          <path d="M 120,25 L 180,60 L 180,135 Q 180,235 120,280 Q 60,235 60,135 L 60,60 Z" fill="rgba(0,0,0,0.15)" />
+          <path d="M 120,20 L 175,55 L 175,120 Q 175,210 120,260 Q 65,210 65,120 L 65,55 Z" fill="url(#voice-shine)" />
+          <circle cx="120" cy="25" r="8" fill="#FF1493" opacity="0.9" />
+          <circle cx="105" cy="35" r="5" fill="#FF1493" opacity="0.7" />
+          <circle cx="135" cy="35" r="5" fill="#FF1493" opacity="0.7" />
+          <text x="120" y="115" fontSize="90" fontWeight="900" textAnchor="middle" fill="#FF1493">15</text>
+          <text x="120" y="165" fontSize="20" fontWeight="bold" textAnchor="middle" fill="rgba(255,255,255,0.95)" letterSpacing="2">DAY</text>
+          <text x="95" y="195" fontSize="18" textAnchor="middle">⭐</text>
+          <text x="120" y="195" fontSize="18" textAnchor="middle">⭐</text>
+          <text x="145" y="195" fontSize="18" textAnchor="middle">⭐</text>
+          <text x="120" y="245" fontSize="50" textAnchor="middle">🎤</text>
+        </svg>
+        <div class="badge-name">Voice Wizard</div>
+        <div class="badge-info">Day 15 • 3 Stars • Unlocked</div>
+      </div>
+
+      <!-- Grand Wizard -->
+      <div class="badge-box">
+        <svg viewBox="0 0 240 320" class="badge-display">
+          <defs>
+            <linearGradient id="grand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#D84315" />
+              <stop offset="50%" stopColor="#FF6F00" />
+              <stop offset="100%" stopColor="#D84315" />
+            </linearGradient>
+            <linearGradient id="grand-shine" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="white" stopOpacity="0.4" />
+              <stop offset="30%" stopColor="white" stopOpacity="0.1" />
+              <stop offset="100%" stopColor="white" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path d="M 120,15 L 190,55 L 190,140 Q 190,240 120,290 Q 50,240 50,140 L 50,55 Z" fill="url(#grand-grad)" stroke="#FFD700" strokeWidth="3" />
+          <path d="M 120,25 L 180,60 L 180,135 Q 180,235 120,280 Q 60,235 60,135 L 60,60 Z" fill="rgba(0,0,0,0.15)" />
+          <path d="M 120,20 L 175,55 L 175,120 Q 175,210 120,260 Q 65,210 65,120 L 65,55 Z" fill="url(#grand-shine)" />
+          <circle cx="120" cy="25" r="8" fill="#FFD700" opacity="0.9" />
+          <circle cx="105" cy="35" r="5" fill="#FFD700" opacity="0.7" />
+          <circle cx="135" cy="35" r="5" fill="#FFD700" opacity="0.7" />
+          <text x="120" y="115" fontSize="90" fontWeight="900" textAnchor="middle" fill="#FFD700">30</text>
+          <text x="120" y="165" fontSize="20" fontWeight="bold" textAnchor="middle" fill="rgba(255,255,255,0.95)" letterSpacing="2">DAY</text>
+          <text x="75" y="195" fontSize="18" textAnchor="middle">⭐</text>
+          <text x="100" y="195" fontSize="18" textAnchor="middle">⭐</text>
+          <text x="125" y="195" fontSize="18" textAnchor="middle">⭐</text>
+          <text x="150" y="195" fontSize="18" textAnchor="middle">⭐</text>
+          <text x="120" y="245" fontSize="50" textAnchor="middle">👑</text>
+        </svg>
+        <div class="badge-name">Grand Wizard</div>
+        <div class="badge-info">Day 30 • 4 Stars • Ultimate</div>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features-section">
+      <h2>✨ Premium Features</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <h3>🛡️ True 3D Shield</h3>
+          <p>Multiple depth layers with shadows, shine overlays, and texture patterns create a genuine 3D appearance</p>
+        </div>
+        <div class="feature-card">
+          <h3>🎨 Bold Colors</h3>
+          <p>Saturated, vibrant brand colors (not pale) - Spark Orange, Royal Blue, Rich Purple, Bold Emerald</p>
+        </div>
+        <div class="feature-card">
+          <h3>⭐ Decorative Elements</h3>
+          <p>Stars at top, rarity stars, large emoji, thick gold borders - every space is visually rich</p>
+        </div>
+        <div class="feature-card">
+          <h3>📱 Instantly Shareable</h3>
+          <p>One-click WhatsApp share or download as high-quality image for Instagram, Facebook, etc.</p>
+        </div>
+        <div class="feature-card">
+          <h3>💎 Premium Appearance</h3>
+          <p>Professional medal-like design that makes parents proud to celebrate and share achievements</p>
+        </div>
+        <div class="feature-card">
+          <h3>🚀 Viral Growth</h3>
+          <p>Impressive visuals + proper branding = parents naturally share, creating organic growth</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparison -->
+    <div class="comparison">
+      <h3>Why These Badges Are Impressive</h3>
+      <div class="comparison-grid">
+        <div class="comparison-card">
+          <h4>Design Quality</h4>
+          <ul>
+            <li>True 3D depth with multiple layers</li>
+            <li>Bold, saturated colors (not pale)</li>
+            <li>Professional gradient fills</li>
+            <li>Decorative shine and texture</li>
+            <li>Thick gold borders</li>
+            <li>No wasted empty space</li>
+          </ul>
+        </div>
+        <div class="comparison-card">
+          <h4>Shareability</h4>
+          <ul>
+            <li>Rich colors photograph beautifully</li>
+            <li>Professional appearance on social media</li>
+            <li>Creates FOMO in other parents</li>
+            <li>Proper WizLingo branding included</li>
+            <li>Correct login URL on shares</li>
+            <li>Instagram & WhatsApp optimized</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
