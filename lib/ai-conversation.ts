@@ -1,6 +1,16 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+// Verify API key on startup
+const apiKey = process.env.ANTHROPIC_API_KEY;
+if (!apiKey) {
+  console.warn('⚠️ ANTHROPIC_API_KEY not set in environment!');
+  console.warn('   AI conversations will use fallback responses');
+  console.warn('   Set ANTHROPIC_API_KEY in Railway variables to enable real AI');
+}
+
+const client = new Anthropic({
+  apiKey: apiKey || "sk-placeholder-no-key-set"
+});
 
 const CHARACTER_PERSONA: Record<string, { trait: string; style: string }> = {
   Meera:  { trait: "storyteller from Mumbai who loves creative stories and imaginative ideas", style: "warm, expressive, loves asking about feelings and experiences" },
@@ -71,6 +81,11 @@ ${isLastTurn
   console.log('💬 Message history length:', messages.length);
 
   try {
+    // Check if API key is available
+    if (!apiKey) {
+      throw new Error('ANTHROPIC_API_KEY not configured. Set it in Railway variables.');
+    }
+
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 100,
@@ -79,15 +94,34 @@ ${isLastTurn
     });
 
     const content = response.content[0];
-    return content.type === "text" ? content.text.trim() : "That's interesting! Tell me more.";
+    const result = content.type === "text" ? content.text.trim() : "That's interesting! Tell me more.";
+    console.log('✅ Real AI response generated:', result.substring(0, 50) + '...');
+    return result;
   } catch (error: any) {
-    console.error('❌ Anthropic API error:', {
-      message: error?.message,
+    const errorInfo = {
+      message: error?.message ?? 'Unknown error',
       status: error?.status,
       code: error?.error?.error?.code,
       type: error?.error?.error?.type,
-      apiKeyMissing: !process.env.ANTHROPIC_API_KEY,
-    });
+      apiKeySet: !!apiKey,
+      apiKeyValid: apiKey?.startsWith('sk-'),
+    };
+
+    console.error('❌ Anthropic API call failed:', errorInfo);
+
+    // Log specific error types
+    if (!apiKey) {
+      console.error('   → ANTHROPIC_API_KEY is not set in environment');
+    } else if (!apiKey.startsWith('sk-')) {
+      console.error('   → API key format invalid (should start with sk-)');
+    } else if (error?.status === 401) {
+      console.error('   → Authentication failed (invalid API key)');
+    } else if (error?.status === 429) {
+      console.error('   → Rate limited (too many requests)');
+    } else if (error?.status === 500) {
+      console.error('   → Anthropic API server error');
+    }
+
     throw error;
   }
 }
