@@ -349,6 +349,15 @@ export default function ConversationSession({
     setPhase("between-turns");
     const isLastTurn = nextTurnCount >= maxTurns - 1;
 
+    console.log('🤖 Fetching AI response with history:', {
+      character,
+      topicTitle,
+      gradeBand,
+      historyLength: updatedHistory.length,
+      lastTurn: updatedHistory[updatedHistory.length - 1],
+      isLastTurn,
+    });
+
     fetch("/api/speaking/ai-turn", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -361,17 +370,23 @@ export default function ConversationSession({
         isLastTurn,
       }),
     })
-      .then(r => {
+      .then(async r => {
+        const text = await r.text();
         if (!r.ok) {
-          console.error('AI turn API error:', r.status);
-          throw new Error(`API error: ${r.status}`);
+          console.error('❌ AI turn API error:', { status: r.status, body: text });
+          throw new Error(`API error: ${r.status} - ${text}`);
         }
-        return r.json();
+        try {
+          return JSON.parse(text);
+        } catch (e) {
+          console.error('❌ Failed to parse AI response:', text);
+          throw new Error('Invalid JSON response');
+        }
       })
       .then(({ text: aiResponse }: { text: string }) => {
         if (!aiResponse || typeof aiResponse !== 'string') {
-          console.error('Invalid AI response:', aiResponse);
-          throw new Error('Invalid response format');
+          console.error('❌ Invalid AI response:', aiResponse);
+          throw new Error('Invalid response format: ' + JSON.stringify(aiResponse));
         }
         console.log('✅ AI response received:', aiResponse.substring(0, 50));
         const newHistory: ConversationTurn[] = [
@@ -387,9 +402,9 @@ export default function ConversationSession({
         speakText(aiResponse, () => startStudentTurnRef.current());
       })
       .catch((err) => {
-        console.error('❌ AI turn error, continuing with fallback:', err);
+        console.error('❌ AI turn error, falling back to next turn:', err);
         // Fallback: skip AI response and go straight to next student turn
-        setCurrentAiText("(Your turn to respond)");
+        setCurrentAiText("(Hmm, let me think... Your turn to respond!)");
         setTranscript("");
         setInterimText("");
         setPhase("student-speaking");
@@ -462,7 +477,7 @@ export default function ConversationSession({
       };
 
       rec.onend = () => {
-        console.log('🛑 Speech recognition ended');
+        console.log('🛑 Speech recognition ended, final transcript:', finalTranscriptRef.current.trim());
         if (!committedRef.current) {
           try { rec.start(); } catch { /* ignore restart errors */ }
         }
