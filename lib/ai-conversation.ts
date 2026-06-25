@@ -61,13 +61,28 @@ ${isLastTurn
     content: h.text,
   }));
 
-  const response = await client.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 100,
-    system: systemPrompt,
-    messages,
-  });
+  console.log('🔑 ANTHROPIC_API_KEY set:', !!process.env.ANTHROPIC_API_KEY);
+  console.log('📝 System prompt length:', systemPrompt.length);
+  console.log('💬 Message history length:', messages.length);
 
-  const content = response.content[0];
-  return content.type === "text" ? content.text.trim() : "That's interesting! Tell me more.";
+  try {
+    const response = await client.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 100,
+      system: systemPrompt,
+      messages,
+    });
+
+    const content = response.content[0];
+    return content.type === "text" ? content.text.trim() : "That's interesting! Tell me more.";
+  } catch (error: any) {
+    console.error('❌ Anthropic API error:', {
+      message: error?.message,
+      status: error?.status,
+      code: error?.error?.error?.code,
+      type: error?.error?.error?.type,
+      apiKeyMissing: !process.env.ANTHROPIC_API_KEY,
+    });
+    throw error;
+  }
 }
