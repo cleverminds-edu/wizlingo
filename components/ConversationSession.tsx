@@ -42,26 +42,29 @@ const MALE_CHARACTERS = ["Alex", "Jamie", "Ravi", "Marco", "Professor", "Mentor"
 
 // Character personality profiles with voice modulation (subtle, natural)
 const CHARACTER_VOICE_PROFILES: Record<string, { pitch: number; rate: number; volume?: number; warmth?: string }> = {
-  // Parent/Family
-  "Mom": { pitch: 1.15, rate: 0.92, warmth: "warm" },
-  // Friends
-  "Alex": { pitch: 1.0, rate: 0.95, warmth: "friendly" },
-  "Sarah": { pitch: 1.08, rate: 0.94, warmth: "friendly" },
-  "Jamie": { pitch: 1.0, rate: 0.95, warmth: "casual" },
-  "Ravi": { pitch: 0.98, rate: 0.92, warmth: "enthusiastic" },
-  "Aisha": { pitch: 1.10, rate: 0.93, warmth: "energetic" },
-  // Mentors/Teachers
-  "Teacher": { pitch: 1.05, rate: 0.93, warmth: "encouraging" },
-  "Professor": { pitch: 0.95, rate: 0.90, warmth: "thoughtful" },
-  "Chef": { pitch: 1.02, rate: 0.94, warmth: "enthusiastic" },
-  "Librarian": { pitch: 1.05, rate: 0.92, warmth: "thoughtful" },
-  "Explorer": { pitch: 1.0, rate: 0.98, warmth: "energetic" },
-  "Coach": { pitch: 0.98, rate: 0.94, warmth: "motivating" },
-  "Tech": { pitch: 1.0, rate: 0.94, warmth: "excited" },
-  "Sage": { pitch: 0.95, rate: 0.90, warmth: "wise" },
-  "Maya": { pitch: 1.05, rate: 0.93, warmth: "curious" },
-  "Eco": { pitch: 1.05, rate: 0.94, warmth: "passionate" },
-  "Emma": { pitch: 1.08, rate: 0.93, warmth: "friendly" },
+  // Parent/Family - warm, natural tones, slower rate = more conversational
+  "Mom": { pitch: 1.30, rate: 0.82, warmth: "warm" },
+  // Friends - friendly, engaging voices
+  "Alex": { pitch: 0.92, rate: 0.85, warmth: "friendly" },
+  "Sarah": { pitch: 1.25, rate: 0.84, warmth: "friendly" },
+  "Jamie": { pitch: 0.94, rate: 0.85, warmth: "casual" },
+  "Ravi": { pitch: 0.90, rate: 0.83, warmth: "enthusiastic" },
+  "Aisha": { pitch: 1.28, rate: 0.84, warmth: "energetic" },
+  "Emma": { pitch: 1.26, rate: 0.84, warmth: "friendly" },
+  "Meera": { pitch: 1.24, rate: 0.83, warmth: "warm" },
+  // Mentors/Teachers - clear, encouraging, slightly slower
+  "Teacher": { pitch: 1.20, rate: 0.81, warmth: "encouraging" },
+  "Professor": { pitch: 0.88, rate: 0.80, warmth: "thoughtful" },
+  "Chef": { pitch: 0.96, rate: 0.84, warmth: "enthusiastic" },
+  "Librarian": { pitch: 1.18, rate: 0.81, warmth: "thoughtful" },
+  "Explorer": { pitch: 0.94, rate: 0.86, warmth: "energetic" },
+  "Coach": { pitch: 0.92, rate: 0.84, warmth: "motivating" },
+  "Tech": { pitch: 0.95, rate: 0.85, warmth: "excited" },
+  "Sage": { pitch: 0.88, rate: 0.79, warmth: "wise" },
+  "Maya": { pitch: 1.22, rate: 0.83, warmth: "curious" },
+  "Eco": { pitch: 1.20, rate: 0.84, warmth: "passionate" },
+  "Mentor": { pitch: 0.93, rate: 0.82, warmth: "encouraging" },
+  "Marco": { pitch: 0.94, rate: 0.85, warmth: "adventurous" },
 };
 
 // Topic-based rate and pitch modulation (subtle, natural)
@@ -102,7 +105,7 @@ function pickVoice(character: string, gradeBand: string, topicTitle?: string): {
 
   // Get character profile
   let pitch = 1.0;
-  let rate = 0.88;
+  let rate = 0.80; // Slower rate = more natural, less robotic
 
   const charProfile = CHARACTER_VOICE_PROFILES[character];
   if (charProfile) {
