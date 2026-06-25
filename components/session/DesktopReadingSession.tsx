@@ -381,9 +381,12 @@ export default function DesktopReadingSession({ passage, sessionId, timeLimitSec
 
   const stopRecording = useCallback(() => {
     if (stoppedRef.current) return;
+    console.log('🛑 User clicked Done Reading');
     stoppedRef.current = true;
     if (timerRef.current) clearInterval(timerRef.current);
     durationRef.current = Math.round((Date.now() - startTimeRef.current) / 1000);
+    console.log('⏱️ Recording duration:', durationRef.current, 'seconds');
+    console.log('🎤 Current transcript before stop:', transcriptRef.current);
     recognitionRef.current?.stop();
   }, []);
 
@@ -408,12 +411,27 @@ export default function DesktopReadingSession({ passage, sessionId, timeLimitSec
       let final = "", interim = "";
       for (let i = 0; i < event.results.length; i++) {
         const t = event.results[i][0].transcript;
-        if (event.results[i].isFinal) final += t + " "; else interim += t;
+        const isFinal = event.results[i].isFinal;
+        if (isFinal) {
+          final += t + " ";
+          console.log('✅ Final transcript segment:', t);
+        } else {
+          interim += t;
+          console.log('📝 Interim transcript:', t);
+        }
       }
       transcriptRef.current = accumulatedRef.current + final;
       setLiveTranscript(accumulatedRef.current + final + interim);
+      console.log('📊 Speech recognition state:', {
+        accumulated: accumulatedRef.current,
+        newFinal: final,
+        interim,
+        totalTranscript: transcriptRef.current
+      });
     };
     rec.onend = () => {
+      console.log('🛑 Speech recognition ended. stoppedRef.current:', stoppedRef.current);
+      console.log('📋 Final transcript to submit:', transcriptRef.current);
       if (stoppedRef.current) {
         submitTranscript(transcriptRef.current, durationRef.current);
       } else {
