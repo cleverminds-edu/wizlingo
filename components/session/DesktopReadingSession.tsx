@@ -440,14 +440,25 @@ export default function DesktopReadingSession({ passage, sessionId, timeLimitSec
       }
     };
     rec.onerror = (e) => {
+      console.error('❌ Speech recognition error:', e.error);
       if (e.error === "not-allowed") {
         setError("Microphone blocked — click the 🔒 in the address bar and allow microphone access.");
         setPhase("ready"); stoppedRef.current = true;
+      } else if (e.error === "no-speech") {
+        console.warn('⚠️ No speech detected in the audio');
+      } else if (e.error === "network") {
+        console.error('❌ Network error with speech recognition');
+      } else {
+        console.error('❌ Unknown speech recognition error:', e.error);
       }
+    };
+    rec.onstart = () => {
+      console.log('🎤 Speech recognition STARTED - microphone is listening');
     };
     rec.start();
     startTimeRef.current = Date.now();
     setPhase("recording");
+    console.log('✅ Recording started - waiting for speech...');
   }
 
   const levelLabel = ["Beginner", "Explorer", "Champion"][passage.level - 1] ?? `Level ${passage.level}`;
