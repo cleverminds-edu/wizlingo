@@ -288,13 +288,26 @@ export default function ConversationSession({
 
   // After student turn: call AI or end session
   const commitTurn = useCallback(() => {
+    if (committedRef.current) {
+      console.log('⚠️  Turn already committed, ignoring duplicate');
+      return;
+    }
+
     committedRef.current = true;
     setMicReady(false);
     stopTimer();
     stopRecognition();
     window.speechSynthesis?.cancel();
 
-    const text       = finalTranscriptRef.current.trim();
+    // Get the final transcript - use state if ref is empty (speech recognition lag)
+    let text = finalTranscriptRef.current.trim();
+    if (!text) {
+      console.warn('⚠️  finalTranscriptRef empty, checking state...');
+      // In case ref wasn't updated, use the transcript state
+      text = transcript.trim() || interimText.trim();
+    }
+
+    console.log('💾 commitTurn with text:', text.substring(0, 50));
     const durationSec = Math.max(1, Math.round((Date.now() - startTimeRef.current) / 1000));
     const { wordCount, wpm, fillerCount } = scoreTurn(text, durationSec);
 
@@ -420,11 +433,12 @@ export default function ConversationSession({
           else interim = t;
         }
         if (finals) {
-          console.log('📝 Final transcript:', finals);
-          finalTranscriptRef.current = finals;
+          console.log('📝 Final transcript captured:', finals.trim());
+          finalTranscriptRef.current += finals; // Append to preserve all finals
         }
         if (interim) console.log('💬 Interim:', interim);
-        setTranscript(finalTranscriptRef.current);
+        // Update UI with current final transcript
+        setTranscript(finalTranscriptRef.current.trim());
         setInterimText(interim);
       };
 
@@ -514,7 +528,12 @@ export default function ConversationSession({
   }, []);
 
   function handleDone() {
-    if (!committedRef.current) commitTurn();
+    if (committedRef.current) return;
+    console.log('🎯 handleDone called, committing turn...');
+    // Small delay to ensure speech recognition has captured final words
+    setTimeout(() => {
+      if (!committedRef.current) commitTurn();
+    }, 100);
   }
 
   if (!browserOk) {
