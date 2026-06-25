@@ -209,7 +209,7 @@ function ResultScreen({ score, passage, studentName, onTryAgain, onNext }: {
             <div className="grid grid-cols-2 gap-4">
               {[
                 { label: "Speed", value: score.wpm, unit: "WPM", target: score.targetWpm, met: score.wpm >= score.targetWpm },
-                { label: "Accuracy", value: score.accuracy, unit: "%", target: score.minAccuracy, met: accMet },
+                { label: "Accuracy", value: score.accuracy, unit: "%", target: score.minAccuracy, met: score.accuracy >= score.minAccuracy },
               ].map(({ label, value, unit, met }) => (
                 <div key={label} className="rounded-2xl p-5 text-center"
                   style={{ background: met ? "rgba(16,185,129,0.12)" : "rgba(245,158,11,0.12)",
