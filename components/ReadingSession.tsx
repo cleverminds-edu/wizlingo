@@ -152,14 +152,23 @@ export default function ReadingSession({ passage, sessionId, timeLimitSec, stude
   const submitTranscript = useCallback(async (transcript: string, durationSec: number) => {
     setPhase("processing");
     try {
+      const payload = { sessionId, transcript, durationSec };
+      console.log('📤 Submitting transcript to /api/assess:', {
+        sessionId: !!sessionId,
+        transcriptLen: transcript?.length ?? 0,
+        durationSec,
+        payload: JSON.stringify(payload)
+      });
       const res = await fetch("/api/assess", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ sessionId, transcript, durationSec }),
+        body: JSON.stringify(payload),
       });
+      console.log('📥 /api/assess response:', res.status);
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
+        console.error('❌ /api/assess error:', err);
         throw new Error((err as any).error ?? `Error ${res.status}`);
       }
       const result: ScoreResult = await res.json();

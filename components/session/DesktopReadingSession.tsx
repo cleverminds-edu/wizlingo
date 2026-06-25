@@ -350,13 +350,21 @@ export default function DesktopReadingSession({ passage, sessionId, timeLimitSec
   const submitTranscript = useCallback(async (transcript: string, durationSec: number) => {
     setPhase("processing");
     try {
+      const payload = { sessionId, transcript, durationSec };
+      console.log('📤 Desktop: Submitting transcript to /api/assess:', {
+        sessionId: !!sessionId,
+        transcriptLen: transcript?.length ?? 0,
+        durationSec,
+      });
       const res = await fetch("/api/assess", {
         method: "POST", credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, transcript, durationSec }),
+        body: JSON.stringify(payload),
       });
+      console.log('📥 /api/assess response:', res.status);
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
+        console.error('❌ /api/assess error:', err);
         throw new Error((err as any).error ?? `Error ${res.status}`);
       }
       const result: ScoreResult = await res.json();
