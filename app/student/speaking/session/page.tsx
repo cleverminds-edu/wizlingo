@@ -96,7 +96,13 @@ function SessionPageInner() {
   }, [topicId, sessionId]);
 
   async function handleComplete({ turns, totalWords, durationSec }: { turns: TurnRecord[]; totalWords: number; durationSec: number }) {
-    if (!sessionId) return;
+    if (!sessionId) {
+      setPhase("error");
+      setError("Missing session ID. Please go back and try again.");
+      return;
+    }
+
+    console.log('💾 Saving session:', { sessionId, turns: turns.length, totalWords, durationSec });
     setPhase("saving");
 
     try {
@@ -106,13 +112,21 @@ function SessionPageInner() {
         credentials: "include",
         body: JSON.stringify({ turns, totalWords, durationSec }),
       });
-      if (!res.ok) throw new Error("Save failed");
+
+      if (!res.ok) {
+        const errData = await res.text();
+        console.error('❌ Save failed:', { status: res.status, error: errData });
+        throw new Error(`Save failed (${res.status}): ${errData}`);
+      }
+
       const r: SessionResult = await res.json();
+      console.log('✅ Session saved:', r);
       setResult(r);
       setPhase("done");
-    } catch {
+    } catch (err: any) {
+      console.error('❌ Error in handleComplete:', err);
       setPhase("error");
-      setError("Could not save your session. Please try again.");
+      setError(`Could not save your session: ${err.message}. Please try again.`);
     }
   }
 
