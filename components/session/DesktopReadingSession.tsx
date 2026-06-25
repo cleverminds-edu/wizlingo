@@ -442,14 +442,26 @@ export default function DesktopReadingSession({ passage, sessionId, timeLimitSec
     rec.onerror = (e) => {
       console.error('❌ Speech recognition error:', e.error);
       if (e.error === "not-allowed") {
-        setError("Microphone blocked — click the 🔒 in the address bar and allow microphone access.");
-        setPhase("ready"); stoppedRef.current = true;
+        const msg = "🔒 MICROPHONE BLOCKED: Click the lock icon in the address bar → allow microphone → refresh page → try again";
+        console.error('🔒 MICROPHONE PERMISSION BLOCKED:', msg);
+        setError(msg);
+        setPhase("ready");
+        stoppedRef.current = true;
       } else if (e.error === "no-speech") {
         console.warn('⚠️ No speech detected in the audio');
+        setError("No speech detected. Please speak clearly and try again.");
+        setPhase("ready");
+        stoppedRef.current = true;
       } else if (e.error === "network") {
         console.error('❌ Network error with speech recognition');
+        setError("Network error. Please check your internet connection.");
+        setPhase("ready");
+        stoppedRef.current = true;
       } else {
         console.error('❌ Unknown speech recognition error:', e.error);
+        setError(`Speech error: ${e.error}. Please try again.`);
+        setPhase("ready");
+        stoppedRef.current = true;
       }
     };
     rec.onstart = () => {
