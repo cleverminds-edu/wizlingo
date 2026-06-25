@@ -364,8 +364,10 @@ export default function DesktopReadingSession({ passage, sessionId, timeLimitSec
       console.log('📥 /api/assess response:', res.status);
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        console.error('❌ /api/assess error:', err);
-        throw new Error((err as any).error ?? `Error ${res.status}`);
+        const errMsg = (err as any).error ?? `HTTP ${res.status}`;
+        console.error('❌ /api/assess error message:', errMsg);
+        console.error('❌ Full error response:', err);
+        throw new Error(errMsg);
       }
       const result: ScoreResult = await res.json();
       setScore(result);

@@ -22,11 +22,17 @@ export async function POST(request: Request) {
     }
 
     const { sessionId, transcript, durationSec } = body;
-    console.log('📝 /api/assess request:', { sessionId: !!sessionId, transcriptLen: transcript?.length ?? 0, durationSec });
+    console.log('📝 /api/assess request:', {
+      sessionId: sessionId ?? 'MISSING',
+      transcriptLen: transcript?.length ?? 0,
+      transcriptPreview: transcript?.substring(0, 50) ?? 'MISSING',
+      durationSec
+    });
 
     if (!sessionId || !transcript) {
-      console.error('❌ /api/assess: Missing fields', { sessionId: !!sessionId, transcript: !!transcript });
-      return Response.json({ error: "sessionId and transcript are required" }, { status: 400 });
+      const reason = !sessionId ? 'sessionId is missing' : 'transcript is empty';
+      console.error(`❌ /api/assess: ${reason}`, { sessionId, transcriptLen: transcript?.length ?? 0 });
+      return Response.json({ error: reason }, { status: 400 });
     }
 
     const readingSession = await prisma.readingSession.findUnique({
