@@ -39,6 +39,35 @@ declare global {
   interface Window { SpeechRecognition: new () => SR; webkitSpeechRecognition: new () => SR; }
 }
 
+function getBrowserMicrophoneGuide() {
+  const ua = typeof navigator !== "undefined" ? navigator.userAgent.toLowerCase() : "";
+  const isChrome = ua.includes("chrome") || ua.includes("edge") || ua.includes("brave");
+  const isFirefox = ua.includes("firefox");
+  const isSafari = ua.includes("safari") && !ua.includes("chrome");
+
+  if (isChrome) {
+    return {
+      shortMessage: "🔒 Microphone blocked. Allow permission to continue.",
+      fullGuide: `🔒 HOW TO ALLOW MICROPHONE (Chrome/Edge/Brave)\n\nStep 1: Click the 🔒 LOCK ICON next to the URL\nStep 2: Find "Microphone" in dropdown\nStep 3: Click it and select ✅ "Allow"\nStep 4: REFRESH the page (Ctrl+R)\nStep 5: Try again!`
+    };
+  } else if (isFirefox) {
+    return {
+      shortMessage: "🔒 Microphone blocked. Allow permission to continue.",
+      fullGuide: `🔒 HOW TO ALLOW MICROPHONE (Firefox)\n\nStep 1: Click the 🔒 LOCK ICON next to the URL\nStep 2: Find "Microphone" permission\nStep 3: Change from "Block" to ✅ "Allow"\nStep 4: REFRESH the page (Ctrl+R)\nStep 5: Try again!`
+    };
+  } else if (isSafari) {
+    return {
+      shortMessage: "🔒 Microphone blocked. Allow permission to continue.",
+      fullGuide: `🔒 HOW TO ALLOW MICROPHONE (Safari)\n\nStep 1: Safari menu → Settings\nStep 2: Go to "Websites" tab\nStep 3: Select "Microphone" in left sidebar\nStep 4: Find wizlingo → Change to "Allow"\nStep 5: REFRESH the page (Cmd+R)\nStep 6: Try again!`
+    };
+  } else {
+    return {
+      shortMessage: "🔒 Microphone blocked. Allow permission to continue.",
+      fullGuide: `🔒 HOW TO ALLOW MICROPHONE\n\n1. Click the 🔒 LOCK ICON in address bar\n2. Find "Microphone" permission\n3. Change to ✅ "Allow"\n4. REFRESH the page\n5. Try again!\n\nBest browsers: Chrome, Firefox, Safari`
+    };
+  }
+}
+
 // ── Small pieces ──────────────────────────────────────────────────────────────
 
 function WaveBar({ delay }: { delay: number }) {
@@ -442,9 +471,12 @@ export default function DesktopReadingSession({ passage, sessionId, timeLimitSec
     rec.onerror = (e) => {
       console.error('❌ Speech recognition error:', e.error);
       if (e.error === "not-allowed") {
-        const msg = "🔒 MICROPHONE BLOCKED: Click the lock icon in the address bar → allow microphone → refresh page → try again";
-        console.error('🔒 MICROPHONE PERMISSION BLOCKED:', msg);
-        setError(msg);
+        console.error('🔒 User denied microphone permission');
+        const browserGuide = getBrowserMicrophoneGuide();
+        setError(browserGuide.shortMessage);
+        setTimeout(() => {
+          alert(browserGuide.fullGuide);
+        }, 300);
         setPhase("ready");
         stoppedRef.current = true;
       } else if (e.error === "no-speech") {

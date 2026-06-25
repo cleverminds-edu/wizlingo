@@ -37,6 +37,96 @@ function getSpeechRecognition(): (new () => SpeechRecognitionInstance) | null {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
+function getBrowserMicrophoneGuide() {
+  const ua = typeof navigator !== "undefined" ? navigator.userAgent.toLowerCase() : "";
+  const isChrome = ua.includes("chrome") || ua.includes("edge") || ua.includes("brave");
+  const isFirefox = ua.includes("firefox");
+  const isSafari = ua.includes("safari") && !ua.includes("chrome");
+
+  if (isChrome) {
+    return {
+      shortMessage: "🔒 Microphone blocked. Allow permission to continue.",
+      fullGuide: `
+🔒 HOW TO ALLOW MICROPHONE (Chrome/Edge/Brave)
+
+Step 1: Look at the address bar (top left)
+Step 2: Click the 🔒 LOCK ICON next to the URL
+Step 3: Find "Microphone" in the dropdown
+Step 4: Click it and select ✅ "Allow"
+Step 5: REFRESH the page (Press Ctrl+R or Cmd+R)
+Step 6: Try the speaking session again!
+
+📍 If you still see an error:
+   Settings → Privacy & Security → Site Settings → Microphone
+   Find wizlingo.edvanta.co.in → Change to "Allow"
+   Refresh and try again.
+
+Questions? Try a different browser if issues persist.
+      `
+    };
+  } else if (isFirefox) {
+    return {
+      shortMessage: "🔒 Microphone blocked. Allow permission to continue.",
+      fullGuide: `
+🔒 HOW TO ALLOW MICROPHONE (Firefox)
+
+Step 1: Look at the address bar (top left)
+Step 2: Click the 🔒 LOCK ICON next to the URL
+Step 3: Look for "Microphone" permission
+Step 4: Change it from ❌ "Block" to ✅ "Allow"
+Step 5: REFRESH the page (Press Ctrl+R or Cmd+R)
+Step 6: Try the speaking session again!
+
+Questions? Try a different browser if issues persist.
+      `
+    };
+  } else if (isSafari) {
+    return {
+      shortMessage: "🔒 Microphone blocked. Allow permission to continue.",
+      fullGuide: `
+🔒 HOW TO ALLOW MICROPHONE (Safari)
+
+Step 1: Click Safari menu (top left)
+Step 2: Click "Settings" or "Preferences"
+Step 3: Go to "Websites" tab
+Step 4: Select "Microphone" in the left sidebar
+Step 5: Find wizlingo.edvanta.co.in
+Step 6: Change from "Deny" to "Allow"
+Step 7: Close settings
+Step 8: REFRESH the page (Press Cmd+R)
+Step 9: Try the speaking session again!
+
+Questions? Try Chrome or Firefox if issues persist.
+      `
+    };
+  } else {
+    return {
+      shortMessage: "🔒 Microphone blocked. Allow permission to continue.",
+      fullGuide: `
+🔒 HOW TO ALLOW MICROPHONE
+
+Your browser is blocking microphone access.
+
+1️⃣ Look for the 🔒 LOCK ICON in the address bar
+2️⃣ Click it and find "Microphone" permission
+3️⃣ Change from ❌ "Block" to ✅ "Allow"
+4️⃣ REFRESH the page
+5️⃣ Try the speaking session again!
+
+💡 BEST BROWSERS FOR THIS:
+   ✅ Chrome, Edge, Brave (easiest)
+   ✅ Firefox
+   ✅ Safari
+
+If you still have problems:
+- Try a different browser
+- Make sure your device has a working microphone
+- Check system microphone permissions (Settings)
+      `
+    };
+  }
+}
+
 const FEMALE_CHARACTERS = ["Meera", "Priya", "Mom", "Sarah", "Emma", "Aisha", "Teacher", "Chef", "Librarian", "Maya", "Eco"];
 const MALE_CHARACTERS = ["Alex", "Jamie", "Ravi", "Marco", "Professor", "Mentor", "Coach", "Tech", "Sage"];
 
@@ -508,8 +598,15 @@ export default function ConversationSession({
       rec.onerror = (e: SpeechRecognitionErrorEvent) => {
         console.error('❌ Speech recognition error:', e.error);
         if (e.error === "not-allowed") {
-          setMicError("🔴 Mic access denied. Please allow microphone permission in browser settings.");
-          console.error('User denied microphone permission');
+          console.error('🔒 User denied microphone permission');
+          const browserGuide = getBrowserMicrophoneGuide();
+          setMicError(browserGuide.shortMessage);
+          // Show detailed guide
+          setTimeout(() => {
+            const fullGuide = browserGuide.fullGuide;
+            console.log(fullGuide);
+            alert(fullGuide);
+          }, 300);
         }
         else if (e.error === "no-speech") {
           console.log('⚠️  No speech detected, restarting...');
