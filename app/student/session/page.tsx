@@ -143,11 +143,29 @@ export default function SessionPage() {
   useEffect(() => { loadSession(); }, []);
 
   function handleComplete(result: ScoreResult) {
+    console.log('✅ Reading session completed:', { passed: result.passed, leveledUp: result.leveledUp });
     setScore(result);
     setPhase("done");
     if (result.leveledUp) {
       // Brief delay so result screen renders first, then overlay pops in
       setTimeout(() => setShowLevelUp(true), 400);
+    }
+  }
+
+  function handleNavigateToDashboard() {
+    console.log('🏠 Navigating to dashboard...');
+    try {
+      router.push("/student/dashboard");
+    } catch (err) {
+      console.error('❌ Navigation error:', err);
+      // Fallback: try again after delay
+      setTimeout(() => {
+        router.push("/student/dashboard").catch(e => {
+          console.error('❌ Dashboard navigation failed:', e);
+          // Last resort: redirect to home
+          window.location.href = "/student/dashboard";
+        });
+      }, 1000);
     }
   }
 
@@ -270,7 +288,7 @@ export default function SessionPage() {
             sessionType="reading"
             onClose={() => {
               setShowFeedback(false);
-              router.push("/student/dashboard");
+              handleNavigateToDashboard();
             }}
           />
         )}

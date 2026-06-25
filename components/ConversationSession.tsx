@@ -402,13 +402,49 @@ export default function ConversationSession({
         speakText(aiResponse, () => startStudentTurnRef.current());
       })
       .catch((err) => {
-        console.error('❌ AI turn error, falling back to next turn:', err);
-        // Fallback: skip AI response and go straight to next student turn
-        setCurrentAiText("(Hmm, let me think... Your turn to respond!)");
+        console.error('❌ AI turn error:', err);
+
+        // Graceful fallback: use pre-written character responses
+        const fallbackResponses: Record<string, string[]> = {
+          "Mom": [
+            "That's wonderful! Tell me more.",
+            "I love that! What else happened?",
+            "That sounds amazing! Keep going!"
+          ],
+          "Alex": [
+            "Cool! What do you think?",
+            "That's awesome! Tell me more.",
+            "Nice! How did that make you feel?"
+          ],
+          "Teacher": [
+            "Great point! Can you explain more?",
+            "Excellent thinking! Why do you think that?",
+            "That's a good observation!"
+          ],
+          "Sarah": [
+            "Oh my gosh, really? Tell me everything!",
+            "That's so cool! What happened next?",
+            "I love that! You're amazing!"
+          ],
+          "Jamie": [
+            "No way! Tell me more about that!",
+            "That's incredible! How did you do it?",
+            "You're so talented! Keep going!"
+          ]
+        };
+
+        // Get fallback response for this character
+        const responses = fallbackResponses[character] || fallbackResponses["Alex"];
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+
+        console.log('🔄 Using fallback response:', randomResponse);
+        setCurrentAiText(randomResponse);
         setTranscript("");
         setInterimText("");
-        setPhase("student-speaking");
-        setTimeout(() => startStudentTurnRef.current(), 500);
+        setPhase("ai-speaking");
+
+        // Speak the fallback response
+        speakText(randomResponse, () => startStudentTurnRef.current());
       });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [character, topicTitle, gradeBand, maxTurns, onComplete, currentAiText, speakText]);

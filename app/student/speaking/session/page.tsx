@@ -297,7 +297,14 @@ function SessionPageInner() {
                 sessionType="speaking"
                 onClose={() => {
                   setShowFeedback(false);
-                  router.push("/student/dashboard");
+                  console.log('🏠 Speaking session: Navigating to dashboard...');
+                  router.push("/student/dashboard").catch(err => {
+                    console.error('❌ Dashboard navigation failed:', err);
+                    // Fallback
+                    setTimeout(() => {
+                      window.location.href = "/student/dashboard";
+                    }, 500);
+                  });
                 }}
               />
             )}
