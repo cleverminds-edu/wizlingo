@@ -10,22 +10,27 @@ export default function SpeakingHomePage() {
     // Auto-start a free-form speaking session without topic selection
     async function startFreeFormSession() {
       try {
+        console.log('🎤 Requesting free-form session...');
         const res = await fetch("/api/speaking/sessions/freeform", {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
         });
 
+        console.log('📡 Response status:', res.status);
+
         if (!res.ok) {
-          console.error("Failed to create free-form session");
+          const errorData = await res.json();
+          console.error('❌ Failed to create free-form session:', { status: res.status, error: errorData });
           router.push("/student/dashboard");
           return;
         }
 
         const session = await res.json();
+        console.log('✅ Session created:', { id: session.id });
         router.push(`/student/speaking/session?sessionId=${session.id}&freeform=true`);
       } catch (error) {
-        console.error("Error starting session:", error);
+        console.error('❌ Error starting session:', error);
         router.push("/student/dashboard");
       }
     }
