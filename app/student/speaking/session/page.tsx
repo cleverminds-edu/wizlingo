@@ -61,6 +61,7 @@ function SessionPageInner() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("sessionId");
   const topicId = searchParams.get("topicId");
+  const isFreeform = searchParams.get("freeform") === "true";
 
   const [topic, setTopic] = useState<TopicData | null>(null);
   const [phase, setPhase] = useState<"loading" | "conversation" | "saving" | "done" | "error">("loading");
@@ -70,30 +71,58 @@ function SessionPageInner() {
   const [studentId, setStudentId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!topicId || !sessionId) { setPhase("error"); setError("Missing session info."); return; }
+    if (!sessionId) { setPhase("error"); setError("Missing session info."); return; }
 
-    Promise.all([
-      fetch(`/api/speaking/topics`, { credentials: "include" }).then((r) => r.ok ? r.json() : Promise.reject(r.status)),
-      fetch(`/api/auth/me`, { credentials: "include" }).then((r) => r.ok ? r.json() : Promise.reject(r.status)),
-    ])
-      .then(([data, me]) => {
-        console.log('🎤 Session data loaded:', { topicId, hasTopics: !!data.topics });
-        const t = data.topics.find((t: TopicData) => t.id === topicId);
-        if (!t) {
-          console.error('❌ Topic not found:', topicId, 'Available:', data.topics.map((x: any) => x.id));
-          throw new Error("Topic not found");
-        }
-        console.log('✅ Topic loaded:', t.title);
-        setTopic(t);
-        if (me && me.id) setStudentId(me.id);
-        setPhase("conversation");
-      })
-      .catch((e) => {
-        console.error('❌ Session load error:', e);
-        setPhase("error");
-        setError(typeof e === 'number' ? `API error: ${e}` : "Could not load topic. Please try again.");
-      });
-  }, [topicId, sessionId]);
+    if (isFreeform) {
+      // For free-form sessions, just load student info and start
+      fetch(`/api/auth/me`, { credentials: "include" })
+        .then((r) => r.ok ? r.json() : Promise.reject(r.status))
+        .then((me) => {
+          console.log('🎤 Free-form session started');
+          if (me && me.id) setStudentId(me.id);
+          // Create a minimal topic for free-form
+          setTopic({
+            id: "freeform",
+            title: "Free Conversation",
+            character: ["Alex", "Sarah", "Ravi", "Meera"][Math.floor(Math.random() * 4)],
+            openingLine: "Hey! What's on your mind today?",
+            level: 1,
+            gradeBand: me.gradeBand,
+          });
+          setPhase("conversation");
+        })
+        .catch((e) => {
+          console.error('❌ Session load error:', e);
+          setPhase("error");
+          setError(typeof e === 'number' ? `API error: ${e}` : "Could not load session. Please try again.");
+        });
+    } else {
+      // Normal flow with topic selection
+      if (!topicId) { setPhase("error"); setError("Missing topic info."); return; }
+
+      Promise.all([
+        fetch(`/api/speaking/topics`, { credentials: "include" }).then((r) => r.ok ? r.json() : Promise.reject(r.status)),
+        fetch(`/api/auth/me`, { credentials: "include" }).then((r) => r.ok ? r.json() : Promise.reject(r.status)),
+      ])
+        .then(([data, me]) => {
+          console.log('🎤 Session data loaded:', { topicId, hasTopics: !!data.topics });
+          const t = data.topics.find((t: TopicData) => t.id === topicId);
+          if (!t) {
+            console.error('❌ Topic not found:', topicId, 'Available:', data.topics.map((x: any) => x.id));
+            throw new Error("Topic not found");
+          }
+          console.log('✅ Topic loaded:', t.title);
+          setTopic(t);
+          if (me && me.id) setStudentId(me.id);
+          setPhase("conversation");
+        })
+        .catch((e) => {
+          console.error('❌ Session load error:', e);
+          setPhase("error");
+          setError(typeof e === 'number' ? `API error: ${e}` : "Could not load topic. Please try again.");
+        });
+    }
+  }, [topicId, sessionId, isFreeform]);
 
   async function handleComplete({ turns, totalWords, durationSec }: { turns: TurnRecord[]; totalWords: number; durationSec: number }) {
     if (!sessionId) {
