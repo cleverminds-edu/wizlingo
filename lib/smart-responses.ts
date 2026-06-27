@@ -1,11 +1,11 @@
 /**
  * INTELLIGENT Conversational Response System
  *
- * Generates natural, varied, context-aware responses.
- * - Extracts specific keywords from student input
+ * Generates highly varied, context-aware, personality-driven responses.
+ * - Acknowledges what student said
  * - Shows genuine personality per character
- * - Varies responses heavily to avoid repetition
- * - References what student actually said
+ * - Asks follow-up questions based on their input
+ * - Varies heavily across many response templates
  */
 
 interface SmartResponseContext {
@@ -16,115 +16,202 @@ interface SmartResponseContext {
   isLastTurn: boolean;
 }
 
-// Extract meaningful keywords and respond contextually
+// Extract meaningful keywords from student message
 function extractKeywords(text: string): string[] {
   const words = text.toLowerCase().split(/\s+/);
-  // Filter: no stopwords, min 3 chars
   const stopwords = new Set([
     "the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "is", "are",
     "was", "were", "be", "have", "has", "do", "does", "did", "can", "could",
     "will", "would", "should", "may", "might", "must", "very", "my", "your",
     "i", "you", "he", "she", "it", "we", "they", "this", "that", "these",
-    "those", "what", "when", "where", "why", "how", "me", "him", "her", "us"
+    "those", "what", "when", "where", "why", "how", "me", "him", "her", "us",
+    "just", "so", "like", "well", "about", "from", "with", "as", "by", "of"
   ]);
-  return words.filter(w => w.length > 3 && !stopwords.has(w));
+  return words.filter(w => w.length > 3 && !stopwords.has(w)).slice(0, 3);
 }
 
-// Character-specific response patterns
+// Reaction patterns - recognize what student is talking about
+const REACTION_PATTERNS: Record<string, string[]> = {
+  "enjoy|love|like|awesome|amazing|cool|great": [
+    "That sounds amazing!",
+    "I love that about you!",
+    "That's so cool!",
+    "You sound really excited!",
+    "That's awesome!",
+  ],
+  "hard|difficult|tough|struggle|challenge": [
+    "That's challenging!",
+    "But you're working through it!",
+    "You're pushing yourself!",
+    "That takes guts!",
+    "You're brave!",
+  ],
+  "friend|family|people|together|group": [
+    "That's so wholesome!",
+    "You sound like a great friend!",
+    "They're lucky to have you!",
+    "That relationship sounds special!",
+    "You really care!",
+  ],
+  "first|new|never|haven't": [
+    "Wow, that's exciting!",
+    "That must be thrilling!",
+    "New experiences are great!",
+    "You're so brave!",
+    "How did that feel?",
+  ],
+};
+
+// Character-specific response templates with high variety
 const CHARACTER_RESPONSES: Record<string, {
   acknowledgments: string[];
+  contextual: (keyword: string) => string[];
   followUps: string[];
   endings: string[];
 }> = {
   "Mom": {
     acknowledgments: [
-      "Oh honey, that sounds wonderful!",
-      "I'm so proud of you for that!",
-      "That makes my heart so happy!",
-      "You always know how to brighten my day!",
+      "Oh honey, that's wonderful!",
+      "I'm so proud of you!",
+      "That makes me so happy!",
+      "You're such a smart kid!",
+      "Tell me everything!",
+      "That's my child!",
+    ],
+    contextual: (kw) => [
+      `The fact that you ${kw} shows who you are!`,
+      `Your ${kw} is something special!`,
+      `I love how you think about ${kw}!`,
     ],
     followUps: [
-      "Tell me everything about it!",
       "How did that make you feel?",
-      "I'd love to hear more!",
+      "What happened after?",
+      "Do you want to do that again?",
       "What was the best part?",
+      "I'd love to hear more!",
+      "Tell me about that!",
     ],
-    endings: ["You're the best!", "I love you so much!", "You're such a joy!"],
+    endings: ["You're the best!", "I love you so much!", "You make me proud!"],
   },
   "Alex": {
     acknowledgments: [
       "Yo, that's sick!",
-      "No way, that sounds awesome!",
-      "Dude, that's incredible!",
-      "That's gonna be epic!",
+      "No way, that's fire!",
+      "Bro, that's so cool!",
+      "That's incredible!",
+      "Dude, for real?",
+      "That's insane!",
+    ],
+    contextual: (kw) => [
+      `The ${kw} thing is so cool!`,
+      `That ${kw} energy is amazing!`,
+      `How you handle ${kw} is awesome!`,
     ],
     followUps: [
+      "What happened next?",
       "How'd you pull that off?",
-      "That's insane! What happens next?",
-      "For real? Tell me more!",
-      "You gotta explain that!",
+      "Did you actually do that?",
+      "Tell me more!",
+      "That's wild, right?",
+      "You gotta tell the full story!",
     ],
-    endings: ["You're a legend!", "That was rad!", "Let's do this again!"],
+    endings: ["You're a legend!", "That was epic!", "You're amazing!"],
   },
   "Sarah": {
     acknowledgments: [
       "Oh my gosh, YES!",
-      "That's literally so cool!",
-      "I can't even handle how awesome that is!",
-      "Okay but that's actually incredible!",
+      "That's literally so good!",
+      "I can't even—amazing!",
+      "OMG that's incredible!",
+      "No way, really?",
+      "That's the best!",
+    ],
+    contextual: (kw) => [
+      `The way you talk about ${kw} is so genuine!`,
+      `Your ${kw} perspective is cool!`,
+      `I love how passionate you are about ${kw}!`,
     ],
     followUps: [
-      "Spill the tea!",
-      "I need ALL the details!",
+      "Like, tell me everything!",
+      "What else happened?",
       "How did you even do that?",
-      "This is the best day ever!",
+      "What was that like?",
+      "Spill the details!",
+      "I need the full story!",
     ],
-    endings: ["You're amazing!", "This was so fun!", "You're the coolest!"],
+    endings: ["You're awesome!", "This is the best!", "I love chatting with you!"],
   },
   "Teacher": {
     acknowledgments: [
       "That's an excellent observation!",
-      "What a thoughtful perspective!",
-      "You're demonstrating real critical thinking there!",
-      "That's a very insightful point!",
+      "Very insightful thinking!",
+      "I really like that perspective!",
+      "That shows real understanding!",
+      "Thoughtful answer!",
+      "That's quite sophisticated!",
+    ],
+    contextual: (kw) => [
+      `Your understanding of ${kw} is strong!`,
+      `That's a mature perspective on ${kw}!`,
+      `Your critical thinking about ${kw} is impressive!`,
     ],
     followUps: [
-      "Can you elaborate on that?",
+      "Can you expand on that?",
       "What led you to that conclusion?",
       "How would you apply that?",
-      "What's another example of that?",
+      "Can you give an example?",
+      "What else comes to mind?",
+      "How does that connect?",
     ],
-    endings: ["You're a wonderful student!", "Great thinking!", "You've got real potential!"],
+    endings: ["Excellent work!", "You're doing great!", "Keep thinking like that!"],
   },
   "Coach": {
     acknowledgments: [
-      "That's the kind of dedication I love!",
-      "You're pushing yourself hard—respect!",
+      "That's the dedication I love!",
+      "You're pushing hard!",
       "That takes real commitment!",
-      "Now THAT'S what I'm talking about!",
+      "Now THAT'S the spirit!",
+      "I respect that effort!",
+      "You've got drive!",
+    ],
+    contextual: (kw) => [
+      `The way you tackle ${kw} shows heart!`,
+      `Your ${kw} mentality is champion-level!`,
+      `You're seriously dedicated to ${kw}!`,
     ],
     followUps: [
-      "How'd you train for that?",
+      "How's that training going?",
       "What's your secret?",
-      "How long have you been working on this?",
-      "What's your next goal?",
+      "What's next on your list?",
+      "How long you been at that?",
+      "What drives you?",
+      "What's the goal?",
     ],
-    endings: ["Keep that up!", "You've got heart!", "That's champion mindset!"],
+    endings: ["Keep pushing!", "You've got this!", "That's a champ!"],
   },
   "Professor": {
     acknowledgments: [
-      "Fascinating—that's a nuanced understanding!",
-      "You've got the analytical mind for this!",
-      "That's a sophisticated take!",
-      "Now that's rigorous thinking!",
+      "Fascinating perspective!",
+      "That's quite insightful!",
+      "Rigorous thinking!",
+      "Intellectually interesting!",
+      "That shows critical analysis!",
+      "Excellent reasoning!",
+    ],
+    contextual: (kw) => [
+      `Your analytical approach to ${kw} is strong!`,
+      `The logic behind your ${kw} argument works!`,
+      `Your nuanced view of ${kw} is compelling!`,
     ],
     followUps: [
-      "What's your evidence for that?",
+      "What's your evidence?",
       "How does that connect to...?",
-      "Can you see any counterarguments?",
-      "What would disprove that?",
+      "What counter-arguments exist?",
+      "Can you elaborate?",
+      "How would you test that?",
+      "What's the deeper implication?",
     ],
-    endings: ["Brilliant mind!", "You think deep!", "Impressive analysis!"],
+    endings: ["Brilliant analysis!", "You've got a sharp mind!", "Impressive reasoning!"],
   },
 };
 
@@ -132,36 +219,50 @@ export function generateSmartResponse(context: SmartResponseContext): string {
   const { character, studentMessage, isLastTurn } = context;
 
   // Get character responses (fallback to Alex)
-  const charResponses = CHARACTER_RESPONSES[character] || CHARACTER_RESPONSES["Alex"];
+  const charData = CHARACTER_RESPONSES[character] || CHARACTER_RESPONSES["Alex"];
 
-  // Extract keywords to potentially reference
+  // Extract keywords and patterns from student message
   const keywords = extractKeywords(studentMessage);
+  const messageL = studentMessage.toLowerCase();
 
-  // Build response: acknowledgment + follow-up (or ending)
-  const ack = charResponses.acknowledgments[
-    Math.floor(Math.random() * charResponses.acknowledgments.length)
-  ];
+  // Check for emotion/reaction patterns
+  let reactionAck = null;
+  for (const [pattern, responses] of Object.entries(REACTION_PATTERNS)) {
+    const patternRegex = new RegExp(pattern);
+    if (patternRegex.test(messageL)) {
+      reactionAck = responses[Math.floor(Math.random() * responses.length)];
+      break;
+    }
+  }
 
+  // Build response
   let response: string;
 
   if (isLastTurn) {
-    // Last turn: acknowledge + warm goodbye
-    const ending = charResponses.endings[
-      Math.floor(Math.random() * charResponses.endings.length)
-    ];
+    // Last turn: warm goodbye
+    const ack = reactionAck || charData.acknowledgments[Math.floor(Math.random() * charData.acknowledgments.length)];
+    const ending = charData.endings[Math.floor(Math.random() * charData.endings.length)];
     response = `${ack} ${ending}`;
   } else {
-    // Continue conversation: acknowledge + follow-up question
-    const followUp = charResponses.followUps[
-      Math.floor(Math.random() * charResponses.followUps.length)
-    ];
-    response = `${ack} ${followUp}`;
+    // Continue conversation
+    const ack = reactionAck || charData.acknowledgments[Math.floor(Math.random() * charData.acknowledgments.length)];
+
+    // Sometimes reference the keyword
+    let contextLine = "";
+    if (keywords.length > 0 && Math.random() > 0.5) {
+      const contextualResponses = charData.contextual(keywords[0]);
+      contextLine = contextualResponses[Math.floor(Math.random() * contextualResponses.length)];
+    }
+
+    const followUp = charData.followUps[Math.floor(Math.random() * charData.followUps.length)];
+
+    response = contextLine ? `${ack} ${contextLine} ${followUp}` : `${ack} ${followUp}`;
   }
 
-  // Keep under 40 words (safe limit)
+  // Keep under 50 words
   const words = response.split(" ");
-  if (words.length > 40) {
-    response = words.slice(0, 40).join(" ");
+  if (words.length > 50) {
+    response = words.slice(0, 50).join(" ");
   }
 
   return response.trim();
