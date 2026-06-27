@@ -13,31 +13,32 @@
 const GOOGLE_TTS_API_KEY = process.env.GOOGLE_TTS_API_KEY;
 const GOOGLE_TTS_ENABLED = !!GOOGLE_TTS_API_KEY;
 
-// Character to Google Cloud voice mapping
-const CHARACTER_VOICE_MAP: Record<string, { name: string; gender: string }> = {
-  // Female voices (en-IN-Standard-A or Neural2-A for premium)
-  "Mom": { name: "en-IN-Standard-A", gender: "FEMALE" },
-  "Sarah": { name: "en-IN-Standard-A", gender: "FEMALE" },
-  "Emma": { name: "en-IN-Standard-A", gender: "FEMALE" },
-  "Aisha": { name: "en-IN-Standard-A", gender: "FEMALE" },
-  "Teacher": { name: "en-IN-Standard-A", gender: "FEMALE" },
-  "Librarian": { name: "en-IN-Standard-A", gender: "FEMALE" },
-  "Maya": { name: "en-IN-Standard-A", gender: "FEMALE" },
-  "Eco": { name: "en-IN-Standard-A", gender: "FEMALE" },
-  "Meera": { name: "en-IN-Standard-A", gender: "FEMALE" },
+// Character to Google Cloud NEURAL voice mapping (95% human quality)
+// Neural2 voices sound much more natural than Standard voices
+const CHARACTER_VOICE_MAP: Record<string, { name: string; gender: string; pitch: number; rate: number }> = {
+  // Female NEURAL voices - warm, natural, expressive
+  "Mom": { name: "en-IN-Neural2-A", gender: "FEMALE", pitch: 0.5, rate: 0.95 },
+  "Sarah": { name: "en-IN-Neural2-A", gender: "FEMALE", pitch: 0.3, rate: 0.95 },
+  "Emma": { name: "en-IN-Neural2-A", gender: "FEMALE", pitch: 0.2, rate: 0.93 },
+  "Aisha": { name: "en-IN-Neural2-A", gender: "FEMALE", pitch: 0.4, rate: 0.94 },
+  "Teacher": { name: "en-IN-Neural2-A", gender: "FEMALE", pitch: 0.1, rate: 0.92 },
+  "Librarian": { name: "en-IN-Neural2-A", gender: "FEMALE", pitch: 0.2, rate: 0.91 },
+  "Maya": { name: "en-IN-Neural2-A", gender: "FEMALE", pitch: 0.35, rate: 0.94 },
+  "Eco": { name: "en-IN-Neural2-A", gender: "FEMALE", pitch: 0.3, rate: 0.93 },
+  "Meera": { name: "en-IN-Neural2-A", gender: "FEMALE", pitch: 0.4, rate: 0.95 },
 
-  // Male voices (en-IN-Standard-B or Neural2-B for premium)
-  "Alex": { name: "en-IN-Standard-B", gender: "MALE" },
-  "Jamie": { name: "en-IN-Standard-B", gender: "MALE" },
-  "Ravi": { name: "en-IN-Standard-B", gender: "MALE" },
-  "Professor": { name: "en-IN-Standard-B", gender: "MALE" },
-  "Chef": { name: "en-IN-Standard-B", gender: "MALE" },
-  "Explorer": { name: "en-IN-Standard-B", gender: "MALE" },
-  "Coach": { name: "en-IN-Standard-B", gender: "MALE" },
-  "Tech": { name: "en-IN-Standard-B", gender: "MALE" },
-  "Sage": { name: "en-IN-Standard-B", gender: "MALE" },
-  "Mentor": { name: "en-IN-Standard-B", gender: "MALE" },
-  "Marco": { name: "en-IN-Standard-B", gender: "MALE" },
+  // Male NEURAL voices - clear, friendly, youthful
+  "Alex": { name: "en-IN-Neural2-B", gender: "MALE", pitch: -0.2, rate: 0.93 },
+  "Jamie": { name: "en-IN-Neural2-B", gender: "MALE", pitch: -0.1, rate: 0.94 },
+  "Ravi": { name: "en-IN-Neural2-B", gender: "MALE", pitch: -0.3, rate: 0.93 },
+  "Professor": { name: "en-IN-Neural2-B", gender: "MALE", pitch: -0.5, rate: 0.90 },
+  "Chef": { name: "en-IN-Neural2-B", gender: "MALE", pitch: -0.2, rate: 0.94 },
+  "Explorer": { name: "en-IN-Neural2-B", gender: "MALE", pitch: 0, rate: 0.95 },
+  "Coach": { name: "en-IN-Neural2-B", gender: "MALE", pitch: -0.3, rate: 0.92 },
+  "Tech": { name: "en-IN-Neural2-B", gender: "MALE", pitch: -0.1, rate: 0.94 },
+  "Sage": { name: "en-IN-Neural2-B", gender: "MALE", pitch: -0.6, rate: 0.89 },
+  "Mentor": { name: "en-IN-Neural2-B", gender: "MALE", pitch: -0.4, rate: 0.91 },
+  "Marco": { name: "en-IN-Neural2-B", gender: "MALE", pitch: -0.2, rate: 0.94 },
 };
 
 export async function synthesizeWithGoogle(
@@ -53,6 +54,18 @@ export async function synthesizeWithGoogle(
   try {
     const voiceInfo = CHARACTER_VOICE_MAP[character] || CHARACTER_VOICE_MAP["Alex"];
 
+    // Use character-specific pitch/rate, or override with options
+    const pitch = options?.pitch ?? voiceInfo.pitch;
+    const rate = options?.rate ?? voiceInfo.rate;
+
+    console.log('🎤 Google TTS synthesis:', {
+      character,
+      voice: voiceInfo.name,
+      pitch,
+      rate,
+      textLen: text.length,
+    });
+
     const payload = {
       input: { text },
       voice: {
@@ -61,8 +74,8 @@ export async function synthesizeWithGoogle(
       },
       audioConfig: {
         audioEncoding: "MP3",
-        pitch: options?.pitch ?? 0, // -20.0 to 20.0
-        speakingRate: options?.rate ?? 1.0, // 0.25 to 4.0
+        pitch, // -20.0 to 20.0 (adjusted per character)
+        speakingRate: rate, // 0.25 to 4.0 (optimized for natural speech)
       },
     };
 
