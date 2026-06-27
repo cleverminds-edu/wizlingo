@@ -1,5 +1,6 @@
 import { getSession } from "@/lib/auth";
 import { getCharacterResponse, ConversationTurn } from "@/lib/ai-conversation";
+import { generateSmartResponse } from "@/lib/smart-responses";
 
 export async function POST(request: Request) {
   try {
@@ -28,22 +29,44 @@ export async function POST(request: Request) {
 
     console.log('🤖 AI turn request:', { character, topicTitle, gradeBand, historyLen: safeHistory.length, isLastTurn });
 
-    const text = await getCharacterResponse({
-      character,
-      topicTitle,
-      gradeBand,
-      history: safeHistory,
-      isLastTurn: !!isLastTurn,
-    });
+    let text: string;
+    let source = "smart-response";
 
-    console.log('✅ AI response generated:', { responseLen: text.length });
-    return Response.json({ text });
+    // Try Anthropic API first (if configured)
+    try {
+      text = await getCharacterResponse({
+        character,
+        topicTitle,
+        gradeBand,
+        history: safeHistory,
+        isLastTurn: !!isLastTurn,
+      });
+      source = "anthropic-api";
+      console.log('✅ AI response from Anthropic:', { responseLen: text.length });
+    } catch (apiError: any) {
+      console.warn('⚠️ Anthropic API unavailable, using smart response:', apiError?.message);
+
+      // Get the last student message for context
+      const lastStudentMsg = safeHistory.reverse().find(h => h.role === "student")?.text || "";
+
+      text = generateSmartResponse({
+        character,
+        topicTitle,
+        studentMessage: lastStudentMsg,
+        gradeBand,
+        isLastTurn: !!isLastTurn,
+      });
+      console.log('✅ AI response from smart-response system:', { responseLen: text.length });
+    }
+
+    return Response.json({ text, source });
   } catch (error: any) {
     console.error('❌ /api/speaking/ai-turn error:', error?.message ?? error);
-    // Return fallback instead of error - keeps conversation flowing
+    // Should not reach here, but safety fallback
     return Response.json({
       text: "That's interesting! Tell me more about that.",
-      error: error?.message ?? "API error - using fallback"
+      error: error?.message ?? "API error - using fallback",
+      source: "fallback"
     });
   }
 }

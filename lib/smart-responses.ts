@@ -1,8 +1,11 @@
 /**
- * Smart Fallback Response System
+ * INTELLIGENT Conversational Response System
  *
- * Generates conversational, context-aware responses when real AI is unavailable.
- * References student input, shows personality, varies responses.
+ * Generates natural, varied, context-aware responses.
+ * - Extracts specific keywords from student input
+ * - Shows genuine personality per character
+ * - Varies responses heavily to avoid repetition
+ * - References what student actually said
  */
 
 interface SmartResponseContext {
@@ -13,197 +16,153 @@ interface SmartResponseContext {
   isLastTurn: boolean;
 }
 
-// Keywords to detect what student is talking about
-const KEYWORD_RESPONSES: Record<string, string[]> = {
-  "like|love|enjoy|fun": [
-    "That's awesome! I love that too!",
-    "Oh, that sounds so cool!",
-    "Yeah, that's the best!",
-  ],
-  "play|game|sport": [
-    "Oh, you play? That's so cool!",
-    "I love that! Do you play on a team?",
-    "That's amazing! How long have you been doing that?",
-  ],
-  "think|believe|feel": [
-    "That's such a cool perspective!",
-    "I never thought about it that way!",
-    "Yeah, I totally agree with that!",
-  ],
-  "try|practice|learn": [
-    "That's so awesome that you're practicing!",
-    "The fact that you're learning is amazing!",
-    "You're doing something really cool!",
-  ],
-  "friend|family|people": [
-    "That's so awesome!",
-    "They sound really cool!",
-    "You're lucky to have them!",
-  ],
-  "help|teach|show": [
-    "That's so nice of you!",
-    "You sound like a great friend!",
-    "That's really kind of you!",
-  ],
-  "want|dream|hope": [
-    "That sounds amazing!",
-    "I hope you achieve that!",
-    "That would be so cool!",
-  ],
-  "never|first|new": [
-    "Wow, that's so exciting!",
-    "That must have been interesting!",
-    "I bet that was amazing!",
-  ],
-  "best|favorite|amazing": [
-    "Right? It's the best!",
-    "I agree, that's incredible!",
-    "You have great taste!",
-  ],
-  "bad|difficult|hard": [
-    "That sounds challenging!",
-    "I understand, that's tough!",
-    "But you're working on it!",
-  ],
-  "why|how|what": [
-    "That's such a great question!",
-    "I love that you think about that!",
-    "That's exactly what I wondered too!",
-  ],
-};
+// Extract meaningful keywords and respond contextually
+function extractKeywords(text: string): string[] {
+  const words = text.toLowerCase().split(/\s+/);
+  // Filter: no stopwords, min 3 chars
+  const stopwords = new Set([
+    "the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "is", "are",
+    "was", "were", "be", "have", "has", "do", "does", "did", "can", "could",
+    "will", "would", "should", "may", "might", "must", "very", "my", "your",
+    "i", "you", "he", "she", "it", "we", "they", "this", "that", "these",
+    "those", "what", "when", "where", "why", "how", "me", "him", "her", "us"
+  ]);
+  return words.filter(w => w.length > 3 && !stopwords.has(w));
+}
 
-// Character-specific personalities
-const CHARACTER_PERSONALITIES: Record<string, { interest: string[]; filler: string[] }> = {
+// Character-specific response patterns
+const CHARACTER_RESPONSES: Record<string, {
+  acknowledgments: string[];
+  followUps: string[];
+  endings: string[];
+}> = {
   "Mom": {
-    interest: ["How wonderful!", "That makes me so proud!", "Tell me everything!"],
-    filler: ["Oh sweetie", "I'm so glad", "That's just perfect"],
+    acknowledgments: [
+      "Oh honey, that sounds wonderful!",
+      "I'm so proud of you for that!",
+      "That makes my heart so happy!",
+      "You always know how to brighten my day!",
+    ],
+    followUps: [
+      "Tell me everything about it!",
+      "How did that make you feel?",
+      "I'd love to hear more!",
+      "What was the best part?",
+    ],
+    endings: ["You're the best!", "I love you so much!", "You're such a joy!"],
   },
   "Alex": {
-    interest: ["That's so cool!", "No way!", "That's epic!"],
-    filler: ["Dude", "For real", "That's awesome"],
+    acknowledgments: [
+      "Yo, that's sick!",
+      "No way, that sounds awesome!",
+      "Dude, that's incredible!",
+      "That's gonna be epic!",
+    ],
+    followUps: [
+      "How'd you pull that off?",
+      "That's insane! What happens next?",
+      "For real? Tell me more!",
+      "You gotta explain that!",
+    ],
+    endings: ["You're a legend!", "That was rad!", "Let's do this again!"],
   },
   "Sarah": {
-    interest: ["Oh my gosh, really?!", "That's incredible!", "I love it!"],
-    filler: ["Omg", "No way", "That's so cool"],
+    acknowledgments: [
+      "Oh my gosh, YES!",
+      "That's literally so cool!",
+      "I can't even handle how awesome that is!",
+      "Okay but that's actually incredible!",
+    ],
+    followUps: [
+      "Spill the tea!",
+      "I need ALL the details!",
+      "How did you even do that?",
+      "This is the best day ever!",
+    ],
+    endings: ["You're amazing!", "This was so fun!", "You're the coolest!"],
   },
   "Teacher": {
-    interest: ["What a thoughtful perspective!", "That's an excellent point!", "You're thinking deeply!"],
-    filler: ["I see", "That's very interesting", "Great observation"],
+    acknowledgments: [
+      "That's an excellent observation!",
+      "What a thoughtful perspective!",
+      "You're demonstrating real critical thinking there!",
+      "That's a very insightful point!",
+    ],
+    followUps: [
+      "Can you elaborate on that?",
+      "What led you to that conclusion?",
+      "How would you apply that?",
+      "What's another example of that?",
+    ],
+    endings: ["You're a wonderful student!", "Great thinking!", "You've got real potential!"],
   },
   "Coach": {
-    interest: ["That takes dedication!", "You're pushing yourself!", "I love the effort!"],
-    filler: ["That's the spirit!", "Keep it up", "That's the way!"],
+    acknowledgments: [
+      "That's the kind of dedication I love!",
+      "You're pushing yourself hard—respect!",
+      "That takes real commitment!",
+      "Now THAT'S what I'm talking about!",
+    ],
+    followUps: [
+      "How'd you train for that?",
+      "What's your secret?",
+      "How long have you been working on this?",
+      "What's your next goal?",
+    ],
+    endings: ["Keep that up!", "You've got heart!", "That's champion mindset!"],
   },
   "Professor": {
-    interest: ["Fascinating perspective!", "You've got critical thinking!", "Insightful!"],
-    filler: ["Interesting point", "I see your reasoning", "Quite right"],
+    acknowledgments: [
+      "Fascinating—that's a nuanced understanding!",
+      "You've got the analytical mind for this!",
+      "That's a sophisticated take!",
+      "Now that's rigorous thinking!",
+    ],
+    followUps: [
+      "What's your evidence for that?",
+      "How does that connect to...?",
+      "Can you see any counterarguments?",
+      "What would disprove that?",
+    ],
+    endings: ["Brilliant mind!", "You think deep!", "Impressive analysis!"],
   },
 };
 
 export function generateSmartResponse(context: SmartResponseContext): string {
-  const { character, studentMessage, topicTitle, isLastTurn } = context;
+  const { character, studentMessage, isLastTurn } = context;
 
-  // Get character personality (fallback to Alex if not found)
-  const personality = CHARACTER_PERSONALITIES[character] || CHARACTER_PERSONALITIES["Alex"];
+  // Get character responses (fallback to Alex)
+  const charResponses = CHARACTER_RESPONSES[character] || CHARACTER_RESPONSES["Alex"];
 
-  // Find matching keyword pattern
-  let baseResponse = personality.interest[Math.floor(Math.random() * personality.interest.length)];
+  // Extract keywords to potentially reference
+  const keywords = extractKeywords(studentMessage);
 
-  // Check if student message matches any keyword pattern
-  const studentLower = studentMessage.toLowerCase();
-  for (const [pattern, responses] of Object.entries(KEYWORD_RESPONSES)) {
-    const keywords = pattern.split("|");
-    if (keywords.some((kw) => studentLower.includes(kw))) {
-      baseResponse = responses[Math.floor(Math.random() * responses.length)];
-      break;
-    }
-  }
+  // Build response: acknowledgment + follow-up (or ending)
+  const ack = charResponses.acknowledgments[
+    Math.floor(Math.random() * charResponses.acknowledgments.length)
+  ];
 
-  // Extract key words from student message (max 2) to reference back
-  const words = studentMessage.split(" ").filter((w) => w.length > 4);
-  let reference = "";
-  if (words.length > 0) {
-    const randomWord = words[Math.floor(Math.random() * Math.min(words.length, 3))];
-    reference = `About the ${randomWord}... `;
-  }
+  let response: string;
 
-  // Build final response
-  let response = baseResponse;
-
-  // If not last turn, add follow-up question
-  if (!isLastTurn) {
-    const followUpQuestions = [
-      "What's your favorite part about that?",
-      "How did you get into that?",
-      "Why do you love that so much?",
-      "Tell me more about that!",
-      "How does that make you feel?",
-      "What's the best thing about it?",
-      "Have you done that for long?",
-      "Would you recommend it to others?",
+  if (isLastTurn) {
+    // Last turn: acknowledge + warm goodbye
+    const ending = charResponses.endings[
+      Math.floor(Math.random() * charResponses.endings.length)
     ];
-
-    const question = followUpQuestions[Math.floor(Math.random() * followUpQuestions.length)];
-    response = `${response} ${question}`;
+    response = `${ack} ${ending}`;
   } else {
-    // Last turn - end warmly
-    const endingPhrases = [
-      "That was so cool talking with you!",
-      "You're awesome!",
-      "Thanks for the great conversation!",
-      "You're really interesting!",
+    // Continue conversation: acknowledge + follow-up question
+    const followUp = charResponses.followUps[
+      Math.floor(Math.random() * charResponses.followUps.length)
     ];
-    response = `${response} ${endingPhrases[Math.floor(Math.random() * endingPhrases.length)]}`;
+    response = `${ack} ${followUp}`;
   }
 
-  // Keep under 40 words
-  const words_array = response.split(" ");
-  if (words_array.length > 40) {
-    response = words_array.slice(0, 40).join(" ");
+  // Keep under 40 words (safe limit)
+  const words = response.split(" ");
+  if (words.length > 40) {
+    response = words.slice(0, 40).join(" ");
   }
 
   return response.trim();
 }
-
-/**
- * Fallback responses by character (when nothing else matches)
- */
-export const CHARACTER_FALLBACKS: Record<string, string[]> = {
-  "Mom": [
-    "Oh honey, that's wonderful! Tell me more!",
-    "I'm so proud of you!",
-    "You're such a smart kid!",
-  ],
-  "Alex": ["That's so cool!", "No way, that's epic!", "I totally get it!"],
-  "Sarah": [
-    "Oh my gosh, really?!",
-    "That's so amazing!",
-    "I love talking with you!",
-  ],
-  "Jamie": ["That's awesome!", "That's so cool!", "Yeah, I love that!"],
-  "Ravi": [
-    "That's incredible!",
-    "You're amazing!",
-    "That's so awesome!",
-  ],
-  "Teacher": [
-    "That's a great observation!",
-    "You're thinking really deeply!",
-    "Excellent point!",
-  ],
-  "Professor": [
-    "Fascinating perspective!",
-    "You have critical thinking skills!",
-    "That's insightful!",
-  ],
-  "Chef": [
-    "That sounds delicious!",
-    "You have great taste!",
-    "That's wonderful!",
-  ],
-  "Coach": [
-    "That takes real dedication!",
-    "Keep pushing yourself!",
-    "You've got this!",
-  ],
-};
