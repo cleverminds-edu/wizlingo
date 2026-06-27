@@ -202,7 +202,7 @@ function pickVoice(character: string, gradeBand: string, topicTitle?: string): {
 
   // Get character profile
   let pitch = 1.0;
-  let rate = 0.80; // Slower rate = more natural, less robotic
+  let rate = 0.70;
 
   const charProfile = CHARACTER_VOICE_PROFILES[character];
   if (charProfile) {
@@ -231,13 +231,13 @@ function pickVoice(character: string, gradeBand: string, topicTitle?: string): {
   rate = Math.max(0.5, Math.min(1.5, rate));
 
   const voices = window.speechSynthesis.getVoices();
-  console.log('🎤 pickVoice:', { character, topicTitle, pitch, rate, availableVoices: voices.length });
-  const local  = voices.filter(v => v.localService);
-  const pool   = local.length > 0 ? local : voices;
+
+  const local = voices.filter(v => v.localService);
+  const pool = local.length > 0 ? local : voices;
 
   // Female name hints for voice matching
   const femaleHints = ["samantha", "victoria", "karen", "moira", "veena", "zira", "female", "woman", "girl"];
-  const maleHints   = ["daniel", "alex", "tom", "fred", "rishi", "male", "man", "guy"];
+  const maleHints = ["daniel", "alex", "tom", "fred", "rishi", "male", "man", "guy"];
   const hints = isFemale ? femaleHints : maleHints;
 
   let voice: SpeechSynthesisVoice | null = null;
@@ -250,6 +250,17 @@ function pickVoice(character: string, gradeBand: string, topicTitle?: string): {
   }
   // Fallback: any English voice
   if (!voice) voice = pool.find(v => v.lang.startsWith("en")) ?? null;
+
+  console.log('🎤 VOICE DEBUG:', {
+    character,
+    isFemale,
+    gradeBand,
+    finalPitch: pitch,
+    finalRate: rate,
+    selectedVoice: voice ? { name: voice.name, lang: voice.lang, local: voice.localService } : 'NONE',
+    totalVoices: voices.length,
+    localVoices: local.length,
+  });
 
   return { voice, pitch, rate };
 }
@@ -327,7 +338,19 @@ export default function ConversationSession({
       const { voice, pitch, rate } = pickVoice(character, gradeBand, topicTitle);
       u.pitch = pitch;
       u.rate  = rate;
+      u.volume = 1.0;
       if (withVoice && voice) u.voice = voice;
+
+      console.log('🔊 UTTERANCE SETTINGS:', {
+        textLength: text.length,
+        lang: u.lang,
+        pitch: u.pitch,
+        rate: u.rate,
+        volume: u.volume,
+        voice: u.voice ? { name: u.voice.name, lang: u.voice.lang } : 'BROWSER_DEFAULT',
+        withVoice,
+      });
+
       return u;
     };
 
