@@ -630,8 +630,8 @@ export default function ConversationSession({
 
       rec.onend = () => {
         console.log('🛑 Speech recognition ended, final transcript:', finalTranscriptRef.current.trim());
-        // Only auto-restart if user is still in conversation and speech wasn't intentionally stopped
-        if (!committedRef.current && !stoppedRef.current && phase === "student-speaking") {
+        // Only auto-restart if user is still in conversation
+        if (!committedRef.current && phase === "student-speaking") {
           try {
             rec.start();
           } catch (e) {
