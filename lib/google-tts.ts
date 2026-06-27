@@ -13,6 +13,17 @@
 const GOOGLE_TTS_API_KEY = process.env.GOOGLE_TTS_API_KEY;
 const GOOGLE_TTS_ENABLED = !!GOOGLE_TTS_API_KEY;
 
+// Log startup status
+if (typeof window === 'undefined') {
+  console.log('🎵 Google Cloud TTS Status:');
+  console.log('   Enabled:', GOOGLE_TTS_ENABLED ? '✅ YES' : '❌ NO');
+  if (GOOGLE_TTS_ENABLED) {
+    console.log('   ✅ API Key is set - using Google Cloud Neural2 voices');
+  } else {
+    console.log('   ⚠️ API Key not found - falling back to Web Speech API');
+  }
+}
+
 // Character to Google Cloud NEURAL voice mapping (95% human quality)
 // Neural2 voices sound much more natural than Standard voices
 const CHARACTER_VOICE_MAP: Record<string, { name: string; gender: string; pitch: number; rate: number }> = {

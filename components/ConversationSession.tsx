@@ -604,8 +604,14 @@ export default function ConversationSession({
 
       rec.onend = () => {
         console.log('🛑 Speech recognition ended, final transcript:', finalTranscriptRef.current.trim());
-        if (!committedRef.current) {
-          try { rec.start(); } catch { /* ignore restart errors */ }
+        // Only auto-restart if user is still in conversation and speech wasn't intentionally stopped
+        if (!committedRef.current && !stoppedRef.current && phase === "student-speaking") {
+          try {
+            rec.start();
+          } catch (e) {
+            console.error('⚠️ Could not restart speech recognition:', e);
+            // Don't keep trying - let user click microphone button again
+          }
         }
       };
 
