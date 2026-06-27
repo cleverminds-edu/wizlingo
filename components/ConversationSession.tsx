@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { CHARACTER_INFO } from "@/lib/speaking-topics";
 import { TurnRecord, scoreTurn } from "@/lib/speaking-score";
 import { ConversationTurn } from "@/lib/ai-conversation";
+import { generateSmartResponse } from "@/lib/smart-responses";
 
 interface ConversationSessionProps {
   sessionId: string;
@@ -506,47 +507,27 @@ export default function ConversationSession({
       .catch((err) => {
         console.error('❌ AI turn error:', err);
 
-        // Graceful fallback: use pre-written character responses
-        const fallbackResponses: Record<string, string[]> = {
-          "Mom": [
-            "That's wonderful! Tell me more.",
-            "I love that! What else happened?",
-            "That sounds amazing! Keep going!"
-          ],
-          "Alex": [
-            "Cool! What do you think?",
-            "That's awesome! Tell me more.",
-            "Nice! How did that make you feel?"
-          ],
-          "Teacher": [
-            "Great point! Can you explain more?",
-            "Excellent thinking! Why do you think that?",
-            "That's a good observation!"
-          ],
-          "Sarah": [
-            "Oh my gosh, really? Tell me everything!",
-            "That's so cool! What happened next?",
-            "I love that! You're amazing!"
-          ],
-          "Jamie": [
-            "No way! Tell me more about that!",
-            "That's incredible! How did you do it?",
-            "You're so talented! Keep going!"
-          ]
-        };
+        // Smart fallback: Generate conversational response that references what student said
+        const lastStudentMessage = updatedHistory.length > 0
+          ? updatedHistory[updatedHistory.length - 1].text
+          : "something interesting";
 
-        // Get fallback response for this character
-        const responses = fallbackResponses[character] || fallbackResponses["Alex"];
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        const smartResponse = generateSmartResponse({
+          character,
+          topicTitle,
+          studentMessage: lastStudentMessage,
+          gradeBand,
+          isLastTurn,
+        });
 
-        console.log('🔄 Using fallback response:', randomResponse);
-        setCurrentAiText(randomResponse);
+        console.log('🎤 Smart fallback response:', smartResponse);
+        setCurrentAiText(smartResponse);
         setTranscript("");
         setInterimText("");
         setPhase("ai-speaking");
 
-        // Speak the fallback response
-        speakText(randomResponse, () => startStudentTurnRef.current());
+        // Speak the smart response
+        speakText(smartResponse, () => startStudentTurnRef.current());
       });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [character, topicTitle, gradeBand, maxTurns, onComplete, currentAiText, speakText]);
