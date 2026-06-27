@@ -248,16 +248,7 @@ function pickVoice(character: string, gradeBand: string, topicTitle?: string): {
   // Fallback: any English voice
   if (!voice) voice = pool.find(v => v.lang.startsWith("en")) ?? null;
 
-  console.log('🎤 VOICE DEBUG:', {
-    character,
-    isFemale,
-    gradeBand,
-    finalPitch: pitch,
-    finalRate: rate,
-    selectedVoice: voice ? { name: voice.name, lang: voice.lang, local: voice.localService } : 'NONE',
-    totalVoices: voices.length,
-    localVoices: local.length,
-  });
+  console.log(`🎤 VOICE: ${character} pitch=${pitch.toFixed(2)}, rate=${rate.toFixed(2)}, voice=${voice?.name || 'BROWSER_DEFAULT'} (${voices.length} available)`);
 
   return { voice, pitch, rate };
 }
@@ -338,15 +329,7 @@ export default function ConversationSession({
       u.volume = 1.0;
       if (withVoice && voice) u.voice = voice;
 
-      console.log('🔊 UTTERANCE SETTINGS:', {
-        textLength: text.length,
-        lang: u.lang,
-        pitch: u.pitch,
-        rate: u.rate,
-        volume: u.volume,
-        voice: u.voice ? { name: u.voice.name, lang: u.voice.lang } : 'BROWSER_DEFAULT',
-        withVoice,
-      });
+      console.log(`🔊 UTTERANCE: pitch=${u.pitch.toFixed(2)}, rate=${u.rate.toFixed(2)}, voice=${u.voice?.name || 'BROWSER'}, lang=${u.lang}`);
 
       return u;
     };
@@ -425,6 +408,15 @@ export default function ConversationSession({
       console.warn('⚠️  finalTranscriptRef empty, checking state...');
       // In case ref wasn't updated, use the transcript state
       text = transcript.trim() || interimText.trim();
+    }
+
+    // If still no text detected, ask user to speak again instead of using empty input
+    if (!text) {
+      console.warn('⚠️  No text detected. Asking user to speak again...');
+      setPhase("student-speaking");
+      setMicReady(true);
+      startStudentTurnRef.current?.();
+      return;
     }
 
     console.log('💾 commitTurn with text:', text.substring(0, 50));
