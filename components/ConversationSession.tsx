@@ -131,31 +131,37 @@ If you still have problems:
 const FEMALE_CHARACTERS = ["Meera", "Priya", "Mom", "Sarah", "Emma", "Aisha", "Teacher", "Chef", "Librarian", "Maya", "Eco"];
 const MALE_CHARACTERS = ["Alex", "Jamie", "Ravi", "Marco", "Professor", "Mentor", "Coach", "Tech", "Sage"];
 
-// Character personality profiles with voice modulation (subtle, natural)
+// Character personality profiles with voice modulation (slower = more natural, less robotic)
 const CHARACTER_VOICE_PROFILES: Record<string, { pitch: number; rate: number; volume?: number; warmth?: string }> = {
-  // Parent/Family - very warm, natural conversational pace
-  "Mom": { pitch: 1.45, rate: 0.72, warmth: "warm" },
-  // Friends - friendly, engaging, conversational
-  "Alex": { pitch: 0.85, rate: 0.75, warmth: "friendly" },
-  "Sarah": { pitch: 1.40, rate: 0.73, warmth: "friendly" },
-  "Jamie": { pitch: 0.86, rate: 0.75, warmth: "casual" },
-  "Ravi": { pitch: 0.82, rate: 0.73, warmth: "enthusiastic" },
-  "Aisha": { pitch: 1.42, rate: 0.74, warmth: "energetic" },
-  "Emma": { pitch: 1.40, rate: 0.74, warmth: "friendly" },
-  "Meera": { pitch: 1.38, rate: 0.73, warmth: "warm" },
-  // Mentors/Teachers - clear, warm, natural pacing
-  "Teacher": { pitch: 1.35, rate: 0.71, warmth: "encouraging" },
-  "Professor": { pitch: 0.80, rate: 0.70, warmth: "thoughtful" },
-  "Chef": { pitch: 0.88, rate: 0.74, warmth: "enthusiastic" },
-  "Librarian": { pitch: 1.32, rate: 0.71, warmth: "thoughtful" },
-  "Explorer": { pitch: 0.87, rate: 0.76, warmth: "energetic" },
-  "Coach": { pitch: 0.84, rate: 0.74, warmth: "motivating" },
-  "Tech": { pitch: 0.87, rate: 0.75, warmth: "excited" },
-  "Sage": { pitch: 0.79, rate: 0.69, warmth: "wise" },
-  "Maya": { pitch: 1.36, rate: 0.73, warmth: "curious" },
-  "Eco": { pitch: 1.34, rate: 0.74, warmth: "passionate" },
-  "Mentor": { pitch: 0.85, rate: 0.72, warmth: "encouraging" },
-  "Marco": { pitch: 0.86, rate: 0.75, warmth: "adventurous" },
+  // Parent/Family - very warm, slow conversational pace
+  "Mom": { pitch: 1.45, rate: 0.65, warmth: "warm" },
+  // Friends - friendly, conversational, slower
+  "Alex": { pitch: 0.85, rate: 0.68, warmth: "friendly" },
+  "Sarah": { pitch: 1.40, rate: 0.66, warmth: "friendly" },
+  "Jamie": { pitch: 0.86, rate: 0.68, warmth: "casual" },
+  "Ravi": { pitch: 0.82, rate: 0.66, warmth: "enthusiastic" },
+  "Aisha": { pitch: 1.42, rate: 0.67, warmth: "energetic" },
+  "Emma": { pitch: 1.40, rate: 0.67, warmth: "friendly" },
+  "Meera": { pitch: 1.38, rate: 0.66, warmth: "warm" },
+  // Mentors/Teachers - clear, measured pace
+  "Teacher": { pitch: 1.35, rate: 0.64, warmth: "encouraging" },
+  "Professor": { pitch: 0.80, rate: 0.62, warmth: "thoughtful" },
+  "Chef": { pitch: 0.88, rate: 0.67, warmth: "enthusiastic" },
+  "Librarian": { pitch: 1.32, rate: 0.64, warmth: "thoughtful" },
+  "Explorer": { pitch: 0.87, rate: 0.68, warmth: "energetic" },
+  "Coach": { pitch: 0.84, rate: 0.66, warmth: "motivating" },
+  "Tech": { pitch: 0.87, rate: 0.68, warmth: "excited" },
+  "Sage": { pitch: 0.79, rate: 0.61, warmth: "wise" },
+  "Maya": { pitch: 1.36, rate: 0.66, warmth: "curious" },
+  "Eco": { pitch: 1.34, rate: 0.67, warmth: "passionate" },
+  "Mentor": { pitch: 0.85, rate: 0.65, warmth: "encouraging" },
+  "Marco": { pitch: 0.86, rate: 0.68, warmth: "adventurous" },
+  // Priya - analytical, slower
+  "Priya": { pitch: 1.38, rate: 0.63, warmth: "curious" },
+  // Rohan - cool, casual
+  "Rohan": { pitch: 0.88, rate: 0.69, warmth: "cool" },
+  // Arjun - energetic
+  "Arjun": { pitch: 0.86, rate: 0.67, warmth: "energetic" },
 };
 
 // Topic-based rate and pitch modulation (subtle, natural)
@@ -182,12 +188,12 @@ const TOPIC_VOICE_MODS: Record<string, { rateMod: number; pitchMod: number }> = 
   "Learning": { rateMod: -0.01, pitchMod: 0.02 }, // Encouraging
 };
 
-// Voice pitch and rate matched to grade band
+// Voice pitch and rate matched to grade band (lower rates sound more natural)
 const VOICE_SETTINGS: Record<string, { pitchF: number; pitchM: number; rate: number }> = {
-  BAND_1_2:  { pitchF: 1.5, pitchM: 1.2, rate: 0.82 },
-  BAND_3_5:  { pitchF: 1.3, pitchM: 1.05, rate: 0.88 },
-  BAND_6_8:  { pitchF: 1.1, pitchM: 0.95, rate: 0.95 },
-  BAND_9_10: { pitchF: 1.0, pitchM: 0.88, rate: 1.0  },
+  BAND_1_2:  { pitchF: 1.5, pitchM: 1.2, rate: 0.70 },
+  BAND_3_5:  { pitchF: 1.3, pitchM: 1.05, rate: 0.72 },
+  BAND_6_8:  { pitchF: 1.1, pitchM: 0.95, rate: 0.75 },
+  BAND_9_10: { pitchF: 1.0, pitchM: 0.88, rate: 0.78 },
 };
 
 function pickVoice(character: string, gradeBand: string, topicTitle?: string): { voice: SpeechSynthesisVoice | null; pitch: number; rate: number } {
