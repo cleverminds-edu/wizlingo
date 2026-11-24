@@ -8,8 +8,8 @@ export async function GET() {
       _count: true,
     });
 
-    const totalTopics = await prisma.conversationTopic.count();
-    const topicsByBand = await prisma.conversationTopic.groupBy({
+    const totalTopics = await prisma.speakingTopic.count();
+    const topicsByBand = await prisma.speakingTopic.groupBy({
       by: ["gradeBand", "level"],
       _count: true,
     });

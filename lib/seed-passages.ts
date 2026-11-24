@@ -3,7 +3,7 @@ import { prisma } from "./prisma";
 export async function ensurePassagesSeeded() {
   try {
     const passageCount = await prisma.readingPassage.count();
-    const topicCount = await prisma.conversationTopic.count();
+    const topicCount = await prisma.speakingTopic.count();
 
     // If we have content, skip seeding
     if (passageCount > 0 && topicCount > 0) {

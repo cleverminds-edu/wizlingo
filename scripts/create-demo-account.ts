@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { enrollIn } from '@/lib/student-class';
 
 async function createDemoAccount() {
   try {
@@ -43,7 +44,7 @@ async function createDemoAccount() {
         name: 'Badge Demo',
         admissionNumber: 'DEMO001',
         pin: '1234',
-        classId: cls.id,
+        ...enrollIn(cls.id),
         accountType: 'PUBLIC',
       },
     });
@@ -102,7 +103,7 @@ async function createDemoAccount() {
     console.log('✓ Reading session 3: 92% accuracy, 125 wpm\n');
 
     // 6. Create conversation topic
-    const topic = await prisma.conversationTopic.create({
+    const topic = await prisma.speakingTopic.create({
       data: {
         title: 'Ordering Food',
         gradeBand: 'BAND_3_5',

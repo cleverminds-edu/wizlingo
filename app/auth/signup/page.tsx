@@ -1,381 +1,408 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import Image from 'next/image'
 
 export default function SignupPage() {
-  const router = useRouter();
-  const [name, setName] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [classId, setClassId] = useState('');
-  const [phone, setPhone] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [generatedPassword, setGeneratedPassword] = useState('');
-  const [studentData, setStudentData] = useState<any>(null);
+  const router = useRouter()
+  const [signupType, setSignupType] = useState<'b2b' | 'b2c'>('b2b')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 10);
-    setPhone(value);
-  };
+  const [b2bForm, setB2bForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    gradeCategory: 'GR_1_3',
+    dob: '',
+  })
 
-  const formatPhoneDisplay = (value: string) => {
-    if (!value) return '';
-    if (value.length <= 5) return value;
-    if (value.length <= 9) return `${value.slice(0, 5)} ${value.slice(5)}`;
-    return `${value.slice(0, 5)} ${value.slice(5, 10)}`;
-  };
+  const [b2cForm, setB2cForm] = useState({
+    name: '',
+    phone: '',
+    gradeCategory: 'GR_1_3',
+    dob: '',
+  })
 
-  const calculateAge = (dob: string) => {
-    if (!dob) return '';
-    const birthDate = new Date(dob);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    return age > 0 ? `(${age} years old)` : '';
-  };
+  const handleB2bSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
 
-  const getPasswordPreview = () => {
-    if (!name || !dateOfBirth || !phone) return '';
-    const namePrefix = name.slice(0, 3).toUpperCase();
-    const year = new Date(dateOfBirth).getFullYear();
-    const phoneSuffix = phone.slice(-3);
-    return `${namePrefix}${year}${phoneSuffix}`;
-  };
-
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setGeneratedPassword('');
-
-    // Validate all fields
-    if (!name || name.length < 2) {
-      setError('Please enter a valid name (at least 2 characters)');
-      return;
-    }
-    if (!dateOfBirth) {
-      setError('Please select your date of birth');
-      return;
-    }
-    if (phone.length !== 10) {
-      setError('Please enter a valid 10-digit phone number');
-      return;
+    if (b2bForm.password !== b2bForm.confirmPassword) {
+      setError('Passwords do not match')
+      setLoading(false)
+      return
     }
 
-    setLoading(true);
+    if (b2bForm.password.length < 6) {
+      setError('Password must be at least 6 characters')
+      setLoading(false)
+      return
+    }
+
     try {
-      const response = await fetch('/api/auth/signup-detailed', {
+      const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name,
-          dateOfBirth,
-          classId,
-          phone,
+          name: b2bForm.name,
+          email: b2bForm.email,
+          password: b2bForm.password,
         }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await res.json()
 
-      if (!response.ok) {
-        setError(data.error || 'Failed to create account');
-        return;
+      if (!res.ok) {
+        setError(data.error || 'Signup failed')
+        return
       }
 
-      // Show generated password
-      setGeneratedPassword(data.password);
-      setStudentData(data.studentData);
+      setSuccess('Account created! Redirecting...')
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('studentId', data.studentId)
+      setTimeout(() => router.push('/dashboard'), 1500)
     } catch (err) {
-      setError('Error creating account. Please try again.');
-      console.error(err);
+      setError('An error occurred. Please try again.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
+
+  const handleB2cSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    if (!/^\d{10}$/.test(b2cForm.phone)) {
+      setError('Phone must be 10 digits')
+      setLoading(false)
+      return
+    }
+
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: b2cForm.name,
+          phone: b2cForm.phone,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || 'Signup failed')
+        return
+      }
+
+      setSuccess(`Account created! Your ID: ${data.userId}`)
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('studentId', data.studentId)
+      localStorage.setItem('userId', data.userId)
+      setTimeout(() => router.push('/dashboard'), 1500)
+    } catch (err) {
+      setError('An error occurred. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #1a1a2e 50%, #16213e 75%, #0f172a 100%)" }}>
-      {/* Animated background shapes */}
-      <div className="absolute -top-20 -right-20 w-80 h-80 bg-yellow-400/20 rounded-full blur-3xl -z-10 animate-pulse"></div>
-      <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
-      <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-cyan-400/15 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+    <div className="min-h-screen bg-white flex flex-col lg:flex-row overflow-hidden">
+      {/* LEFT SIDE - CLEAN HERO SECTION */}
+      <div className="hidden lg:flex w-1/2 bg-gradient-to-b from-slate-900 to-blue-900 relative overflow-hidden items-center justify-center min-h-screen">
+        {/* Minimal, refined background */}
+        <div className="absolute inset-0">
+          {/* Subtle floating elements - very minimal */}
+          <div className="absolute top-20 right-20 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 left-20 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"></div>
 
-      <div className="w-full max-w-2xl relative z-10">
-        {/* Logo Section */}
-        <div className="text-center mb-6">
-          <div className="flex justify-center mb-3">
-            <div className="relative">
-              <Image
-                src="/wiziingo-logo.svg"
-                alt="WizLingo"
-                width={100}
-                height={50}
-                className="h-12 w-auto drop-shadow-lg"
-              />
-              <span className="absolute -top-2 -right-2 text-xl animate-bounce">✨</span>
+          {/* Very subtle grid pattern */}
+          <svg className="absolute inset-0 w-full h-full opacity-[0.02]" patternUnits="userSpaceOnUse">
+            <defs>
+              <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                <path d="M 50 0 L 0 0 0 50" fill="none" stroke="white" strokeWidth="0.5" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+          </svg>
+        </div>
+
+        {/* Hero Content - CLEAN & MINIMAL */}
+        <div className="relative z-10 w-full flex flex-col items-center justify-center px-8 py-12 max-w-lg">
+          {/* Logo - Clean */}
+          <img
+            src="/wizlingo-logo.png"
+            alt="WizLingo"
+            className="h-64 lg:h-80 mb-12 lg:mb-16"
+          />
+
+          {/* Content - Minimal and Clean */}
+          <div className="text-white text-center space-y-6">
+            {/* Headline */}
+            <h1 className="text-4xl lg:text-5xl font-bold leading-tight" style={{ fontFamily: "'Fredoka', sans-serif" }}>
+              Master Languages.<br/>Unlock Worlds.
+            </h1>
+
+            {/* Subtitle */}
+            <p className="text-lg text-white/80 leading-relaxed">
+              AI-powered learning that adapts to you. Progress at your pace, master at your level.
+            </p>
+
+            {/* Divider */}
+            <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-6"></div>
+
+            {/* Simple features */}
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center gap-3 justify-center">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                <span className="text-white/70">Personalized AI learning paths</span>
+              </div>
+              <div className="flex items-center gap-3 justify-center">
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-400"></span>
+                <span className="text-white/70">Master reading, writing, speaking, listening</span>
+              </div>
+              <div className="flex items-center gap-3 justify-center">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span className="text-white/70">Join 10M+ global learners</span>
+              </div>
             </div>
           </div>
-          <p className="text-white text-xs font-semibold uppercase tracking-widest">AI English Learning Platform</p>
         </div>
+      </div>
 
-        {/* Trust badges */}
-        <div className="flex justify-center gap-3 mb-6 text-xs flex-wrap">
-          <div className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 text-white font-semibold">🔒 Secure</div>
-          <div className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 text-white font-semibold">✅ Verified</div>
-          <div className="px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 text-white font-semibold">⭐ Trusted</div>
-        </div>
+      {/* RIGHT SIDE - SIGNUP FORM */}
+      <div className="flex-1 flex flex-col justify-center items-center lg:items-end p-6 sm:p-12 lg:w-1/2 lg:pr-20">
+        <div className="w-full max-w-md">
+          {/* Mobile Logo */}
+          <div className="lg:hidden mb-6">
+            <img src="/wizlingo-logo.png" alt="WizLingo" className="h-16" />
+          </div>
 
-        {/* Card */}
-        <div className="bg-gradient-to-br from-white/95 to-blue-50/95 rounded-3xl shadow-2xl p-8 border-2 border-white/30 backdrop-blur-xl">
-          {!generatedPassword ? (
-            <>
-              <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-orange-600 to-purple-600 bg-clip-text text-transparent mb-2">
+        {/* Floating Card Effect */}
+        <div className="w-full relative">
+          {/* Subtle shadow backdrop */}
+          <div className="absolute -inset-4 bg-gradient-to-br from-blue-100/40 to-orange-100/40 rounded-3xl blur-xl hidden lg:block"></div>
+
+          {/* Form Card */}
+          <div className="relative bg-white rounded-2xl p-8 shadow-2xl">
+              <h2 className="text-3xl font-bold text-slate-900 mb-2" style={{ fontFamily: "'Fredoka', sans-serif" }}>
                 Get Started
-              </h1>
-              <p className="text-center text-gray-600 text-sm mb-6">
-                Join thousands of students mastering English in 5 minutes daily
-              </p>
+              </h2>
+              <p className="text-gray-600 mb-8">Join millions learning smarter, not harder</p>
 
-              <form onSubmit={handleSignup} className="space-y-5">
-                {/* Name */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g., Aditya"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    disabled={loading}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">First 3 letters will be in your password</p>
+              {/* Tabs */}
+              <div className="flex gap-3 mb-8">
+                <button
+                  onClick={() => setSignupType('b2b')}
+                  className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm transition-all ${
+                    signupType === 'b2b'
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  🏫 School
+                </button>
+                <button
+                  onClick={() => setSignupType('b2c')}
+                  className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm transition-all ${
+                    signupType === 'b2c'
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  👨‍🎓 Individual
+                </button>
+              </div>
+
+              {/* Messages */}
+              {error && (
+                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  {error}
                 </div>
+              )}
 
-                {/* Date of Birth */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Date of Birth *
-                  </label>
-                  <input
-                    type="date"
-                    value={dateOfBirth}
-                    onChange={(e) => setDateOfBirth(e.target.value)}
-                    disabled={loading}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
-                  />
-                  {dateOfBirth && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      {calculateAge(dateOfBirth)} • Birth year goes in password
-                    </p>
-                  )}
+              {success && (
+                <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+                  {success}
                 </div>
+              )}
 
-                {/* Class - Made simple with direct input */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Class <span className="text-gray-500 font-normal">(e.g., VI, VII, VIII)</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g., Class V"
-                    value={classId}
-                    onChange={(e) => setClassId(e.target.value)}
+              {/* Forms */}
+              {signupType === 'b2b' && (
+                <form onSubmit={handleB2bSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={b2bForm.name}
+                      onChange={(e) => setB2bForm({ ...b2bForm, name: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      placeholder="Raj Kumar"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Date of Birth</label>
+                    <input
+                      type="date"
+                      value={b2bForm.dob}
+                      onChange={(e) => setB2bForm({ ...b2bForm, dob: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Grade Category</label>
+                    <select
+                      value={b2bForm.gradeCategory}
+                      onChange={(e) => setB2bForm({ ...b2bForm, gradeCategory: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    >
+                      <option value="PREPRIMARY">Pre-Primary (3-5 years)</option>
+                      <option value="GR_1_3">Grade 1-3 (6-9 years)</option>
+                      <option value="GR_4_7">Grade 4-7 (10-13 years)</option>
+                      <option value="GR_8_10">Grade 8-10 (14-16 years)</option>
+                      <option value="GR_11_12">Grade 11-12 (17-18 years)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Email</label>
+                    <input
+                      type="email"
+                      required
+                      value={b2bForm.email}
+                      onChange={(e) => setB2bForm({ ...b2bForm, email: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      placeholder="raj@school.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Password</label>
+                    <input
+                      type="password"
+                      required
+                      value={b2bForm.password}
+                      onChange={(e) => setB2bForm({ ...b2bForm, password: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      placeholder="••••••"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Confirm Password</label>
+                    <input
+                      type="password"
+                      required
+                      value={b2bForm.confirmPassword}
+                      onChange={(e) => setB2bForm({ ...b2bForm, confirmPassword: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      placeholder="••••••"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
                     disabled={loading}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Enter your class (or school name)</p>
-                </div>
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold py-3 rounded-lg hover:shadow-lg transition-all disabled:opacity-50 mt-4"
+                  >
+                    {loading ? 'Creating Account...' : '✨ Become a Language Wizard'}
+                  </button>
+                </form>
+              )}
 
-                {/* Phone */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Phone Number *
-                  </label>
-                  <div className="relative">
-                    <div className="absolute left-4 top-3.5 text-gray-700 font-semibold text-base">
-                      +91
-                    </div>
+              {signupType === 'b2c' && (
+                <form onSubmit={handleB2cSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={b2cForm.name}
+                      onChange={(e) => setB2cForm({ ...b2cForm, name: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      placeholder="Priya Sharma"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Date of Birth</label>
+                    <input
+                      type="date"
+                      value={b2cForm.dob}
+                      onChange={(e) => setB2cForm({ ...b2cForm, dob: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Grade Category</label>
+                    <select
+                      value={b2cForm.gradeCategory}
+                      onChange={(e) => setB2cForm({ ...b2cForm, gradeCategory: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    >
+                      <option value="PREPRIMARY">Pre-Primary (3-5 years)</option>
+                      <option value="GR_1_3">Grade 1-3 (6-9 years)</option>
+                      <option value="GR_4_7">Grade 4-7 (10-13 years)</option>
+                      <option value="GR_8_10">Grade 8-10 (14-16 years)</option>
+                      <option value="GR_11_12">Grade 11-12 (17-18 years)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
                     <input
                       type="tel"
-                      placeholder="98765 43210"
-                      value={formatPhoneDisplay(phone)}
-                      onChange={handlePhoneChange}
-                      disabled={loading}
-                      maxLength={11}
-                      className="w-full pl-16 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all font-semibold tracking-wider"
+                      required
+                      pattern="\d{10}"
+                      value={b2cForm.phone}
+                      onChange={(e) => setB2cForm({ ...b2cForm, phone: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      placeholder="9876543210"
                     />
-                    {phone.length === 10 && <span className="absolute right-4 top-3.5 text-green-600 text-lg">✓</span>}
+                    <p className="text-xs text-slate-500 mt-2">10 digits. Phone is your password.</p>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Last 3 digits will be in your password</p>
-                </div>
 
-                {/* Error */}
-                {error && (
-                  <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl">
-                    <p className="text-red-700 text-sm font-medium">⚠️ {error}</p>
+                  <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-blue-500 p-4 rounded-lg">
+                    <strong className="text-blue-900">🧙 Your WizLingo ID:</strong>
+                    <p className="text-sm text-blue-800 mt-1">Auto-generated (WL + 6 digits)</p>
                   </div>
-                )}
 
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={loading || !name || !dateOfBirth || phone.length !== 10}
-                  className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 duration-200"
-                >
-                  {loading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Creating Account...
-                    </span>
-                  ) : (
-                    '✨ Create Account'
-                  )}
-                </button>
-              </form>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-500 text-white font-bold py-3 rounded-lg hover:shadow-lg transition-all disabled:opacity-50 mt-4"
+                  >
+                    {loading ? 'Creating Account...' : '✨ Become a Language Wizard'}
+                  </button>
+                </form>
+              )}
 
-              {/* Password Formula - After Form */}
-              <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-100 rounded-xl">
-                <p className="text-xs text-gray-700 font-semibold mb-2 text-center">🔑 Your Password Formula</p>
-                {getPasswordPreview() ? (
-                  <div className="text-center">
-                    <div className="bg-white rounded-lg p-3 border border-blue-200 inline-block">
-                      <p className="font-mono text-sm font-bold text-orange-600">
-                        <span className="text-blue-600">{name.slice(0, 3).toUpperCase()}</span>
-                        <span className="text-purple-600">[{new Date(dateOfBirth).getFullYear()}]</span>
-                        <span className="text-green-600">{phone.slice(-3)}</span>
-                      </p>
-                    </div>
-                    <p className="text-xs text-gray-600 mt-2">
-                      <span className="text-blue-600">●</span> First 3 letters of name &nbsp;
-                      <span className="text-purple-600">●</span> Birth year &nbsp;
-                      <span className="text-green-600">●</span> Last 3 digits of phone
-                    </p>
-                  </div>
-                ) : (
-                  <p className="text-xs text-gray-500 text-center italic">Fill form to see your password preview</p>
-                )}
-              </div>
+              {/* Divider */}
+              <div className="my-6 border-t border-slate-200"></div>
 
-              {/* Footer */}
-              <p className="text-center text-xs text-gray-600 mt-6">
-                Already have an account? <a href="/auth/login-password" className="text-orange-600 hover:underline font-semibold">Sign in</a>
+              {/* Login link */}
+              <p className="text-center text-slate-700">
+                Already have an account?{' '}
+                <Link href="/auth/login" className="font-bold text-blue-600 hover:text-blue-700 transition">
+                  Sign in
+                </Link>
               </p>
-            </>
-          ) : (
-            /* Success State */
-            <div>
-              <h2 className="text-3xl font-bold text-center text-green-600 mb-6">🎉 Account Created!</h2>
-
-              {/* Student Details */}
-              <div className="p-6 bg-gradient-to-r from-orange-50 to-purple-50 border-2 border-orange-200 rounded-2xl mb-6">
-                <h3 className="text-sm font-semibold text-gray-700 mb-4">Student Account Details</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs text-gray-500">Name</p>
-                    <p className="text-lg font-bold text-gray-800">{studentData.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Class</p>
-                    <p className="text-lg font-bold text-gray-800">{studentData.class}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-xs text-gray-500">Phone</p>
-                    <p className="text-lg font-mono font-bold text-gray-800">+91{studentData.phone}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Login Credentials */}
-              <div className="p-6 bg-white border-2 border-green-300 rounded-2xl mb-6">
-                <h3 className="text-sm font-semibold text-gray-700 mb-4">🔐 Login Credentials</h3>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Username (Phone Number)</p>
-                    <div className="flex items-center justify-between bg-gray-50 px-4 py-3 rounded-lg border border-gray-200">
-                      <p className="font-mono font-bold text-gray-800">+91{studentData.phone}</p>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(`+91${studentData.phone}`);
-                          alert('Copied!');
-                        }}
-                        className="text-xs bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded font-semibold"
-                      >
-                        Copy
-                      </button>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Default Password</p>
-                    <div className="flex items-center justify-between bg-yellow-50 px-4 py-3 rounded-lg border border-yellow-300">
-                      <p className="font-mono font-bold text-orange-700">{generatedPassword}</p>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(generatedPassword);
-                          alert('Copied!');
-                        }}
-                        className="text-xs bg-yellow-200 hover:bg-yellow-300 px-2 py-1 rounded font-semibold"
-                      >
-                        Copy
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Info Box */}
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl mb-6">
-                <p className="text-xs text-blue-800 leading-relaxed">
-                  <span className="font-semibold">💡 Password Explanation:</span><br/>
-                  {studentData.name.slice(0, 3).toUpperCase()} (first 3 of name) + {new Date(dateOfBirth).getFullYear()} (birth year) + {phone.slice(-3)} (last 3 of phone) = <span className="font-mono font-bold">{generatedPassword}</span>
-                </p>
-              </div>
-
-              <div className="p-4 bg-green-50 border border-green-200 rounded-xl mb-6">
-                <p className="text-xs text-green-800 leading-relaxed">
-                  <span className="font-semibold">📱 Next Steps:</span><br/>
-                  1. Share these credentials with the student<br/>
-                  2. Student logs in at <span className="font-mono text-xs">/auth/login-password</span><br/>
-                  3. After first login, student can reset password
-                </p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setName('');
-                    setDateOfBirth('');
-                    setClassId('');
-                    setPhone('');
-                    setGeneratedPassword('');
-                    setStudentData(null);
-                  }}
-                  className="flex-1 py-3 bg-orange-100 text-orange-700 font-semibold rounded-xl hover:bg-orange-200 transition-all"
-                >
-                  ✨ Create Another
-                </button>
-                <button
-                  onClick={() => router.push('/auth/login-password')}
-                  className="flex-1 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all"
-                >
-                  Go to Login →
-                </button>
-              </div>
             </div>
-          )}
-
-          {/* Legal */}
-          <p className="text-center text-xs text-gray-500 mt-6">
-            Powered by <span className="font-semibold">Edvanta Intelligence System</span>
-          </p>
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

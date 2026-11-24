@@ -15,14 +15,18 @@ export async function GET(
   const classData = await prisma.class.findUnique({
     where: { id: classId },
     include: {
-      students: {
+      enrollments: {
         include: {
-          progress: true,
-          speakingProgress: true,
-          sessions: {
-            orderBy: { createdAt: "desc" },
-            take: 5,
-            where: { status: { in: ["COMPLETED", "NEEDS_REVIEW"] } },
+          student: {
+            include: {
+              progress: true,
+              speakingProgress: true,
+              sessions: {
+                orderBy: { createdAt: "desc" },
+                take: 5,
+                where: { status: { in: ["COMPLETED", "NEEDS_REVIEW"] } },
+              },
+            },
           },
         },
       },
@@ -31,5 +35,7 @@ export async function GET(
 
   if (!classData) return Response.json({ error: "Class not found" }, { status: 404 });
 
-  return Response.json(classData);
+  // Keep the response shape the dashboard expects: `students` on the class.
+  const { enrollments, ...cls } = classData;
+  return Response.json({ ...cls, students: enrollments.map((e) => e.student) });
 }

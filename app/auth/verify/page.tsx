@@ -114,7 +114,7 @@ function VerifyEmailPageContent() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="mb-8 flex items-center justify-center gap-2">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-purple-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center">
             <span className="text-white font-bold text-lg">W</span>
           </div>
           <div>

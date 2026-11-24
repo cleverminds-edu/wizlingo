@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { classWithSchoolInclude } from '@/lib/student-class';
 import { prisma } from '@/lib/prisma';
 import { BadgeType } from '@/app/generated/prisma/client';
 
@@ -78,11 +79,7 @@ export async function POST(request: NextRequest) {
     // Get student details
     const student = await prisma.student.findUnique({
       where: { id: studentId },
-      include: {
-        class: {
-          include: { school: { select: { name: true } } },
-        },
-      },
+      include: classWithSchoolInclude,
     });
 
     if (!student) {

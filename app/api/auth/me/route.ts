@@ -1,71 +1,84 @@
-import { getSession } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import jwt from "jsonwebtoken";
+import { getSession, getTokenFromRequest, verifyStudentToken } from "@/lib/auth";
+import { classInclude, primaryClass } from "@/lib/student-class";
 
-export async function GET(request: Request) {
-  console.log('🔐 GET /api/auth/me - Starting');
-
-  let session: any = null;
-  let isJwtAuth = false;
-
-  // Try session first (for cookies)
-  session = await getSession();
-  console.log('📋 Session check:', { hasSession: !!session, sessionId: session?.id });
-
-  // If no session, try Authorization header (for localStorage tokens)
-  if (!session) {
-    const authHeader = request.headers.get("Authorization");
-    console.log('📨 Authorization header present:', !!authHeader);
-
-    if (authHeader?.startsWith("Bearer ")) {
-      const token = authHeader.slice(7);
-      console.log('🔑 Token found, attempting JWT verification...');
-      try {
-        const secret = process.env.JWT_SECRET || "secret";
-        const verified = jwt.verify(token, secret) as any;
-        console.log('✅ JWT verified successfully:', { studentId: verified.studentId, role: verified.role });
-        session = verified;
-        isJwtAuth = true;
-      } catch (error) {
-        console.error('❌ JWT verification failed:', error instanceof Error ? error.message : error);
-        return Response.json({ error: "Token verification failed", debug: { jwtError: error instanceof Error ? error.message : String(error) } }, { status: 401 });
+/**
+ * Who is logged in.
+ *
+ * 1. School portal (cookie, set by admission number / employee code + PIN login):
+ *    student, teacher or admin — behaviour restored from production.
+ * 2. B2C (Bearer token in the Authorization header): student only — July behaviour.
+ *
+ * Secrets (passwordHash, pin) are never returned.
+ */
+export async function GET(request: NextRequest) {
+  try {
+    // 1. School portal cookie session
+    const session = await getSession();
+    if (session) {
+      if (session.role === "teacher") {
+        const teacher = await prisma.teacher.findUnique({
+          where: { id: session.id },
+          include: { classes: true },
+        });
+        if (!teacher) return NextResponse.json({ error: "Teacher not found" }, { status: 404 });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { pin, passwordHash, ...safe } = teacher;
+        return NextResponse.json({ ...safe, role: "teacher" });
       }
-    } else {
-      console.error('❌ No Authorization header or wrong format');
+
+      if (session.role === "admin") {
+        const admin = await prisma.admin.findUnique({ where: { id: session.id } });
+        if (!admin) return NextResponse.json({ error: "Admin not found" }, { status: 404 });
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { pin, ...safe } = admin;
+        return NextResponse.json({ ...safe, role: "admin" });
+      }
+
+      const student = await prisma.student.findUnique({
+        where: { id: session.id },
+        include: { ...classInclude, progress: true },
+      });
+      if (!student) return NextResponse.json({ error: "Student not found" }, { status: 404 });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { pin, passwordHash, enrollments, ...safe } = student;
+      // `class` kept in the response for the school dashboard (was Student.class before Enrollment)
+      return NextResponse.json({ ...safe, class: primaryClass(student), role: "student" });
     }
-  }
 
-  if (!session) {
-    console.error('❌ No auth found (no session, no valid JWT)');
-    return Response.json({ error: "Unauthorized", debug: { reason: "No session or JWT found" } }, { status: 401 });
-  }
+    // 2. B2C Bearer token
+    const token = getTokenFromRequest(request);
+    if (!token) {
+      return NextResponse.json({ error: "No token provided" }, { status: 401 });
+    }
 
-  console.log('✅ Auth successful:', { isJwtAuth, role: session.role || session.role });
+    const decoded = verifyStudentToken(token);
+    if (!decoded) {
+      return NextResponse.json({ error: "Invalid or expired token" }, { status: 401 });
+    }
 
-  // For JWT tokens (B2C), studentId is in the payload and role is always "student"
-  // For session auth, id and role are in the session object
-  const userId = session.studentId || session.id;
-  const role = isJwtAuth ? "student" : (session.role || "student");
-
-  if (role === "student") {
     const student = await prisma.student.findUnique({
-      where: { id: userId },
-      include: { class: true, progress: true },
+      where: { id: decoded.studentId },
+      include: { progress: true },
     });
-    if (!student) return Response.json({ error: "Student not found" }, { status: 404 });
-    return Response.json({ ...student, role: "student" });
-  }
 
-  if (role === "teacher") {
-    const teacher = await prisma.teacher.findUnique({
-      where: { id: userId },
-      include: { classes: true },
+    if (!student) {
+      return NextResponse.json({ error: "Student not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      id: student.id,
+      name: student.name,
+      email: student.email,
+      currentLevel: student.currentLevel,
+      totalXP: student.totalXP,
+      streakDays: student.streakDays,
+      progress: student.progress,
+      role: "student",
     });
-    if (!teacher) return Response.json({ error: "Teacher not found" }, { status: 404 });
-    return Response.json({ ...teacher, role: "teacher" });
+  } catch (error) {
+    console.error("Me endpoint error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-
-  const admin = await prisma.admin.findUnique({ where: { id: userId } });
-  if (!admin) return Response.json({ error: "Admin not found" }, { status: 404 });
-  return Response.json({ ...admin, role: "admin" });
 }

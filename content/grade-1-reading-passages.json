@@ -1,0 +1,143 @@
+{
+  "grade": 1,
+  "passages": [
+    {
+      "id": "g1-read-001",
+      "title": "My Pet Cat",
+      "content": "I have a cat. Her name is Fluffy. Fluffy is orange and white. She likes to sleep. She likes to play with a ball. I love my cat very much.",
+      "wordCount": 30,
+      "readingLevel": "A1",
+      "estimatedWPM": 50,
+      "keyVocabulary": ["cat", "orange", "white", "sleep", "play", "love"],
+      "comprehensionQuestions": [
+        {
+          "question": "What is the name of the cat?",
+          "type": "literal",
+          "options": ["Fluffy", "Tiger", "Whiskers", "Luna"],
+          "correctAnswer": "Fluffy",
+          "explanation": "The text says 'Her name is Fluffy.'"
+        },
+        {
+          "question": "What color is Fluffy?",
+          "type": "literal",
+          "options": ["Black and white", "Orange and white", "Brown and yellow", "Red and gray"],
+          "correctAnswer": "Orange and white",
+          "explanation": "The text says 'Fluffy is orange and white.'"
+        },
+        {
+          "question": "What does Fluffy like to do?",
+          "type": "literal",
+          "options": ["Eat", "Sleep and play", "Run", "Swim"],
+          "correctAnswer": "Sleep and play",
+          "explanation": "The text says 'She likes to sleep. She likes to play with a ball.'"
+        },
+        {
+          "question": "How does the author feel about Fluffy?",
+          "type": "inferential",
+          "options": ["Sad", "Scared", "Happy and caring", "Angry"],
+          "correctAnswer": "Happy and caring",
+          "explanation": "The author says 'I love my cat very much,' which shows they care and are happy."
+        },
+        {
+          "question": "What word means 'to move around and have fun'?",
+          "type": "vocabulary",
+          "options": ["Sleep", "Play", "Love", "Ball"],
+          "correctAnswer": "Play",
+          "explanation": "'Play' means to have fun and move around. The text says Fluffy likes to play."
+        }
+      ]
+    },
+    {
+      "id": "g1-read-002",
+      "title": "Fun at the Park",
+      "content": "Tom and Ann go to the park. Tom plays on the slide. Ann plays on the swing. They see a dog. The dog runs and jumps. They play with the dog. They have fun.",
+      "wordCount": 35,
+      "readingLevel": "A1",
+      "estimatedWPM": 55,
+      "keyVocabulary": ["park", "slide", "swing", "dog", "run", "jump", "play"],
+      "comprehensionQuestions": [
+        {
+          "question": "Where do Tom and Ann go?",
+          "type": "literal",
+          "options": ["To school", "To the park", "To the zoo", "To home"],
+          "correctAnswer": "To the park",
+          "explanation": "The text says 'Tom and Ann go to the park.'"
+        },
+        {
+          "question": "What does Tom play on?",
+          "type": "literal",
+          "options": ["Swing", "Slide", "See-saw", "Monkey bars"],
+          "correctAnswer": "Slide",
+          "explanation": "The text says 'Tom plays on the slide.'"
+        },
+        {
+          "question": "What animal do they see?",
+          "type": "literal",
+          "options": ["Cat", "Bird", "Dog", "Fish"],
+          "correctAnswer": "Dog",
+          "explanation": "The text says 'They see a dog.'"
+        },
+        {
+          "question": "What do you think they did after seeing the dog?",
+          "type": "inferential",
+          "options": ["Went home", "Played with the dog", "Slept", "Cried"],
+          "correctAnswer": "Played with the dog",
+          "explanation": "The text says 'They play with the dog.'"
+        },
+        {
+          "question": "Which word means to push your legs and go up into the air?",
+          "type": "vocabulary",
+          "options": ["Run", "Jump", "Slide", "Swing"],
+          "correctAnswer": "Jump",
+          "explanation": "'Jump' means to go up into the air using your legs."
+        }
+      ]
+    },
+    {
+      "id": "g1-read-003",
+      "title": "Apple Tree",
+      "content": "There is an apple tree in my yard. In summer, the tree is green. In fall, red apples grow on the tree. I pick the apples. I eat the sweet apples. They taste good.",
+      "wordCount": 35,
+      "readingLevel": "A1",
+      "estimatedWPM": 55,
+      "keyVocabulary": ["tree", "yard", "summer", "green", "fall", "red", "apples", "pick", "sweet"],
+      "comprehensionQuestions": [
+        {
+          "question": "Where is the apple tree?",
+          "type": "literal",
+          "options": ["In the park", "In the yard", "In the school", "In the forest"],
+          "correctAnswer": "In the yard",
+          "explanation": "The text says 'There is an apple tree in my yard.'"
+        },
+        {
+          "question": "What color is the tree in summer?",
+          "type": "literal",
+          "options": ["Red", "Yellow", "Green", "Brown"],
+          "correctAnswer": "Green",
+          "explanation": "The text says 'In summer, the tree is green.'"
+        },
+        {
+          "question": "When do red apples grow?",
+          "type": "literal",
+          "options": ["In spring", "In summer", "In fall", "In winter"],
+          "correctAnswer": "In fall",
+          "explanation": "The text says 'In fall, red apples grow on the tree.'"
+        },
+        {
+          "question": "Why does the author like the apples?",
+          "type": "inferential",
+          "options": ["They are pretty", "They taste good", "They are big", "They are cheap"],
+          "correctAnswer": "They taste good",
+          "explanation": "The text says 'They taste good,' which is why the author eats them."
+        },
+        {
+          "question": "What does 'sweet' mean?",
+          "type": "vocabulary",
+          "options": ["Sour", "Tastes like sugar", "Hard", "Cold"],
+          "correctAnswer": "Tastes like sugar",
+          "explanation": "'Sweet' means something tastes like sugar - pleasant and not sour."
+        }
+      ]
+    }
+  ]
+}

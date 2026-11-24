@@ -14,6 +14,11 @@ const WHATSAPP_MESSAGES: Record<BadgeType, { emoji: string; title: string; descr
     title: "WORD WIZARD Badge",
     description: "Achieved 80%+ reading accuracy - a true master of words!",
   },
+  STORY_WIZARD: {
+    emoji: "📖",
+    title: "STORY WIZARD Badge",
+    description: "Completed Stage 3 — reads for meaning and retells stories in their own words!",
+  },
   VOICE_WIZARD: {
     emoji: "🎤",
     title: "VOICE WIZARD Badge",

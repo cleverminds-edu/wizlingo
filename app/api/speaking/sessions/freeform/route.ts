@@ -1,4 +1,7 @@
 import { getSession } from "@/lib/auth";
+import { SERVABLE_TOPIC } from '@/lib/content-status';
+import { ageBandToGradeBand } from '@/lib/age-band-mapping';
+import type { AgeBand } from '@/lib/age-band';
 import { prisma } from "@/lib/prisma";
 
 export async function POST() {
@@ -14,27 +17,31 @@ export async function POST() {
     // Get student info
     const student = await prisma.student.findUnique({
       where: { id: session.id },
-      select: { gradeBand: true, userId: true },
+      select: { userId: true, progress: { select: { gradeBand: true, ageBand: true } } },
     });
+    // Student has no gradeBand column: take it from progress, else derive it from the age band.
+    const gradeBand = student
+      ? student.progress?.gradeBand ?? ageBandToGradeBand((student.progress?.ageBand ?? '9-11') as AgeBand)
+      : null;
 
-    console.log('📚 Student lookup:', { studentId: session.id, found: !!student, gradeBand: student?.gradeBand });
+    console.log('📚 Student lookup:', { studentId: session.id, found: !!student, gradeBand });
 
-    if (!student) {
+    if (!student || !gradeBand) {
       console.error('❌ Student not found:', session.id);
       return Response.json({ error: "Student not found" }, { status: 404 });
     }
 
     // Fetch all topics for the student's grade band
-    const topics = await prisma.conversationTopic.findMany({
-      where: { gradeBand: student.gradeBand },
+    const topics = await prisma.speakingTopic.findMany({
+      where: { gradeBand, ...SERVABLE_TOPIC },
       select: { id: true, title: true },
       take: 100,
     });
 
-    console.log('📖 Topics found:', { count: topics.length, gradeBand: student.gradeBand });
+    console.log('📖 Topics found:', { count: topics.length, gradeBand });
 
     if (topics.length === 0) {
-      console.error('❌ No topics for grade band:', student.gradeBand);
+      console.error('❌ No topics for grade band:', gradeBand);
       return Response.json({ error: "No topics available for your level" }, { status: 404 });
     }
 

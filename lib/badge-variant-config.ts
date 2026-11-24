@@ -33,6 +33,7 @@ function getBadgeFileName(badgeType: BadgeType): string {
   const fileMap: Record<BadgeType, string> = {
     SPARK: 'spark-badge.svg',
     WORD_WIZARD: 'word-wizard-badge.svg',
+    STORY_WIZARD: 'story-wizard-badge.svg', // art pending (task 1.14)
     VOICE_WIZARD: 'voice-wizard-badge.svg',
     LANGUAGE_WIZARD: 'language-wizard-badge.svg',
     GRAND_WIZARD: 'grand-wizard-badge.svg',

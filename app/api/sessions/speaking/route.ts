@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Get topic
-    const topic = await prisma.conversationTopic.findUnique({
+    const topic = await prisma.speakingTopic.findUnique({
       where: { id: topicId },
     });
 

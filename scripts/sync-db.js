@@ -19,17 +19,6 @@ if (!dbUrl) {
   process.exit(0);
 }
 
-async function createEnums(client) {
-  console.log('📋 Ensuring enums exist...');
-  try {
-    const enumSql = fs.readFileSync('./scripts/create-enums.sql', 'utf-8');
-    await client.query(enumSql);
-    console.log('✅ Enums ready\n');
-  } catch (error) {
-    console.error('⚠️  Enum creation issue:', error.message);
-  }
-}
-
 async function verifyTables(client) {
   console.log('Verifying essential tables...');
 
@@ -68,8 +57,9 @@ async function main() {
     await client.connect();
     console.log('✅ Connected\n');
 
-    // Create enums first
-    await createEnums(client);
+    // Enums are created by the Prisma migrations. The old pre-step (scripts/create-enums.sql) created
+    // them first, with values that don't match the schema, which made a fresh `migrate deploy` fail
+    // with "type already exists". Removed for the clean start (2026-11-24).
     await client.end();
 
     // Now run Prisma migrations (requires DATABASE_URL env var)
@@ -80,15 +70,11 @@ async function main() {
     });
 
     if (migrateResult.status !== 0) {
-      console.log('\n⚠️  Migrations had issues, trying db push...\n');
-      const dbPushResult = spawnSync('npx', ['prisma', 'db', 'push', '--accept-data-loss'], {
-        stdio: 'inherit',
-        env: { ...process.env, DATABASE_URL: dbUrl }
-      });
-
-      if (dbPushResult.status !== 0) {
-        console.log('\n⚠️  Both migration methods failed\n');
-      }
+      // Never fall back to `prisma db push --accept-data-loss`: it applies the schema without the
+      // data moves in the migrations and can drop production data (see
+      // docs/plans/SCHEMA_REPLACEMENT_PLAN.md). Fail the deploy instead; fix the migration by hand.
+      console.error('\n❌ prisma migrate deploy failed. Not starting. No schema changes were forced.\n');
+      process.exit(1);
     }
 
     // Verify tables exist

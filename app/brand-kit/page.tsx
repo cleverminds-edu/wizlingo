@@ -6,14 +6,14 @@ import Image from "next/image";
 // ── Brand tokens ──────────────────────────────────────────────────────────────
 
 const COLORS = [
-  { name: "Wiz Orange",   hex: "#F97316", rgb: "249 115 22",  role: "Primary · logo wordmark",   dark: false },
-  { name: "Lingo Purple", hex: "#9333EA", rgb: "147 51 234",  role: "Primary · logo wordmark",   dark: false },
-  { name: "Magic Pink",   hex: "#F43F88", rgb: "244 63 136",  role: "Accent · bubble gradient",  dark: false },
-  { name: "Deep Violet",  hex: "#7C3AED", rgb: "124 58 237",  role: "Brand dark · backgrounds",  dark: false },
-  { name: "Spark Gold",   hex: "#FFD700", rgb: "255 215 0",   role: "Accent · stars & badges",   dark: true  },
-  { name: "Midnight",     hex: "#0F0C29", rgb: "15 12 41",    role: "Dark background",            dark: false },
-  { name: "Pure White",   hex: "#FFFFFF", rgb: "255 255 255", role: "Light background",           dark: true  },
-  { name: "Soft Lilac",   hex: "#EDE9FE", rgb: "237 233 254", role: "UI tint / hover states",    dark: true  },
+  { name: "Wizard Blue",   hex: "#0066FF", rgb: "0 102 255",   role: "Primary · logo main",       dark: false },
+  { name: "Wizard Cyan",   hex: "#00CCFF", rgb: "0 204 255",   role: "Primary · logo wave",      dark: false },
+  { name: "Wizard Orange", hex: "#FF9900", rgb: "255 153 0",   role: "Primary · logo wave",      dark: false },
+  { name: "Lingo Red",     hex: "#FF3333", rgb: "255 51 51",   role: "Accent · bubble & cta",    dark: false },
+  { name: "Wizard Purple", hex: "#6600FF", rgb: "102 0 255",   role: "Accent · stars",           dark: false },
+  { name: "Lingo Pink",    hex: "#FF3366", rgb: "255 51 102",  role: "Accent · bubble",          dark: false },
+  { name: "Lingo Green",   hex: "#00CC66", rgb: "0 204 102",   role: "Accent · badges",          dark: false },
+  { name: "Navy Dark",     hex: "#001F3F", rgb: "0 31 63",     role: "Dark background",          dark: false },
 ];
 
 const BADGES = [

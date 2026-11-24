@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { primaryClassId } from "@/lib/student-class";
 import { prisma } from "@/lib/prisma";
 import { signToken, makeAuthCookie } from "@/lib/auth";
 
@@ -39,9 +40,10 @@ export async function GET(req: NextRequest) {
   if (role === "student") {
     const student = await prisma.student.findUnique({
       where: { admissionNumber: DEMO.student.admissionNumber },
+      include: { enrollments: { take: 1, orderBy: { enrolledAt: "asc" } } },
     });
     if (!student) return new Response("Demo student not found — run db:seed", { status: 500 });
-    token = signToken({ id: student.id, role: "student", classId: student.classId });
+    token = signToken({ id: student.id, role: "student", classId: primaryClassId(student) ?? undefined });
   } else if (role === "teacher") {
     const teacher = await prisma.teacher.findUnique({
       where: { empCode: DEMO.teacher.empCode },

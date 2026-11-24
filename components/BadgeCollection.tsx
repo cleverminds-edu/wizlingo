@@ -15,7 +15,10 @@ export function BadgeCollection({
 }: BadgeCollectionProps) {
   const [selectedBadge, setSelectedBadge] = useState<BadgeType | null>(null);
 
-  const allBadges = Object.values(BADGE_CONFIG) as Array<typeof BADGE_CONFIG[BadgeType]>;
+  // Hide badges that are defined but not yet awarded (STORY_WIZARD until the stage system ships)
+  const allBadges = (Object.values(BADGE_CONFIG) as Array<typeof BADGE_CONFIG[BadgeType]>).filter(
+    (b) => b.released !== false
+  );
 
   return (
     <div>

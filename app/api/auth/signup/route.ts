@@ -1,145 +1,161 @@
-// @ts-ignore
-import bcrypt from 'bcrypt';
-import crypto from 'crypto';
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { hashPassword, createToken } from "@/lib/auth";
 
-function generateVerificationCode(): string {
-  return crypto.randomBytes(3).toString('hex').toUpperCase();
-}
-
-export async function POST(req: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    const { email, name, grade, dateOfBirth, accountType } = await req.json();
+    const body = await request.json();
+    const { email, password, name, phone, gradeCategory, dob } = body;
 
-    // Validate required fields
-    if (!email || !name || !grade || !dateOfBirth) {
+    // Validate: Must have name
+    if (!name) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: "Name is required" },
         { status: 400 }
       );
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
+    // TWO SIGNUP FLOWS:
+    // 1. B2B Schools: Email + Password (for school students with email)
+    // 2. B2C Tier 2/3: Phone only (for students without email)
 
-    // Check if user already exists by admission number (email-based)
-    const existingUser = await prisma.student.findUnique({
-      where: { admissionNumber: email },
-    });
-
-    if (existingUser) {
-      return NextResponse.json(
-        { error: 'Email already registered. Please sign in instead.' },
-        { status: 409 }
-      );
-    }
-
-    // Generate verification code
-    const verificationCode = generateVerificationCode();
-    const verificationCodeHash = await bcrypt.hash(verificationCode, 10);
-
-    // Generate a temporary PIN (can be customized later)
-    const tempPin = Math.floor(1000 + Math.random() * 9000).toString();
-
-    // Map grade to gradeBand
-    const gradeNum = parseInt(grade);
-    let gradeBand = 'BAND_3_5';
-    if (gradeNum <= 2) gradeBand = 'BAND_1_2';
-    else if (gradeNum <= 5) gradeBand = 'BAND_3_5';
-    else if (gradeNum <= 8) gradeBand = 'BAND_6_8';
-    else gradeBand = 'BAND_9_10';
-
-    // Get or create a default class for public signups
-    let defaultClass = await prisma.class.findFirst({
-      where: {
-        grade: gradeNum,
-        section: 'Public',
-      },
-    });
-
-    if (!defaultClass) {
-      // Create a school for public users if it doesn't exist
-      let publicSchool = await prisma.school.findFirst({
-        where: { code: 'PUBLIC' },
-      });
-
-      if (!publicSchool) {
-        publicSchool = await prisma.school.create({
-          data: {
-            name: 'WizLingo Public',
-            code: 'PUBLIC',
-          },
-        });
+    if (email) {
+      // FLOW 1: Email-based signup (B2B/B2C with email)
+      if (!password) {
+        return NextResponse.json(
+          { error: "Password is required for email signup" },
+          { status: 400 }
+        );
       }
 
-      defaultClass = await prisma.class.create({
+      if (password.length < 6) {
+        return NextResponse.json(
+          { error: "Password must be at least 6 characters" },
+          { status: 400 }
+        );
+      }
+
+      // Check if email exists
+      const existing = await prisma.student.findUnique({
+        where: { email },
+      });
+
+      if (existing) {
+        return NextResponse.json(
+          { error: "Email already exists" },
+          { status: 409 }
+        );
+      }
+
+      // Hash password
+      const passwordHash = await hashPassword(password);
+
+      // Create student
+      const student = await prisma.student.create({
         data: {
-          grade: gradeNum,
-          section: 'Public',
-          schoolId: publicSchool.id,
+          email,
+          name,
+          passwordHash,
+          currentLevel: 2,
+          gradeCategory: gradeCategory || 'GR_1_3',
+          dateOfBirth: dob ? new Date(dob) : null,
+          progress: {
+            create: {},
+          },
+          journeyProgress: {
+            create: {
+              currentPillar: 'SOUND_FOUNDATION',
+              currentStage: 'STAGE_1',
+              stageProgress: 0,
+            },
+          },
         },
       });
-    }
 
-    // Create student
-    const student = await prisma.student.create({
-      data: {
-        admissionNumber: email,
-        name,
-        pin: tempPin,
-        classId: defaultClass.id,
-        accountType: accountType || 'PUBLIC',
-        parentEmail: email, // Use signup email as parent email for public users
-      },
-    });
+      // Create token
+      const token = createToken(student.id);
 
-    // Create progress record
-    await prisma.studentProgress.create({
-      data: {
+      return NextResponse.json({
         studentId: student.id,
-        gradeBand: gradeBand as any,
-      },
-    });
+        userId: null,
+        token,
+        signupType: "email",
+        message: "Welcome to WizLingo! 🎉",
+      });
+    } else if (phone) {
+      // FLOW 2: Phone-based signup (B2C Tier 2/3 without email)
+      // Validate phone: 10 digits
+      if (!/^\d{10}$/.test(phone)) {
+        return NextResponse.json(
+          { error: "Phone must be 10 digits" },
+          { status: 400 }
+        );
+      }
 
-    // Store verification code in database (valid for 24 hours)
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    await prisma.verificationCode.create({
-      data: {
-        email,
-        code: verificationCode,
-        expiresAt,
-      },
-    });
+      // Check if phone already has a student
+      const existing = await prisma.student.findFirst({
+        where: { phone },
+      });
 
-    // TODO: Send verification email with the code
-    // This would typically be done via a service like SendGrid, AWS SES, etc.
-    // Example integration:
-    // await sendVerificationEmail(email, verificationCode);
+      if (existing) {
+        return NextResponse.json(
+          { error: "Phone number already registered. Use login instead." },
+          { status: 409 }
+        );
+      }
 
-    return NextResponse.json(
-      {
-        message: 'Signup successful. Check your email for verification code.',
-        student: {
-          id: student.id,
-          name: student.name,
-          email: email,
-          accountType: student.accountType,
+      // Generate UserID: WL + 6 random digits
+      // Example: WL123456, WL987654
+      const randomNum = Math.floor(100000 + Math.random() * 900000);
+      const userId = `WL${randomNum}`;
+
+      // Use phone as default password (hashed)
+      const passwordHash = await hashPassword(phone);
+
+      // Create student with phone-based signup
+      const student = await prisma.student.create({
+        data: {
+          email: null,
+          name,
+          phone,
+          passwordHash,
+          userId,
+          currentLevel: 2,
+          gradeCategory: gradeCategory || 'GR_1_3',
+          dateOfBirth: dob ? new Date(dob) : null,
+          progress: {
+            create: {},
+          },
+          journeyProgress: {
+            create: {
+              currentPillar: 'SOUND_FOUNDATION',
+              currentStage: 'STAGE_1',
+              stageProgress: 0,
+            },
+          },
         },
-        verificationCodeForDev: verificationCode, // Remove in production
-      },
-      { status: 201 }
-    );
+      });
+
+      // Create token
+      const token = createToken(student.id);
+
+      return NextResponse.json({
+        studentId: student.id,
+        userId: userId,
+        token,
+        signupType: "phone",
+        message: `Welcome to WizLingo! Your ID is ${userId}. Your password is your phone number. Change it on first login.`,
+      });
+    } else {
+      return NextResponse.json(
+        { error: "Please provide either email or phone number" },
+        { status: 400 }
+      );
+    }
   } catch (error) {
-    console.error('Signup error:', error);
+    console.error("Signup error:", error);
     return NextResponse.json(
-      { error: 'Signup failed. Please try again.' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

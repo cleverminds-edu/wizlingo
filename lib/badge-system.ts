@@ -33,6 +33,21 @@ Join me → [LINK]`,
 Join the challenge → [LINK]`,
     order: 2,
   },
+  // STORY_WIZARD = Stage 3 badge (PD-003). Not awarded or listed until the stage system ships (Phase 1 task 1.8); art from task 1.14.
+  STORY_WIZARD: {
+    type: 'STORY_WIZARD',
+    name: 'Story Wizard',
+    emoji: '📖',
+    color: '#0D9488',
+    bgColor: '#F0FDFA',
+    description: 'Reads for meaning: understands stories, spots clues, retells in own words',
+    requirement: 'Complete Stage 3 — reading for meaning',
+    message: 'Brilliant! You\'re a Story Wizard! 📖 You don\'t just read stories — you understand them.',
+    shareText: `I just became a 📖 STORY WIZARD on WizLingo!
+I can read for meaning and retell stories in my own words.
+Join the challenge → [LINK]`,
+    order: 2.5,
+  },
   VOICE_WIZARD: {
     type: 'VOICE_WIZARD',
     name: 'Voice Wizard',
@@ -285,8 +300,9 @@ async function checkStreakBadges(studentId: string, streak: number) {
 // GET BADGE INFO FOR DISPLAY/SHARING
 // ═══════════════════════════════════════════════════════════════
 
-export function getBadgeConfig(badgeType: BadgeType) {
-  return BADGE_CONFIG[badgeType];
+// Badge.type is text: unknown/effort types (e.g. streaks) return undefined.
+export function getBadgeConfig(badgeType: BadgeType | string): BadgeDefinition | undefined {
+  return BADGE_CONFIG[badgeType as BadgeType];
 }
 
 export function getStreakBadgeConfig(streakId: string) {
@@ -317,7 +333,8 @@ export async function getNextBadges(studentId: string) {
   });
 
   const earnedTypes = earned.map((b) => b.type);
-  const allTypes = Object.keys(BADGE_CONFIG) as BadgeType[];
+  // STORY_WIZARD is not awarded yet (stage system, task 1.8): don't show it as a next badge
+  const allTypes = (Object.keys(BADGE_CONFIG) as BadgeType[]).filter((t) => t !== 'STORY_WIZARD');
 
   return allTypes
     .filter((t) => !earnedTypes.includes(t))

@@ -1,7 +1,14 @@
 // Client-side badge configuration (no server imports)
 
 // Badge types - duplicated here to avoid importing from prisma
-export type BadgeType = 'SPARK' | 'WORD_WIZARD' | 'VOICE_WIZARD' | 'LANGUAGE_WIZARD' | 'GRAND_WIZARD';
+export type BadgeType = 'SPARK' | 'WORD_WIZARD' | 'STORY_WIZARD' | 'VOICE_WIZARD' | 'LANGUAGE_WIZARD' | 'GRAND_WIZARD';
+
+/** Wizard badge types. Badge.type in the database is text and can also hold effort badges (e.g. streaks). */
+export const WIZARD_BADGE_TYPES: readonly BadgeType[] = ['SPARK', 'WORD_WIZARD', 'STORY_WIZARD', 'VOICE_WIZARD', 'LANGUAGE_WIZARD', 'GRAND_WIZARD'];
+
+export function isWizardBadgeType(type: string): type is BadgeType {
+  return (WIZARD_BADGE_TYPES as readonly string[]).includes(type);
+}
 
 // Share context type
 export interface ShareContext {
@@ -27,6 +34,8 @@ interface BadgeDefinition {
   message: string;
   shareText: string;
   order: number;
+  /** false = defined but not yet shown or awarded (STORY_WIZARD until task 1.8) */
+  released?: boolean;
 }
 
 interface StreakedBadgeDefinition {
@@ -72,6 +81,24 @@ Join the Wizard's Academy 👉 {appUrl}`,
 🏫 {schoolName} | {grade}-{section}
 Can YOUR child beat this? 👉 {appUrl}`,
     order: 2,
+  },
+  // STORY_WIZARD = Stage 3 badge (PD-003). Not awarded or listed until the stage system ships (Phase 1 task 1.8); art from task 1.14.
+  STORY_WIZARD: {
+    type: 'STORY_WIZARD',
+    name: 'Story Wizard',
+    emoji: '📖',
+    badgeImage: '/badges/story-wizard-badge.svg',
+    color: '#0D9488',
+    bgColor: '#F0FDFA',
+    description: 'Reads for meaning: understands stories, spots clues, retells in own words',
+    requirement: 'Complete Stage 3 — reading for meaning',
+    message: 'Brilliant! You\'re a Story Wizard! 📖 You don\'t just read stories — you understand them.',
+    shareText: `📖 {studentName} is now a STORY WIZARD on WizLingo!
+Reads for meaning, finds clues and retells stories in their own words. 🌟
+🏫 {schoolName} | {grade}-{section}
+Start your child's journey 👉 {appUrl}`,
+    order: 2.5,
+    released: false,
   },
   VOICE_WIZARD: {
     type: 'VOICE_WIZARD',

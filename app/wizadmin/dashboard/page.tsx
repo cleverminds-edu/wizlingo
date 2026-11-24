@@ -182,7 +182,7 @@ export default function WizAdminDashboard() {
             <p className="font-bold text-sm text-gray-300 uppercase tracking-wider">Schools</p>
             <button
               onClick={() => setShowAddSchool(true)}
-              className="flex items-center gap-1 text-xs bg-indigo-600 hover:bg-indigo-500 px-3 py-1.5 rounded-lg font-medium transition-colors"
+              className="flex items-center gap-1 text-xs bg-blue-600 hover:bg-indigo-500 px-3 py-1.5 rounded-lg font-medium transition-colors"
             >
               <Plus size={14} /> Add School
             </button>
@@ -306,20 +306,20 @@ export default function WizAdminDashboard() {
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">School Name</label>
                 <input value={newSchool.name} onChange={(e) => setNewSchool({ ...newSchool, name: e.target.value })}
-                  className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g. St. Mary's School" required />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">School Code</label>
                 <input value={newSchool.code} onChange={(e) => setNewSchool({ ...newSchool, code: e.target.value.toUpperCase() })}
-                  className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono uppercase"
+                  className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono uppercase"
                   placeholder="e.g. STMARY" required />
                 <p className="text-gray-500 text-xs mt-1">Used as prefix for student admission numbers</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">Logo URL <span className="text-gray-500">(optional)</span></label>
                 <input value={newSchool.logoUrl} onChange={(e) => setNewSchool({ ...newSchool, logoUrl: e.target.value })}
-                  className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="https://school.com/logo.png" type="url" />
               </div>
               {addError && <p className="text-red-400 text-sm">{addError}</p>}
@@ -357,7 +357,7 @@ export default function WizAdminDashboard() {
             </div>
 
             <input ref={fileRef} type="file" accept=".csv,.txt" onChange={handleCSVFile}
-              className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 mb-4" />
+              className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-indigo-500 mb-4" />
 
             {importPreview.length > 0 && (
               <>

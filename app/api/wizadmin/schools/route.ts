@@ -9,7 +9,7 @@ export async function GET() {
     include: {
       _count: { select: { classes: true } },
       classes: {
-        include: { _count: { select: { students: true } } },
+        include: { _count: { select: { enrollments: true } } },
       },
     },
   });
@@ -20,7 +20,7 @@ export async function GET() {
     code: s.code,
     logoUrl: s.logoUrl,
     createdAt: s.createdAt,
-    totalStudents: s.classes.reduce((sum, c) => sum + c._count.students, 0),
+    totalStudents: s.classes.reduce((sum, c) => sum + c._count.enrollments, 0),
     totalClasses: s._count.classes,
   }));
 

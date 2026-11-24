@@ -1,0 +1,655 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model School {
+  id                      String                       @id @default(cuid())
+  name                    String
+  code                    String                       @unique
+  logoUrl                 String?
+  createdAt               DateTime                     @default(now())
+  updatedAt               DateTime                     @updatedAt
+  admins                  Admin[]
+  classes                 Class[]
+  teachers                Teacher[]
+  schoolSubscription      SchoolSubscription?
+  schoolAdmins            SchoolAdmin[]
+  schoolInvites           SchoolInvite[]
+  leaderboardSnapshots    SchoolLeaderboardSnapshot[]
+}
+
+model Admin {
+  id          String        @id @default(cuid())
+  name        String
+  empCode     String        @unique
+  pin         String
+  role        AdminRole
+  schoolId    String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  school      School        @relation(fields: [schoolId], references: [id])
+  schoolAdmin SchoolAdmin[]
+}
+
+model Teacher {
+  id        String   @id @default(cuid())
+  name      String
+  empCode   String   @unique
+  pin       String
+  schoolId  String
+  createdAt DateTime @default(now())
+  classes   Class[]
+  school    School   @relation(fields: [schoolId], references: [id])
+}
+
+model Class {
+  id        String    @id @default(cuid())
+  grade     Int
+  section   String
+  schoolId  String
+  teacherId String?
+  school    School    @relation(fields: [schoolId], references: [id])
+  teacher   Teacher?  @relation(fields: [teacherId], references: [id])
+  students  Student[]
+}
+
+model Student {
+  id                   String                   @id @default(cuid())
+  name                 String?
+  dateOfBirth          DateTime?
+  admissionNumber      String?                  @unique
+  userId               String?                  @unique
+  pin                  String?
+  phone                String?
+  passwordHash         String?
+  classId              String?
+  accountType          AccountType              @default(SCHOOL)
+  loginType            String?                  // SCHOOL or PHONE_ID for B2C
+  gender               Gender?
+  parentEmail          String?
+  hasSeenOnboarding    Boolean                  @default(false)
+  passwordChangedAt    DateTime?
+  createdAt            DateTime                 @default(now())
+  badges               Badge[]
+  certificates         Certificate[]
+  sessions             ReadingSession[]
+  speakingProgress     SpeakingProgress?
+  speakingSessions     SpeakingSession[]
+  class                Class?                   @relation(fields: [classId], references: [id])
+  progress             StudentProgress?
+  notificationPrefs    NotificationPreference?
+  sentEmails           SentEmail[]
+  referralsCreated     Referral[]              @relation("ReferrerRelation")
+  referralsReceived    Referral[]              @relation("ReferredRelation")
+  referralReward       ReferralReward?
+  betaFeedback         BetaFeedback[]
+  speakingPreference   SpeakingPreference?
+
+  @@index([userId])
+  @@index([phone])
+}
+
+model StudentProgress {
+  id             String    @id @default(cuid())
+  studentId      String    @unique
+  currentLevel   Int       @default(2)
+  ageBand        String    @default("9-11")     // 6-8, 9-11, 12-14, 15+
+  gradeBand      GradeBand
+  totalSessions  Int       @default(0)
+  passedSessions Int       @default(0)
+  avgWpm         Float     @default(0)
+  avgAccuracy    Float     @default(0)
+  avgFluency     Float     @default(0)
+  updatedAt      DateTime  @updatedAt
+  student        Student   @relation(fields: [studentId], references: [id])
+}
+
+model ReadingPassage {
+  id        String           @id @default(cuid())
+  title     String
+  content   String
+  wordCount Int
+  gradeBand GradeBand
+  level     Int
+  topic     String
+  createdAt DateTime         @default(now())
+  sessions  ReadingSession[]
+}
+
+model ConversationTopic {
+  id              String            @id @default(cuid())
+  title           String
+  gradeBand       GradeBand
+  level           Int
+  character       String
+  characterGender Gender?           // NEW: M/F/OTHER/NEUTRAL
+  characterRole   String?           // NEW: Teacher, Shopkeeper, Friend, etc.
+  openingLine     String
+  mode            TopicMode         @default(SCRIPTED)
+  script          Json?
+  createdAt       DateTime          @default(now())
+  sessions        SpeakingSession[]
+}
+
+model SpeakingSession {
+  id           String            @id @default(cuid())
+  studentId    String
+  topicId      String
+  startedAt    DateTime          @default(now())
+  completedAt  DateTime?
+  turns        Json?
+  totalWords   Int?
+  durationSec  Int?
+  wpm          Float?
+  fluencyScore Float?
+  status       SessionStatus     @default(IN_PROGRESS)
+  createdAt    DateTime          @default(now())
+  student      Student           @relation(fields: [studentId], references: [id])
+  topic        ConversationTopic @relation(fields: [topicId], references: [id])
+}
+
+model SpeakingProgress {
+  id             String   @id @default(cuid())
+  studentId      String   @unique
+  currentLevel   Int      @default(1)
+  passedSessions Int      @default(0)
+  totalSessions  Int      @default(0)
+  avgWpm         Float    @default(0)
+  avgFluency     Float    @default(0)
+  updatedAt      DateTime @updatedAt
+  student        Student  @relation(fields: [studentId], references: [id])
+}
+
+model ReadingSession {
+  id          String         @id @default(cuid())
+  studentId   String
+  passageId   String
+  startedAt   DateTime       @default(now())
+  completedAt DateTime?
+  durationSec Int?
+  transcript  String?
+  wpm         Float?
+  accuracy    Float?
+  missedWords String[]
+  wrongWords  Json?
+  status      SessionStatus  @default(IN_PROGRESS)
+  teacherNote String?
+  createdAt   DateTime       @default(now())
+  passage     ReadingPassage @relation(fields: [passageId], references: [id])
+  student     Student        @relation(fields: [studentId], references: [id])
+}
+
+model Badge {
+  id        String    @id @default(cuid())
+  studentId String
+  type      BadgeType
+  earnedAt  DateTime  @default(now())
+  student   Student   @relation(fields: [studentId], references: [id])
+
+  @@unique([studentId, type])
+}
+
+model Certificate {
+  id         String    @id @default(cuid())
+  studentId  String
+  badgeType  BadgeType
+  verifyCode String    @unique @default(cuid())
+  issuedAt   DateTime  @default(now())
+  student    Student   @relation(fields: [studentId], references: [id])
+
+  @@unique([studentId, badgeType])
+}
+
+model BadgeVariantLog {
+  id        String   @id @default(cuid())
+  studentId String
+  badgeType BadgeType
+  variant   String   // 'current', 'style_a', 'style_b'
+  action    String   // 'viewed', 'shared'
+  platform  String?  // 'whatsapp', 'clipboard', 'native'
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([studentId])
+  @@index([badgeType])
+  @@index([variant])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model BadgeColorVariant {
+  id                String    @id @default(cuid())
+  studentId         String
+  badgeType         BadgeType
+  colorVariant      String    // 'gold', 'rainbow', 'glow', etc.
+  unlockedAt        DateTime  @default(now())
+  unlockedBy        String    // 'shares:3', 'referral:2', etc.
+
+  @@unique([studentId, badgeType, colorVariant])
+  @@index([studentId])
+  @@index([badgeType])
+}
+
+enum AccountType {
+  SCHOOL
+  PUBLIC
+  B2C
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum BadgeType {
+  SPARK
+  WORD_WIZARD
+  VOICE_WIZARD
+  LANGUAGE_WIZARD
+  GRAND_WIZARD
+}
+
+enum AdminRole {
+  PRINCIPAL
+  ACADEMIC_INCHARGE
+}
+
+enum GradeBand {
+  BAND_1_2
+  BAND_3_5
+  BAND_6_8
+  BAND_9_10
+}
+
+enum SessionStatus {
+  IN_PROGRESS
+  COMPLETED
+  NEEDS_REVIEW
+}
+
+enum TopicMode {
+  AI
+  SCRIPTED
+}
+
+enum LeaderboardType {
+  BADGE_COUNT
+  SPEED
+  CONSISTENCY
+  ACCURACY
+  FLUENCY
+}
+
+model Leaderboard {
+  id        String          @id @default(cuid())
+  type      LeaderboardType
+  scope     String          // class_id, school_id, all
+  studentId String
+  rank      Int
+  value     Float           // badges count, sessions, accuracy %, etc
+  updatedAt DateTime        @updatedAt
+
+  @@unique([type, scope, studentId])
+  @@index([type, scope, rank])
+  @@index([scope, type])
+}
+
+model LeaderboardSnapshot {
+  id        String          @id @default(cuid())
+  type      LeaderboardType
+  scope     String
+  studentId String
+  rank      Int
+  value     Float
+  trend     String          // "up", "down", "same"
+  takenAt   DateTime        @default(now())
+
+  @@unique([type, scope, studentId, takenAt])
+  @@index([takenAt])
+}
+
+enum EmailFrequency {
+  IMMEDIATE
+  DAILY
+  WEEKLY
+  NEVER
+}
+
+model NotificationPreference {
+  id                  String        @id @default(cuid())
+  studentId           String        @unique
+  badgeEarnedStudent  Boolean       @default(true)
+  badgeEarnedParent   Boolean       @default(true)
+  milestoneEmail      Boolean       @default(true)
+  weeklySummary       Boolean       @default(true)
+  leaderboardUpdate   Boolean       @default(true)
+  emailFrequency      EmailFrequency @default(WEEKLY)
+  updatedAt           DateTime      @updatedAt
+  student             Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model SentEmail {
+  id          String    @id @default(cuid())
+  studentId   String
+  type        String    // badge_earned, milestone, weekly_summary, leaderboard
+  recipientEmail String
+  subject     String
+  body        String
+  sentAt      DateTime  @default(now())
+  status      String    @default("sent") // sent, failed, bounced
+  error       String?
+  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([sentAt])
+}
+
+model Referral {
+  id            String    @id @default(cuid())
+  referrerId    String
+  referredId    String?
+  referralCode  String    @unique
+  status        String    @default("pending") // pending, completed, expired
+  createdAt     DateTime  @default(now())
+  completedAt   DateTime?
+  referrer      Student   @relation("ReferrerRelation", fields: [referrerId], references: [id], onDelete: Cascade)
+  referred      Student?  @relation("ReferredRelation", fields: [referredId], references: [id], onDelete: SetNull)
+
+  @@index([referralCode])
+  @@index([referrerId])
+  @@index([status])
+}
+
+model ReferralReward {
+  id                      String    @id @default(cuid())
+  studentId               String    @unique
+  referralCount           Int       @default(0)
+  badgeColorVariantsUnlocked String[] @default([])
+  bonusStreakDays         Int       @default(0)
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  student                 Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+}
+
+model ConversionFunnel {
+  id              String    @id @default(cuid())
+  step            String    // share, landing_click, landing_view, signup_start, signup_complete
+  sourceStudentId String?
+  newStudentEmail String?
+  referralCode    String?
+  badgeType       String?
+  schoolId        String?
+  timestamp       DateTime  @default(now())
+
+  @@index([sourceStudentId])
+  @@index([referralCode])
+  @@index([timestamp])
+  @@index([schoolId])
+}
+
+enum SchoolTierType {
+  FREE
+  STARTER
+  GROWTH
+  ENTERPRISE
+}
+
+model SchoolSubscription {
+  id                String         @id @default(cuid())
+  schoolId          String         @unique
+  tier              SchoolTierType @default(FREE)
+  studentsIncluded  Int            @default(50) // DEFAULT varies by tier
+  activeStudents    Int            @default(0)
+  startDate         DateTime       @default(now())
+  renewalDate       DateTime
+  price             Float?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  school            School         @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  @@index([schoolId])
+  @@index([tier])
+  @@index([renewalDate])
+}
+
+model SchoolAdmin {
+  id          String   @id @default(cuid())
+  schoolId    String
+  adminId     String
+  role        String   // admin, manager, principal
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  admin       Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@unique([schoolId, adminId])
+  @@index([schoolId])
+  @@index([adminId])
+}
+
+model SchoolInvite {
+  id        String    @id @default(cuid())
+  schoolId  String
+  code      String    @unique
+  email     String
+  usedBy    String?
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+  school    School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  @@index([schoolId])
+  @@index([code])
+  @@index([expiresAt])
+}
+
+model SchoolLeaderboardSnapshot {
+  id                 String    @id @default(cuid())
+  schoolId           String
+  rank               Int
+  totalStudents      Int
+  totalBadgesEarned  Int
+  grandWizardCount   Int
+  avgAccuracy        Float
+  avgSessionsPerStudent Float
+  monthlyGrowth      Int
+  takenAt            DateTime  @default(now())
+  school             School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  @@unique([schoolId, takenAt])
+  @@index([schoolId])
+  @@index([takenAt])
+  @@index([rank])
+}
+
+// ════════════════════════════════════════════════════════════════
+// PARENT EMAIL SYSTEM
+// ════════════════════════════════════════════════════════════════
+
+model ParentEmailPreference {
+  id                  String   @id @default(cuid())
+  parentEmail         String   @unique
+  frequency           String   @default("immediate") // immediate, daily, weekly
+  badgeEarned         Boolean  @default(true)
+  weeklyProgress      Boolean  @default(true)
+  monthlyMilestone    Boolean  @default(true)
+  schoolRanking       Boolean  @default(true)
+  sendTime            String?  // "6pm", "8pm", etc
+  timezone            String   @default("Asia/Kolkata")
+  unsubscribeToken    String   @unique @default(cuid())
+  unsubscribedAt      DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([parentEmail])
+  @@index([unsubscribeToken])
+}
+
+model EmailLog {
+  id                String       @id @default(cuid())
+  studentId         String
+  parentEmail       String
+  type              String       // badge_earned, weekly_summary, monthly_achievement, milestone, school_ranking
+  subject           String
+  body              String       @db.Text
+  referralCode      String?
+  sentAt            DateTime     @default(now())
+  status            String       @default("sent") // sent, failed, bounced, unsubscribed
+  opens             Int          @default(0)
+  clicks            Int          @default(0)
+  lastOpenedAt      DateTime?
+  lastClickedAt     DateTime?
+  variant           String?      // A/B test variant
+  createdAt         DateTime     @default(now())
+  emailClicks       EmailClick[]
+
+  @@index([studentId])
+  @@index([parentEmail])
+  @@index([sentAt])
+  @@index([type])
+  @@index([status])
+}
+
+model EmailClick {
+  id          String    @id @default(cuid())
+  emailId     String
+  eventType   String    // open, click
+  linkType    String?   // view_cert, share_whatsapp, view_dashboard, signup, pixel
+  timestamp   DateTime  @default(now())
+  userAgent   String?
+  ipAddress   String?
+  createdAt   DateTime  @default(now())
+  emailLog    EmailLog  @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  @@index([emailId])
+  @@index([eventType])
+  @@index([linkType])
+  @@index([timestamp])
+}
+
+model EmailSchedule {
+  id            String    @id @default(cuid())
+  studentId     String
+  parentEmail   String
+  type          String
+  subject       String
+  html          String    @db.Text
+  scheduledFor  DateTime
+  sent          Boolean   @default(false)
+  sentAt        DateTime?
+  error         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([parentEmail])
+  @@index([scheduledFor])
+  @@index([sent])
+  @@index([createdAt])
+}
+
+model EmailVariantTest {
+  id          String       @id @default(cuid())
+  type        String       // badge_earned, weekly_summary, etc
+  variant     String       // A, B, C, etc
+  subject     String?
+  ctaText     String?
+  layoutType  String?
+  conversions Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@unique([type, variant])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// ════════════════════════════════════════════════════════════════
+// BETA FEEDBACK (Collect feedback during beta launch)
+// ════════════════════════════════════════════════════════════════
+
+model BetaFeedback {
+  id              String    @id @default(cuid())
+  studentId       String
+  sessionType     String    // "reading" or "speaking"
+  rating          Int       // 1-5 stars
+  selectedIssues  String[]  // ["too_easy", "speech_failed", etc]
+  comment         String?   // Free text feedback
+  createdAt       DateTime  @default(now())
+  student         Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([sessionType])
+  @@index([createdAt])
+  @@index([rating])
+}
+
+// ════════════════════════════════════════════════════════════════
+// EMAIL VERIFICATION (Temporary codes for signup verification)
+// ════════════════════════════════════════════════════════════════
+
+model VerificationCode {
+  id        String    @id @default(cuid())
+  email     String
+  code      String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([email])
+  @@index([expiresAt])
+  @@index([usedAt])
+}
+
+// ════════════════════════════════════════════════════════════════
+// SPEAKING PREFERENCES (Gender-aware character selection)
+// ════════════════════════════════════════════════════════════════
+
+model SpeakingPreference {
+  id                    String    @id @default(cuid())
+  studentId             String    @unique
+  characterGenderPref   String    @default("ANY")  // ANY, SAME, DIFFERENT, MALE, FEMALE, NEUTRAL
+  pronouns              String?   // he/him, she/her, they/them, custom
+  startedAt             DateTime  @default(now())
+  progressionWeek       Int       @default(1)      // Week 1: choice, Week 2+: varied
+  updatedAt             DateTime  @updatedAt
+
+  student               Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([characterGenderPref])
+  @@index([progressionWeek])
+}
+
+// ════════════════════════════════════════════════════════════════
+// PLATFORM MANAGER (Global admin for B2B/B2C management)
+// ════════════════════════════════════════════════════════════════
+
+model Manager {
+  id              String    @id @default(cuid())
+  name            String
+  email           String    @unique
+  phone           String?
+  passwordHash    String
+  role            ManagerRole @default(MANAGER)
+  organization    String?          // Edvanta / Company name
+  isActive        Boolean   @default(true)
+  lastLogin       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([email])
+  @@index([isActive])
+}
+
+enum ManagerRole {
+  MANAGER
+  ADMIN
+  SUPER_ADMIN
+}

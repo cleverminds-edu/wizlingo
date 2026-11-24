@@ -28,6 +28,13 @@ export const CERTIFICATE_TEMPLATES: Record<BadgeType, CertificateTemplate> = {
     skillDescription: 'Demonstrated exceptional mastery of reading comprehension with outstanding accuracy and word understanding',
     accoladeText: 'Master of the written word, wielder of knowledge',
   },
+  STORY_WIZARD: {
+    title: 'Reading for Meaning Certificate',
+    badgeType: 'STORY_WIZARD',
+    description: 'For completing Stage 3 — reading for meaning',
+    skillDescription: 'Demonstrated understanding of stories and texts: finding clues, explaining why things happen and retelling in their own words',
+    accoladeText: 'Reader of meaning, teller of tales',
+  },
   VOICE_WIZARD: {
     title: 'Speaking Fluency Master Certificate',
     badgeType: 'VOICE_WIZARD',

@@ -1,0 +1,569 @@
+// WizLingo Comprehensive Pedagogical Schema
+// Supports: 5 Learning Pillars → Linear Progression → Grade-Based Curriculum
+// Frameworks: Jolly Phonics + Science of Reading + CEFR + Structured Literacy
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ===== ENUMS =====
+
+enum GradeCategory {
+  PREPRIMARY      // Ages 3-5
+  GR_1_3          // Ages 6-9
+  GR_4_7          // Ages 10-13
+  GR_8_10         // Ages 14-16
+  GR_11_12        // Ages 17-18
+}
+
+enum LearningPillar {
+  SOUND_FOUNDATION      // Letters, Sounds, Phonics, Pronunciation
+  LANGUAGE_FOUNDATION   // Vocabulary, Grammar, Spelling, Structure
+  CORE_SKILLS           // Listening, Speaking, Reading, Writing
+  COMMUNICATION         // Conversation, Storytelling, Presentation, Debate
+  HIGHER_ORDER_LANGUAGE // Critical Thinking, Analysis, Creativity, Academic Writing
+}
+
+enum ProgressionStage {
+  STAGE_1   // Letters & Sounds (Pre-primary)
+  STAGE_2   // Phonics & Blending (Gr 1-3)
+  STAGE_3   // Words & Vocabulary (Gr 1-3)
+  STAGE_4   // Sentences & Simple Grammar (Gr 1-3)
+  STAGE_5   // Reading Fluency (Gr 4-7)
+  STAGE_6   // Listening Comprehension (Gr 4-7)
+  STAGE_7   // Oral Expression (Gr 4-7)
+  STAGE_8   // Writing Fundamentals (Gr 4-7)
+  STAGE_9   // Grammar Mastery (Gr 8-10)
+  STAGE_10  // Communication Skills (Gr 8-10)
+  STAGE_11  // Critical Thinking (Gr 8-10)
+  STAGE_12  // Advanced Writing (Gr 11-12)
+  STAGE_13  // Professional Communication (Gr 11-12)
+}
+
+enum ContentType {
+  EXERCISE          // Interactive practice (e.g., letter tracing, phonics drills)
+  LESSON            // Structured lesson with explanation
+  ACTIVITY          // Engaging activity (games, stories)
+  ASSESSMENT        // Quiz/test to check understanding
+  INTERACTIVE       // Interactive content (drag & drop, matching)
+  SPEAKING          // Speaking practice with pronunciation feedback
+  LISTENING         // Listening comprehension with audio
+  WRITING           // Writing practice with AI-powered feedback
+}
+
+// ===== GLOBAL MANAGER MODEL =====
+
+model GlobalManager {
+  id                String         @id @default(cuid())
+
+  // Authentication
+  email             String         @unique
+  passwordHash      String
+
+  // Profile
+  name              String
+  phone             String?
+  organizationName  String?
+  role              String         @default("manager") // manager, admin, superadmin
+
+  // Relations
+  schools           School[]
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([email])
+}
+
+// ===== SCHOOL MODEL =====
+
+model School {
+  id                String         @id @default(cuid())
+
+  // School info
+  name              String
+  code              String         @unique
+  city              String?
+  state             String?
+  principalEmail    String?
+
+  // Relations
+  managerId         String
+  manager           GlobalManager  @relation(fields: [managerId], references: [id], onDelete: Cascade)
+  teachers          Teacher[]
+
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([managerId])
+  @@index([code])
+}
+
+// ===== TEACHER MODEL =====
+
+model Teacher {
+  id                String         @id @default(cuid())
+
+  // Authentication
+  email             String         @unique
+  passwordHash      String
+
+  // Profile
+  name              String
+  phone             String?
+  schoolName        String?
+
+  // Relations
+  schoolId          String?
+  school            School?        @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+  classes           Class[]
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([email])
+  @@index([schoolId])
+}
+
+// ===== CLASS & ENROLLMENT =====
+
+model Class {
+  id                String         @id @default(cuid())
+
+  // Class info
+  name              String
+  gradeLevel        GradeCategory
+  code              String         @unique  // Code for students to join
+
+  // Relations
+  teacherId         String
+  teacher           Teacher        @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  enrollments       Enrollment[]
+
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([teacherId])
+  @@index([code])
+}
+
+model Enrollment {
+  id                String         @id @default(cuid())
+
+  classId           String
+  class             Class          @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  studentId         String
+  student           Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  enrolledAt        DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@unique([classId, studentId])
+  @@index([classId])
+  @@index([studentId])
+}
+
+// ===== CORE STUDENT MODEL =====
+
+model Student {
+  id                String         @id @default(cuid())
+
+  // Authentication
+  email             String?        @unique
+  phone             String?        @unique
+  userId            String?        @unique   // WL + 6 digits for B2C
+  passwordHash      String
+
+  // Profile
+  name              String
+  gradeCategory     GradeCategory  @default(GR_1_3)
+  dob               DateTime?
+
+  // Legacy level tracking (for backward compatibility)
+  currentLevel      Int            @default(2)
+
+  // Gamification
+  streakDays        Int            @default(0)
+  longestStreak     Int            @default(0)
+  lastActivityDate  DateTime?
+  totalXP           Int            @default(0)
+
+  // Relations
+  progress          StudentProgress?
+  journeyProgress   JourneyProgress?
+  lessonSessions    LessonSession[]
+  badges            Badge[]
+  leaderboardEntry  Leaderboard?
+  dailySessions     DailySession[]
+  classEnrollments  Enrollment[]   // For B2B school enrollment
+
+  // Legacy session relations (keep for backward compatibility)
+  readingSessions   ReadingSession[]
+  speakingSessions  SpeakingSession[]
+  writingSessions   WritingSession[]
+  listeningSessions ListeningSession[]
+
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([email])
+  @@index([phone])
+  @@index([userId])
+  @@index([gradeCategory])
+}
+
+model StudentProgress {
+  id                    String    @id @default(cuid())
+  studentId             String    @unique
+  student               Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  // Legacy LSRW tracking (kept for backward compatibility)
+  readingLevel          Int       @default(1)
+  speakingLevel         Int       @default(1)
+  writingLevel          Int       @default(1)
+  listeningLevel        Int       @default(1)
+
+  avgReadingScore       Float     @default(0)
+  avgSpeakingScore      Float     @default(0)
+  avgWritingScore       Float     @default(0)
+  avgListeningScore     Float     @default(0)
+
+  totalSessions         Int       @default(0)
+  passedSessions        Int       @default(0)
+
+  updatedAt             DateTime  @updatedAt
+}
+
+// ===== NEW: JOURNEY-BASED PROGRESS =====
+
+model JourneyProgress {
+  id                    String           @id @default(cuid())
+  studentId             String           @unique
+  student               Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  // Current position in learning journey
+  currentPillar         LearningPillar   @default(SOUND_FOUNDATION)
+  currentStage          ProgressionStage @default(STAGE_1)
+  stageProgress         Float            @default(0)  // 0-100: % complete in current stage
+
+  // Pillar completion tracking
+  soundFoundationScore     Float        @default(0)
+  languageFoundationScore  Float        @default(0)
+  coreSkillsScore          Float        @default(0)
+  communicationScore       Float        @default(0)
+  higherOrderScore         Float        @default(0)
+
+  // Mastery tracking
+  masteredStages        ProgressionStage[] @default([])
+  completedAt           DateTime?
+
+  updatedAt             DateTime         @updatedAt
+
+  @@index([currentPillar])
+  @@index([currentStage])
+}
+
+// ===== CURRICULUM ARCHITECTURE =====
+
+model CurriculumUnit {
+  id                String          @id @default(cuid())
+
+  // Curriculum positioning
+  gradeCategory     GradeCategory
+  pillar            LearningPillar
+  stage             ProgressionStage
+
+  // Content metadata
+  title             String
+  description       String?         @db.Text
+  sequence          Int             // Order within stage
+
+  // Skills covered in this unit
+  skills            String[]        @default([])  // e.g., ["Phoneme Recognition", "Blending"]
+  objectives        String[]        @default([])  // Learning outcomes
+
+  // Relations
+  lessons           Lesson[]
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@unique([gradeCategory, pillar, stage, sequence])
+  @@index([gradeCategory])
+  @@index([pillar])
+  @@index([stage])
+}
+
+model Lesson {
+  id                String        @id @default(cuid())
+
+  unitId            String
+  unit              CurriculumUnit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  // Lesson metadata
+  title             String
+  description       String?       @db.Text
+  sequence          Int           // Order within unit
+  estimatedMinutes  Int           @default(15)
+
+  // Content
+  contents          LessonContent[]
+  sessions          LessonSession[]
+
+  createdAt         DateTime      @default(now())
+
+  @@index([unitId])
+}
+
+model LessonContent {
+  id                String        @id @default(cuid())
+
+  lessonId          String
+  lesson            Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  // Content type and metadata
+  type              ContentType
+  sequence          Int
+  title             String
+  description       String?       @db.Text
+
+  // Content data (varies by type)
+  // For EXERCISE: instructions + answer keys
+  // For LESSON: explanation text
+  // For ACTIVITY: instructions + assets
+  // For ASSESSMENT: questions + answers
+  content           Json
+  mediaUrl          String?       // Images, audio, video
+
+  // Assessment
+  isGraded          Boolean       @default(true)
+  passingScore      Float?        @default(80)
+
+  createdAt         DateTime      @default(now())
+
+  @@index([lessonId])
+}
+
+// ===== STUDENT SESSIONS =====
+
+model LessonSession {
+  id                String        @id @default(cuid())
+
+  studentId         String
+  student           Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  lessonId          String
+  lesson            Lesson        @relation(fields: [lessonId], references: [id])
+
+  // Session tracking
+  startedAt         DateTime
+  completedAt       DateTime?
+  durationSec       Int?
+
+  // Performance
+  score             Float?        // 0-100
+  passed            Boolean       @default(false)
+  xpEarned          Int           @default(0)
+
+  // Student responses (JSON array of content answers)
+  responses         Json          @default("{}")
+
+  createdAt         DateTime      @default(now())
+
+  @@index([studentId])
+  @@index([lessonId])
+  @@index([studentId, completedAt])
+}
+
+// ===== DAILY SESSION TRACKING =====
+
+model DailySession {
+  id                String    @id @default(cuid())
+  studentId         String
+  student           Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  date              String            // YYYY-MM-DD
+  lessonsCompleted  Int       @default(0)
+  totalScore        Float?
+  xpEarned          Int       @default(0)
+  completed         Boolean   @default(false)
+
+  createdAt         DateTime  @default(now())
+
+  @@unique([studentId, date])
+  @@index([studentId])
+  @@index([date])
+}
+
+// ===== GAMIFICATION =====
+
+model Badge {
+  id                String    @id @default(cuid())
+  studentId         String
+  student           Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  type              String                // "stage_mastery", "streak_7day"
+  name              String                // "Phonics Master", "Streak Master"
+  description       String?
+  icon              String?               // Emoji or icon path
+
+  unlockedAt        DateTime  @default(now())
+
+  @@unique([studentId, type])
+  @@index([studentId])
+}
+
+model Leaderboard {
+  id                String    @id @default(cuid())
+  studentId         String    @unique
+  student           Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  rank              Int
+  xpTotal           Int
+  lessonsCompleted  Int       @default(0)
+
+  updatedAt         DateTime  @updatedAt
+}
+
+// ===== LEGACY CONTENT MODELS (Preserved for backward compatibility) =====
+
+model ReadingPassage {
+  id                String    @id @default(cuid())
+  title             String
+  content           String    @db.Text
+  wordCount         Int
+  level             Int
+  topic             String
+
+  sessions          ReadingSession[]
+
+  createdAt         DateTime  @default(now())
+}
+
+model SpeakingTopic {
+  id                String    @id @default(cuid())
+  title             String
+  prompt            String    @db.Text
+  level             Int
+  topic             String
+
+  sessions          SpeakingSession[]
+
+  createdAt         DateTime  @default(now())
+}
+
+model WritingPrompt {
+  id                String    @id @default(cuid())
+  title             String
+  prompt            String    @db.Text
+  level             Int
+  topic             String
+
+  sessions          WritingSession[]
+
+  createdAt         DateTime  @default(now())
+}
+
+model ListeningClip {
+  id                String    @id @default(cuid())
+  title             String
+  audioUrl          String
+  transcript        String    @db.Text
+  level             Int
+  topic             String
+  questions         Json
+
+  sessions          ListeningSession[]
+
+  createdAt         DateTime  @default(now())
+}
+
+model ReadingSession {
+  id                String    @id @default(cuid())
+  studentId         String
+  student           Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  passageId         String
+  passage           ReadingPassage @relation(fields: [passageId], references: [id])
+
+  wpm               Float?
+  accuracy          Float?
+  missedWords       Int?
+
+  completedAt       DateTime?
+  durationSec       Int?
+
+  createdAt         DateTime  @default(now())
+
+  @@index([studentId])
+  @@index([passageId])
+}
+
+model SpeakingSession {
+  id                String    @id @default(cuid())
+  studentId         String
+  student           Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  topicId           String
+  topic             SpeakingTopic @relation(fields: [topicId], references: [id])
+
+  audioUrl          String?
+  transcript        String?
+
+  fluencyScore      Float?
+  pronunciationScore Float?
+
+  completedAt       DateTime?
+  durationSec       Int?
+
+  createdAt         DateTime  @default(now())
+
+  @@index([studentId])
+  @@index([topicId])
+}
+
+model WritingSession {
+  id                String    @id @default(cuid())
+  studentId         String
+  student           Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  promptId          String
+  prompt            WritingPrompt @relation(fields: [promptId], references: [id])
+
+  content           String    @db.Text
+  wordCount         Int?
+
+  score             Float?
+  feedback          String?   @db.Text
+
+  completedAt       DateTime?
+
+  createdAt         DateTime  @default(now())
+
+  @@index([studentId])
+  @@index([promptId])
+}
+
+model ListeningSession {
+  id                String    @id @default(cuid())
+  studentId         String
+  student           Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  clipId            String
+  clip              ListeningClip @relation(fields: [clipId], references: [id])
+
+  responses         String[]  @default([])
+  correctCount      Int?
+  totalQuestions    Int?
+  score             Float?
+
+  completedAt       DateTime?
+
+  createdAt         DateTime  @default(now())
+
+  @@index([studentId])
+  @@index([clipId])
+}

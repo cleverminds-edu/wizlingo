@@ -1,8 +1,21 @@
-# WizLingo: AI-Powered English Learning Platform for Schools
+# WizLingo: AI-Powered LSRW English Learning Ecosystem (K-12)
 
-**An intelligent reading & speaking practice app powered by Anthropic Claude AI**
+**Building India's #1 AI-Powered English Learning Platform with LSRW Integration**
 
 ![WizLingo Badge](public/wiziingo-logo.svg)
+
+---
+
+## 📚 **START HERE** → [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)
+
+**Quick Navigation for June 2026 LSRW Transformation:**
+- 🚀 **[START_HERE.md](START_HERE.md)** - 5-minute overview (read this first!)
+- 📊 **[WIZLINGO_EXECUTIVE_SUMMARY.md](WIZLINGO_EXECUTIVE_SUMMARY.md)** - 26-week roadmap + budget
+- 🔧 **[WIZLINGO_LSRW_BLUEPRINT.md](WIZLINGO_LSRW_BLUEPRINT.md)** - Technical architecture
+- 📈 **[COMPETITIVE_ANALYSIS.md](COMPETITIVE_ANALYSIS.md)** - Market positioning
+- 💡 **[COMPETITOR_BEST_PRACTICES.md](COMPETITOR_BEST_PRACTICES.md)** - Implementation priorities
+
+**Full Documentation Index:** [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)
 
 ---
 

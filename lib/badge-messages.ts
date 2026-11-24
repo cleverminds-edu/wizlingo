@@ -121,6 +121,28 @@ Who's next in your class?
 #WordWizard #WizLingo #EnglishMastery`,
   },
 
+  // STORY_WIZARD = Stage 3 badge (PD-003). Not awarded or listed until the stage system ships (Phase 1 task 1.8); art from task 1.14.
+  STORY_WIZARD: {
+    narrative: `Stories are more than words on a page. You've learned to read for meaning — to notice clues, understand why characters act, and retell what happened in your own words. That is the Story Wizard's power, and now it is yours.`,
+    congratulations: `🎉 YOU'RE A STORY WIZARD! 📖
+
+You read for meaning!
+You find clues, understand characters and retell stories in your own words. 🌟
+
+🚀 Next Challenge:
+Share your ideas out loud to become a VOICE WIZARD 🎤`,
+    locked: `📖 Unlock STORY WIZARD
+Complete Stage 3 — reading for meaning.
+
+✅ Read the whole story before answering
+✅ Look for clues: why did it happen?
+✅ Retell the story in your own words
+
+Every story you read brings you closer! 💪`,
+    inProgress: (progress: number) =>
+      `📖 Becoming a Story Wizard... ${Math.round(progress)}% of Stage 3 done. Keep reading for meaning!`,
+    shareTemplate: `📖 I'm a STORY WIZARD on WizLingo! I can read for meaning and retell stories in my own words.`,
+  },
   VOICE_WIZARD: {
     narrative: `Your voice is powerful. By achieving 75%+ fluency in speaking, you've proven that you can express yourself with clarity and confidence. You're not just speaking—you're *communicating*. You're captivating. You're a VOICE WIZARD, and the world is listening.`,
     congratulations: `🎉 YOU'RE A VOICE WIZARD! 🎤

@@ -32,6 +32,8 @@ export async function getAuth(request: Request): Promise<AuthPayload | null> {
       const verified = jwt.verify(token, secret) as AuthPayload;
       return {
         ...verified,
+        // B2C tokens from createToken() carry only { studentId }: they are student tokens
+        role: verified.role ?? (verified.studentId ? "student" : undefined),
         isJwt: true,
       };
     } catch (error) {

@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   const { topicId } = await request.json();
   if (!topicId) return Response.json({ error: "topicId required" }, { status: 400 });
 
-  const topic = await prisma.conversationTopic.findUnique({
+  const topic = await prisma.speakingTopic.findUnique({
     where: { id: topicId },
   });
   if (!topic) return Response.json({ error: "Topic not found" }, { status: 404 });

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { classWithSchoolInclude, enrollIn } from '@/lib/student-class';
 import { hash } from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { validateBody } from '@/lib/validation';
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
     const { name, dateOfBirth, classId, phone } = validation.data;
 
     // Check if phone already exists
-    const existingPhone = await prisma.student.findUnique({
+    const existingPhone = await prisma.student.findFirst({
       where: { phone },
     });
 
@@ -58,13 +59,11 @@ export async function POST(request: NextRequest) {
         name,
         dateOfBirth: dob,
         phone,
-        classId: classId || null,
+        ...enrollIn(classId),
         passwordHash: hashedPassword,
         accountType: 'B2C',
       },
-      include: {
-        class: true,
-      },
+      include: classWithSchoolInclude,
     });
 
     // Calculate age band and create progress record

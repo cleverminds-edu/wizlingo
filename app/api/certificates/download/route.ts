@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { classWithSchoolInclude, primaryClass } from '@/lib/student-class';
 import { prisma } from '@/lib/prisma';
 import { generateCertificatePDFAsHTML } from '@/lib/pdf-certificate-generator';
 import { BadgeType } from '@/app/generated/prisma/client';
@@ -63,11 +64,7 @@ export async function GET(request: NextRequest) {
     // Get student details
     const student = await prisma.student.findUnique({
       where: { id: studentId },
-      include: {
-        class: {
-          include: { school: { select: { name: true } } },
-        },
-      },
+      include: classWithSchoolInclude,
     });
 
     if (!student) {
@@ -77,14 +74,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const cls = primaryClass(student);
+
     // Generate HTML certificate
     const htmlContent = await generateCertificatePDFAsHTML(
       badgeType as BadgeType,
       student.name,
       student.id,
       certificate.verifyCode,
-      `${student.class.grade}-${student.class.section}`,
-      student.class.school.name
+      // B2C students have no class/school: leave those lines off the certificate
+      cls ? `${cls.grade}-${cls.section}` : undefined,
+      cls?.school?.name
     );
 
     if (format === 'html') {

@@ -23,9 +23,9 @@ export async function GET(req: NextRequest) {
       include: {
         classes: {
           include: {
-            students: {
+            enrollments: {
               include: {
-                badges: true,
+                student: { include: { badges: true } },
               },
             },
           },
@@ -41,10 +41,11 @@ export async function GET(req: NextRequest) {
     }
 
     // Calculate badge counts
-    const allStudents = school.classes.flatMap((c) => c.students);
+    const allStudents = school.classes.flatMap((c) => c.enrollments.map((e) => e.student));
     const badgeCounts = {
       SPARK: 0,
       WORD_WIZARD: 0,
+      STORY_WIZARD: 0,
       VOICE_WIZARD: 0,
       LANGUAGE_WIZARD: 0,
       GRAND_WIZARD: 0,
@@ -52,7 +53,8 @@ export async function GET(req: NextRequest) {
 
     allStudents.forEach((student) => {
       student.badges.forEach((badge) => {
-        badgeCounts[badge.type as keyof typeof badgeCounts]++;
+        // Badge.type is text now and can also hold effort badges (e.g. streaks): count wizard badges only
+        if (badge.type in badgeCounts) badgeCounts[badge.type as keyof typeof badgeCounts]++;
       });
     });
 
