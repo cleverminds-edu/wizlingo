@@ -19,17 +19,6 @@ if (!dbUrl) {
   process.exit(0);
 }
 
-async function createEnums(client) {
-  console.log('📋 Ensuring enums exist...');
-  try {
-    const enumSql = fs.readFileSync('./scripts/create-enums.sql', 'utf-8');
-    await client.query(enumSql);
-    console.log('✅ Enums ready\n');
-  } catch (error) {
-    console.error('⚠️  Enum creation issue:', error.message);
-  }
-}
-
 async function verifyTables(client) {
   console.log('Verifying essential tables...');
 
@@ -68,8 +57,9 @@ async function main() {
     await client.connect();
     console.log('✅ Connected\n');
 
-    // Create enums first
-    await createEnums(client);
+    // Enums are created by the Prisma migrations. The old pre-step (scripts/create-enums.sql) created
+    // them first, with values that don't match the schema, which made a fresh `migrate deploy` fail
+    // with "type already exists". Removed for the clean start (2026-11-24).
     await client.end();
 
     // Now run Prisma migrations (requires DATABASE_URL env var)

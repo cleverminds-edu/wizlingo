@@ -65,7 +65,8 @@ const topics = [
 async function seed() {
   const client = new Client({
     connectionString: dbUrl,
-    ssl: { rejectUnauthorized: false }, // Required for Railway
+    // SSL is required for Railway; local databases (localhost) usually don't support it
+    ssl: /@(localhost|127\.0\.0\.1)[:/]/.test(dbUrl) ? false : { rejectUnauthorized: false },
   });
 
   try {

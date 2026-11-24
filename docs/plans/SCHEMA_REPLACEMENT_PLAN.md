@@ -3,6 +3,26 @@
 **Date:** 2026-11-19 · **Decision:** product owner — replace the old production schema with the July
 rewrite · **Status:** Plan; nothing has been changed in the database or code yet
 
+> **Update 2026-11-24 — CLEAN START (supersedes steps S1, S4, S6 and baselining below).**
+> The owner confirmed the current production deployment is trial-and-error only and its data can be
+> lost. So instead of migrating data, production is **wiped once** and rebuilt from a single fresh
+> migration, `prisma/migrations/20261124000000_init`. The data-preserving migration and the old history
+> are archived in `prisma/migration-drafts/archive-pre-clean-start/` for reference only. The sections
+> below are kept as a record of the analysis.
+>
+> **Clean-start deploy, step by step**
+> 1. (Optional, recommended) take a Railway backup of the current database to look at later.
+> 2. **Wipe** the production database (owner confirms at the time; irreversible).
+> 3. Merge PR #1 and deploy. `npm start` → `scripts/init.js` applies `20261124000000_init`,
+>    applies the idempotent `apply-migration.js`, seeds 27 starter passages as **DRAFT**, then starts.
+> 4. SMEs approve a first set of passages and speaking topics. Until then students see
+>    "no approved passages yet".
+> 5. Smoke test: school PIN login, B2C login, teacher/admin, certificates, referral links.
+>
+> Tested locally on an empty database (2026-11-24): migration applies, start-up succeeds and is
+> re-runnable, 27 passages seeded as DRAFT, database matches the schema exactly. Also removed the
+> enum pre-step (`scripts/create-enums.sql`), which made a fresh `migrate deploy` fail.
+
 ## Why this needs a plan, not a swap
 
 | Fact (checked 2026-11-19) | Consequence |
