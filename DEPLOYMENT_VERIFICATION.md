@@ -1,255 +1,388 @@
-# WizLingo Beta Launch - Deployment Verification Guide
+# Deployment Verification Checklist - T1.8
 
-**Deployment Date:** June 18, 2026  
-**Status:** Ready for Production  
-**Target:** 100-150 students at 1-2 Indian schools
-
----
-
-## 🚀 Deployment Steps
-
-### 1. **Trigger Deployment on Railway**
-
-```bash
-# Railway auto-deploys on push to main
-# If manual trigger needed:
-# 1. Go to https://railway.app
-# 2. Select "wizlingo-production" project
-# 3. Click "Deploy" on the GitHub integration
-# 4. Monitor build logs in real-time
-```
-
-### 2. **Expected Build Time**
-- **Total Duration:** 5-8 minutes
-- Build stage (Prisma generate, npm ci): 3-4 min
-- Next.js compilation: 2-3 min
-- Docker image push: 1-2 min
-
-### 3. **What Gets Deployed**
-
-| Component | Version | Status |
-|-----------|---------|--------|
-| Node.js | 20.19.0 | ✅ LTS |
-| Next.js | 16.2.4 | ✅ Latest |
-| Prisma | 7.8.0 | ✅ Ready |
-| PostgreSQL | (Railway managed) | ✅ Linked |
+**Status:** Ready to Verify  
+**Environment:** Staging (Railway)  
+**Date:** Post-Deployment (July 5, 2026)  
 
 ---
 
-## ✅ Post-Deployment Verification
+## 🎯 Verification Process
 
-### Test #1: Health Check
+Run these checks immediately after deployment to verify everything is working.
+
+---
+
+## ✅ Deployment Health Checks
+
+### 1. Application Is Running
 ```bash
-curl https://wizlingo.edvanta.co.in/api/health
-```
-**Expected Response:**
-```json
-{
-  "status": "healthy",
-  "timestamp": "2026-06-18T...",
-  "uptime": 123456,
-  "environment": "production"
-}
+# Check if application is accessible
+curl https://staging-wizlingo.railway.app/
+
+# Expected: HTTP 200 (or redirect to dashboard)
 ```
 
-### Test #2: B2C Signup Form
-**URL:** `https://wizlingo.edvanta.co.in/auth/signup`
-
-**Verify:**
-- ✅ Form loads with 4 fields: Name, DOB, Class, Phone
-- ✅ Password formula shows: "First 3 letters + Year + Last 3 phone digits"
-- ✅ Password preview updates as you type
-- ✅ "Powered by Edvanta Intelligence System" in footer
-- ✅ Animations work smoothly (fade-in-up on load)
-
-**Test Signup:**
-```
-Name: Aditya
-DOB: 2010-05-15
-Class: Class V
-Phone: 9876543210
-
-Expected Password: ADI20210
-```
-
-### Test #3: Login Page
-**URL:** `https://wizlingo.edvanta.co.in/auth/login-password`
-
-**Verify:**
-- ✅ Page has animated entrance (glow effect)
-- ✅ Logo floats smoothly
-- ✅ Password reminder shows NEW formula (not old "Wiz+6digits")
-- ✅ Form fields have smooth animations
-- ✅ "Create Account" button links to `/auth/signup`
-- ✅ Branding says "Powered by Edvanta Intelligence System"
-
-### Test #4: Manager Dashboard
-**URL:** `https://wizlingo.edvanta.co.in/admin/dashboard`
-
-**Verify:**
-- ✅ Page loads with loading spinner
-- ✅ Summary cards animate with counters (0 → final value)
-- ✅ Cards have glow effect on hover
-- ✅ Performance charts slide in from sides
-- ✅ Recent signups load and display
-- ✅ Top performers table shows (empty initially)
-- ✅ Auto-refresh works every 30 seconds
-- ✅ Refresh button functional
-
-### Test #5: API Endpoints
-
-**Create Student (B2C Signup):**
+### 2. Health Endpoint
 ```bash
-curl -X POST https://wizlingo.edvanta.co.in/api/auth/signup-detailed \
+# Check health endpoint (create this if needed)
+curl https://staging-wizlingo.railway.app/api/health
+
+# Expected Response:
+# {
+#   "status": "healthy",
+#   "timestamp": "2026-07-05T10:00:00Z",
+#   "version": "0.1.0"
+# }
+```
+
+### 3. Database Connection
+```bash
+# Verify database is connected by trying to get student data
+curl -X GET https://staging-wizlingo.railway.app/api/student/journey \
+  -H "Authorization: Bearer $TEST_TOKEN"
+
+# Expected: 200 with journey data (or 401 if no valid token)
+```
+
+---
+
+## 🔐 Authentication Tests
+
+### Test Token Generation
+```bash
+# Create test user and get token
+curl -X POST https://staging-wizlingo.railway.app/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Priya",
-    "dateOfBirth": "2012-03-20",
-    "classId": "class-id-here",
-    "phone": "9123456789"
+    "email": "test@example.com",
+    "password": "password123"
   }'
+
+# Expected: 200 with token
+# Save token: TOKEN=eyJhbGc...
 ```
 
-**Expected Response:**
-```json
-{
-  "message": "Account created successfully",
-  "studentId": "...",
-  "password": "PRI201289",
-  "studentData": { ... }
-}
-```
+---
 
-**Get Classes:**
+## 🎯 API Endpoint Tests
+
+### Test T1.2: Lesson Start
 ```bash
-curl https://wizlingo.edvanta.co.in/api/classes
+curl -X POST https://staging-wizlingo.railway.app/api/lesson/session/start \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"lessonId": "lesson_001"}'
+
+# Expected: 201 with sessionId and lesson content
+# Save: SESSION_ID=session_789
 ```
 
-**Get Dashboard Stats:**
+### Test T1.3: Lesson Submit
 ```bash
-curl https://wizlingo.edvanta.co.in/api/admin/dashboard-stats
+curl -X POST https://staging-wizlingo.railway.app/api/lesson/session/$SESSION_ID/submit \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "responses": {
+      "q1": "a",
+      "q2": "true",
+      "q3": "answer"
+    }
+  }'
+
+# Expected: 200 with results including score, XP, feedback
 ```
 
 ---
 
-## 🎯 Performance Targets
+## 📊 Performance Tests
 
-| Metric | Target | Tolerance |
-|--------|--------|-----------|
-| Page Load Time | < 2s | ± 0.5s |
-| API Response | < 500ms | ± 100ms |
-| Dashboard Refresh | 30s interval | ± 2s |
-| Login Success Rate | 100% | N/A |
-| Signup Success Rate | 100% | N/A |
-
----
-
-## 📊 Monitoring Checklist
-
-### Immediate (First 30 minutes)
-- [ ] Build completes successfully on Railway
-- [ ] All URLs load without 500 errors
-- [ ] Database migrations applied
-- [ ] Health endpoint responds
-- [ ] Create test account via signup
-
-### Day 1 (First 24 hours)
-- [ ] Monitor `/admin/dashboard` for stats
-- [ ] Test login with created account
-- [ ] Verify password formula works
-- [ ] Check PWA installation on mobile
-- [ ] Monitor response times
-
-### Week 1 (Ongoing)
-- [ ] Daily check of active students
-- [ ] Monitor engagement rate
-- [ ] Verify database backups run
-- [ ] Check error logs for issues
-- [ ] Test on different devices
-
----
-
-## 🚨 Common Issues & Fixes
-
-### Issue: "Database table does not exist"
-**Solution:** Migrations didn't run
+### Response Time Check
 ```bash
-# In Railway terminal:
-npx prisma migrate deploy
+# Measure lesson start response time
+time curl -X POST https://staging-wizlingo.railway.app/api/lesson/session/start \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{"lessonId": "lesson_001"}' \
+  > /dev/null
+
+# Expected: < 500ms real time
 ```
 
-### Issue: Old password formula showing
-**Solution:** Clear browser cache
+### Load Test (Optional)
 ```bash
-# Hard refresh:
-Ctrl+Shift+R (Windows/Linux)
-Cmd+Shift+R (Mac)
+# Using Apache Bench (if installed)
+ab -n 100 -c 10 https://staging-wizlingo.railway.app/api/health
+
+# Expected: >99% success rate
 ```
 
-### Issue: Classes not loading in dropdown
-**Solution:** Seed test classes
+---
+
+## 🗄️ Database Verification
+
+### Check Data Persistence
 ```bash
-# In Railway terminal or local:
-npx tsx scripts/seed-classes.ts
-```
+# After submitting answers, verify in database:
+# 1. LessonSession record created
+# 2. Student XP updated
+# 3. Responses saved
 
-### Issue: Dashboard showing 0 students
-**Solution:** Normal - no students signed up yet
-- Create test account via signup form
-- Stats will update in real-time
+# If you have database access:
+psql $DATABASE_URL -c "SELECT * FROM \"LessonSession\" ORDER BY \"createdAt\" DESC LIMIT 1;"
+```
 
 ---
 
-## 📞 Rollback Plan
+## 📝 Logging & Monitoring
 
-If critical issues occur:
-
+### Check Application Logs
 ```bash
-# Revert to previous version
-git revert HEAD
-git push origin main
-# Railway auto-deploys immediately
+# View Rails logs
+railway logs --environment staging --tail
+
+# Look for:
+# ✅ Application started
+# ✅ Database connection successful
+# ✅ Prisma Client initialized
+# ❌ Any ERROR or FATAL messages
 ```
 
-**Previous Stable Commit:** `b57c739` (Before branding fixes)
+### Check Error Logs
+```bash
+# Filter for errors only
+railway logs --environment staging --tail | grep -i error
+
+# Expected: No errors (or only expected errors from test failures)
+```
+
+### Check Request Logs
+```bash
+# View incoming requests
+railway logs --environment staging --tail | grep -i "POST\|GET"
+
+# Expected: All API endpoints are being called
+```
 
 ---
 
-## 🎊 Success Criteria
+## 🔒 Security Verification
 
-- ✅ All pages load without errors
-- ✅ Signup creates accounts with correct password
-- ✅ Login works with phone + password
-- ✅ Manager dashboard displays real-time stats
-- ✅ Animations work smoothly on all pages
-- ✅ Branding shows "Powered by Edvanta Intelligence System"
-- ✅ PWA installable on mobile
-- ✅ API endpoints respond correctly
+### Verify JWT Authentication
+```bash
+# Test without token (should fail)
+curl -X POST https://staging-wizlingo.railway.app/api/lesson/session/start \
+  -d '{"lessonId": "lesson_001"}'
 
----
+# Expected: 401 Unauthorized
+```
 
-## 📅 Timeline
+### Verify Input Validation
+```bash
+# Test with invalid data
+curl -X POST https://staging-wizlingo.railway.app/api/lesson/session/start \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{"lessonId": ""}'
 
-| Phase | Date | Status |
-|-------|------|--------|
-| Deploy to Railway | June 18 | ✅ NOW |
-| Run verification tests | June 18 | 📋 Next |
-| Onboard 10-20 students | June 18-22 | 📅 Week 1 |
-| Monitor & optimize | June 23-29 | 📅 Week 2 |
-| Scale to 100-150 | June 30-July 15 | 📅 Week 3-4 |
+# Expected: 400 Bad Request
+```
 
----
-
-## 🎯 Beta Launch Goals
-
-**Participants:** 100-150 students  
-**Schools:** 1-2 Indian tier 2/3 schools  
-**Features:** Reading + Speaking with adaptive difficulty  
-**Duration:** 4 weeks (June 15 - July 15)  
-**Success Metric:** 60%+ weekly engagement rate
+### Verify Session Isolation
+```bash
+# Test that student can't access other student's session
+# (requires creating another student account first)
+```
 
 ---
 
-**Questions?** Check `/admin/dashboard` for real-time metrics!
+## 🧪 Feature Verification
 
-**Powered by Edvanta Intelligence System**
+### Complete Learning Journey
+```
+1. ✅ Login and get token
+2. ✅ Start lesson (T1.2 endpoint)
+3. ✅ View lesson content (returned from start)
+4. ✅ Submit answers (T1.3 endpoint)
+5. ✅ Receive results with feedback
+6. ✅ Verify XP awarded
+7. ✅ Verify progress updated
+```
+
+### All Question Types
+```
+1. ✅ Multiple choice questions work
+2. ✅ True/false questions work
+3. ✅ Text match questions work
+```
+
+---
+
+## 📋 Quick Verification Checklist
+
+```
+IMMEDIATE (First 30 minutes after deploy):
+  □ Application loads (curl homepage)
+  □ Health endpoint responds (HTTP 200)
+  □ Database connected (query database)
+  □ Authentication works (login returns token)
+  □ Lesson start endpoint works (201 response)
+  □ Lesson submit endpoint works (200 response)
+  □ No errors in logs
+
+FIRST HOUR:
+  □ Performance metrics acceptable (<500ms)
+  □ All endpoints responding
+  □ Database records created
+  □ XP awarded correctly
+  □ Progress updated
+
+FIRST 24 HOURS:
+  □ No memory leaks
+  □ No database connection drops
+  □ Consistent response times
+  □ No unexpected errors
+  □ All features working
+```
+
+---
+
+## 🚨 If Issues Occur
+
+### Issue: Application Won't Start
+```bash
+# Check logs
+railway logs --environment staging
+
+# Common causes:
+# 1. DATABASE_URL not set
+# 2. Migrations failed
+# 3. Missing environment variables
+# 4. Port already in use
+```
+
+### Issue: Database Connection Failed
+```bash
+# Check connection string
+railway variables list | grep DATABASE_URL
+
+# Verify database is accessible
+psql $DATABASE_URL -c "SELECT 1;"
+
+# Check Prisma setup
+npx prisma db push --skip-generate
+```
+
+### Issue: 5xx Server Errors
+```bash
+# Check logs for stack traces
+railway logs --environment staging --tail
+
+# Look for:
+# - Unhandled exceptions
+# - Missing dependencies
+# - Configuration issues
+# - Database errors
+```
+
+### Issue: Slow Response Times
+```bash
+# Check database query performance
+# Check application memory usage
+# Check CPU utilization
+# Scale up if needed
+```
+
+---
+
+## 📊 Monitoring Setup
+
+### Set Up Alerts (Railway Dashboard)
+```
+1. Go to Railway Dashboard
+2. Select your project
+3. Go to Monitoring
+4. Set alerts for:
+   - CPU > 80%
+   - Memory > 80%
+   - Error rate > 1%
+   - Response time > 1s
+```
+
+### Set Up Log Notifications
+```
+Configure to get notified of:
+- ERROR and FATAL level logs
+- Unhandled exceptions
+- Database connection failures
+```
+
+---
+
+## ✅ Success Criteria
+
+Deployment is successful when:
+```
+✅ Application starts without errors
+✅ All endpoints respond correctly
+✅ Database is connected and queryable
+✅ Authentication works (JWT valid)
+✅ Lesson flow works end-to-end
+✅ Performance is acceptable (<500ms)
+✅ No errors in logs
+✅ Data is persisted correctly
+✅ XP is awarded correctly
+✅ Progress is updated correctly
+✅ 24-hour stability test passes
+```
+
+---
+
+## 📈 Performance Baseline
+
+Expected metrics after deployment:
+```
+Response Times:
+  - Lesson Start:     100-200ms
+  - Lesson Submit:    150-300ms
+  - Database Query:   50-100ms
+
+Error Rates:
+  - 4xx Errors:       < 1% (mostly 401 for missing auth)
+  - 5xx Errors:       0% (any indicates issue)
+
+Availability:
+  - Uptime:           99.9%+
+  - Health Check:     100% successful
+```
+
+---
+
+## 🎉 Deployment Complete Checklist
+
+Once all verifications pass:
+```
+□ Document deployment details
+□ Create deployment record with timestamp
+□ Notify team of successful deployment
+□ Update deployment status in system
+□ Start 24-hour monitoring
+□ Prepare for beta launch
+□ Document any issues for post-mortems
+```
+
+---
+
+## 📞 Support Contacts
+
+If issues occur:
+- **DevOps Lead:** Deployment issues, scaling, infrastructure
+- **Backend Lead:** API errors, database issues, logic problems
+- **Frontend Lead:** UI issues, integration problems
+- **QA Lead:** Testing issues, verification problems
+
+---
+
+**Verification Status:** Ready to Execute  
+**Expected Duration:** 30 minutes for full verification  
+**Timeline:** July 5, 2026 morning  
+
+✅ **LET'S VERIFY!**
