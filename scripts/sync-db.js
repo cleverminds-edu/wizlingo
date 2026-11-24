@@ -80,15 +80,11 @@ async function main() {
     });
 
     if (migrateResult.status !== 0) {
-      console.log('\n⚠️  Migrations had issues, trying db push...\n');
-      const dbPushResult = spawnSync('npx', ['prisma', 'db', 'push', '--accept-data-loss'], {
-        stdio: 'inherit',
-        env: { ...process.env, DATABASE_URL: dbUrl }
-      });
-
-      if (dbPushResult.status !== 0) {
-        console.log('\n⚠️  Both migration methods failed\n');
-      }
+      // Never fall back to `prisma db push --accept-data-loss`: it applies the schema without the
+      // data moves in the migrations and can drop production data (see
+      // docs/plans/SCHEMA_REPLACEMENT_PLAN.md). Fail the deploy instead; fix the migration by hand.
+      console.error('\n❌ prisma migrate deploy failed. Not starting. No schema changes were forced.\n');
+      process.exit(1);
     }
 
     // Verify tables exist

@@ -7,7 +7,6 @@ cmds = ["npm ci --ignore-scripts"]
 [phases.build]
 cmds = [
   "NODE_OPTIONS=--experimental-require-module npx prisma generate",
-  "NODE_OPTIONS=--experimental-require-module npx prisma db push --skip-generate",
   "NODE_OPTIONS=--experimental-require-module npx next build"
 ]
 

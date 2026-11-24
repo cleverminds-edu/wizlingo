@@ -13,12 +13,12 @@ else
   echo "📍 Database: $(echo $DATABASE_URL | sed 's/:.*@/:***@/')"
   echo ""
 
-  echo "Step 1️⃣  - Creating enums..."
-  node scripts/sync-db.js || echo "⚠️  Enum creation had issues"
-
-  echo ""
-  echo "Step 2️⃣  - Running migrations..."
-  npx prisma migrate deploy || npx prisma db push --accept-data-loss || echo "⚠️  Migrations had issues"
+  # Enums + `prisma migrate deploy`. If migrations fail, stop here: the app must not start on a
+  # half-migrated database, and nothing may fall back to `prisma db push --accept-data-loss`
+  # (it would drop production data). With `set -e` a failure exits this script, so the new
+  # deployment fails and the previous one keeps serving.
+  echo "Step 1️⃣  - Creating enums and running migrations..."
+  node scripts/sync-db.js
 
   echo ""
   echo "════════════════════════════════════════════════════════════"
