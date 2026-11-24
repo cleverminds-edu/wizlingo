@@ -1,393 +1,490 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
-interface DashboardStats {
-  success: boolean;
-  summary: {
-    totalStudents: number;
-    totalSchools: number;
-    studentsLast30Days: number;
-    studentsLast7Days: number;
-    studentsLast24h: number;
-    activeStudentsLast7Days: number;
-    engagementRate: string;
-  };
-  sessions: {
-    totalReadingSessions: number;
-    totalSpeakingSessions: number;
-  };
-  studentsByType: Array<{ type: string; count: number }>;
-  topPerformers: Array<{
-    id: string;
-    userId: string;
-    name: string;
-    phone: string;
-    type: string;
-    level: number;
-    sessions: number;
-    accuracy: number;
-  }>;
+interface ManagerState {
+  id: string
+  email: string
+  name: string
+  organizationName?: string
 }
 
-const StatCard = ({ label, value, unit = '', icon, color = 'blue' }: any) => {
-  const colorClasses = {
-    blue: 'bg-blue-50 text-blue-600',
-    green: 'bg-green-50 text-green-600',
-    purple: 'bg-purple-50 text-purple-600',
-    orange: 'bg-orange-50 text-orange-600',
-  };
+interface SchoolStat {
+  schoolId: string
+  schoolName: string
+  city?: string
+  students: number
+  teachers: number
+  classes: number
+  sessions: number
+  avgScore: number
+  passRate: number
+  xp: number
+  avgReadingScore: number
+  avgSpeakingScore: number
+  avgWritingScore: number
+  avgListeningScore: number
+  topStudents: Array<{ studentId: string; name: string; xp: number }>
+}
 
-  return (
-    <div className="bg-white rounded-lg shadow border border-gray-100 p-5 hover:shadow-lg transition">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-gray-600 text-xs font-semibold uppercase tracking-wide mb-2">{label}</p>
-          <p className="text-4xl font-bold text-gray-900 mb-1">
-            {typeof value === 'number' ? value.toLocaleString() : value}
-          </p>
-          {unit && <p className="text-sm text-gray-500">{unit}</p>}
-        </div>
-        {icon && <div className={`text-4xl p-3 rounded-lg ${colorClasses[color as keyof typeof colorClasses]}`}>{icon}</div>}
-      </div>
-    </div>
-  );
-};
+interface ManagerAnalytics {
+  stats: {
+    totalSchools: number
+    totalTeachers: number
+    totalStudents: number
+    totalSessions: number
+    totalXP: number
+    avgScore: number
+    passRate: number
+    avgReadingScore: number
+    avgSpeakingScore: number
+    avgWritingScore: number
+    avgListeningScore: number
+  }
+  schools: SchoolStat[]
+}
+
+type DashboardView = 'login' | 'overview' | 'schoolDetail'
 
 export default function ManagerDashboard() {
-  const router = useRouter();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [resetUserId, setResetUserId] = useState('');
-  const [resetPassword, setResetPassword] = useState('');
-  const [resetting, setResetting] = useState(false);
-  const [resetMessage, setResetMessage] = useState('');
+  const router = useRouter()
+  const [view, setView] = useState<DashboardView>('login')
+  const [manager, setManager] = useState<ManagerState | null>(null)
+  const [token, setToken] = useState('')
+  const [analytics, setAnalytics] = useState<ManagerAnalytics | null>(null)
+  const [selectedSchool, setSelectedSchool] = useState<SchoolStat | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
+  // Login form state
+  const [loginEmail, setLoginEmail] = useState('')
+  const [loginPassword, setLoginPassword] = useState('')
+
+  // Restore session from localStorage
   useEffect(() => {
-    fetchDashboard();
-    const interval = setInterval(fetchDashboard, 30000); // Refresh every 30 seconds
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchDashboard = async () => {
-    try {
-      const res = await fetch('/api/manager/dashboard', { credentials: 'include' });
-      if (res.status === 401) {
-        router.push('/manager/login');
-        return;
-      }
-      const data = await res.json();
-      if (data.success) {
-        setStats(data);
-      }
-    } catch (err) {
-      console.error('Failed to load dashboard:', err);
-    } finally {
-      setLoading(false);
+    const savedToken = localStorage.getItem('managerToken')
+    const savedManager = localStorage.getItem('manager')
+    if (savedToken && savedManager) {
+      setToken(savedToken)
+      setManager(JSON.parse(savedManager))
+      setView('overview')
+      loadAnalytics(savedToken)
     }
-  };
+  }, [])
 
-  const handlePasswordReset = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!resetUserId || !resetPassword) {
-      setResetMessage('Please fill all fields');
-      return;
-    }
-
-    setResetting(true);
-    setResetMessage('');
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
 
     try {
-      const res = await fetch('/api/manager/reset-password', {
+      const response = await fetch('/api/manager/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: resetUserId, newPassword: resetPassword }),
-        credentials: 'include'
-      });
+        body: JSON.stringify({ email: loginEmail, password: loginPassword })
+      })
 
-      const data = await res.json();
-      if (res.ok) {
-        setResetMessage(`✅ ${data.message}`);
-        setResetUserId('');
-        setResetPassword('');
-      } else {
-        setResetMessage(`❌ ${data.error || 'Failed to reset password'}`);
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Login failed')
+        return
       }
-    } catch (err) {
-      setResetMessage('❌ Error resetting password');
-    } finally {
-      setResetting(false);
-    }
-  };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin mb-4">
-            <Image src="/wiziingo-logo.svg" alt="Loading" width={80} height={80} />
-          </div>
-          <p className="text-gray-600 font-medium">Loading dashboard...</p>
-        </div>
-      </div>
-    );
+      const { token, manager } = data
+      localStorage.setItem('managerToken', token)
+      localStorage.setItem('manager', JSON.stringify(manager))
+      setToken(token)
+      setManager(manager)
+      setView('overview')
+      loadAnalytics(token)
+    } catch (err) {
+      setError('Network error. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const totalSessions = (stats?.sessions.totalReadingSessions || 0) + (stats?.sessions.totalSpeakingSessions || 0);
-  const b2cUsers = stats?.studentsByType.find(s => s.type === 'PUBLIC')?.count || 0;
-  const b2bUsers = stats?.studentsByType.find(s => s.type === 'SCHOOL')?.count || 0;
+  const loadAnalytics = async (managerToken: string) => {
+    try {
+      const response = await fetch('/api/manager/analytics', {
+        headers: { 'Authorization': `Bearer ${managerToken}` }
+      })
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="relative h-16 w-16">
-                <Image
-                  src="/wiziingo-logo.svg"
-                  alt="WizLingo"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">WizLingo Manager</h1>
-                <p className="text-sm text-gray-500">Platform Analytics & Management</p>
-              </div>
+      const data = await response.json()
+
+      if (response.ok) {
+        setAnalytics(data)
+      }
+    } catch (err) {
+      console.error('Failed to load analytics')
+    }
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('managerToken')
+    localStorage.removeItem('manager')
+    setToken('')
+    setManager(null)
+    setView('login')
+    setError('')
+  }
+
+  // Login View
+  if (view === 'login') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">WizLingo</h1>
+          <p className="text-gray-600 mb-8">Global Manager Dashboard</p>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="manager@wizlingo.com"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            {error && <div className="bg-red-50 text-red-700 p-3 rounded-lg text-sm">{error}</div>}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-purple-600 text-white py-2 rounded-lg font-medium hover:bg-purple-700 disabled:opacity-50"
+            >
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+          </form>
+
+          <p className="text-center text-sm text-gray-600 mt-6">
+            Don't have an account?{' '}
+            <button
+              onClick={() => router.push('/manager/signup')}
+              className="text-purple-600 hover:underline font-medium"
+            >
+              Sign up
+            </button>
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  // Overview View
+  if (view === 'overview' && analytics) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">Global Manager Dashboard</h1>
+              <p className="text-gray-600">{manager?.name} • {manager?.organizationName}</p>
             </div>
             <button
-              onClick={() => {
-                fetch('/api/manager/logout', { method: 'POST', credentials: 'include' });
-                router.push('/manager/login');
-              }}
-              className="px-5 py-2 text-red-600 hover:bg-red-50 rounded-lg transition font-medium text-sm"
+              onClick={handleLogout}
+              className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
             >
               Logout
             </button>
           </div>
         </div>
+
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Key Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600 text-sm">Total Schools</p>
+              <p className="text-3xl font-bold text-purple-600">{analytics.stats.totalSchools}</p>
+            </div>
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600 text-sm">Total Teachers</p>
+              <p className="text-3xl font-bold text-blue-600">{analytics.stats.totalTeachers}</p>
+            </div>
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600 text-sm">Total Students</p>
+              <p className="text-3xl font-bold text-green-600">{analytics.stats.totalStudents}</p>
+            </div>
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600 text-sm">Total Sessions</p>
+              <p className="text-3xl font-bold text-orange-600">{analytics.stats.totalSessions}</p>
+            </div>
+          </div>
+
+          {/* Performance Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600 text-sm mb-2">Average Class Score</p>
+              <p className="text-4xl font-bold text-gray-800">{analytics.stats.avgScore.toFixed(1)}%</p>
+              <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-blue-400 to-blue-600" style={{ width: `${analytics.stats.avgScore}%` }} />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600 text-sm mb-2">Pass Rate Across Schools</p>
+              <p className="text-4xl font-bold text-green-600">{analytics.stats.passRate.toFixed(0)}%</p>
+              <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-green-400 to-green-600" style={{ width: `${analytics.stats.passRate}%` }} />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600 text-sm mb-2">Total XP Earned</p>
+              <p className="text-4xl font-bold text-indigo-600">{analytics.stats.totalXP.toLocaleString()}</p>
+            </div>
+          </div>
+
+          {/* LSRW Skills Breakdown */}
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 className="text-xl font-bold text-gray-800 mb-6">Global Skills Performance (LSRW)</h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {[
+                { label: 'Listening', score: analytics.stats.avgListeningScore, color: 'bg-blue-100', textColor: 'text-blue-600' },
+                { label: 'Speaking', score: analytics.stats.avgSpeakingScore, color: 'bg-green-100', textColor: 'text-green-600' },
+                { label: 'Reading', score: analytics.stats.avgReadingScore, color: 'bg-purple-100', textColor: 'text-purple-600' },
+                { label: 'Writing', score: analytics.stats.avgWritingScore, color: 'bg-orange-100', textColor: 'text-orange-600' }
+              ].map((skill) => (
+                <div key={skill.label} className={`${skill.color} rounded-lg p-4`}>
+                  <p className="text-gray-600 text-sm mb-2">{skill.label}</p>
+                  <p className={`text-3xl font-bold ${skill.textColor}`}>{skill.score.toFixed(0)}%</p>
+                  <div className="mt-2 bg-gray-300 h-2 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full ${skill.textColor.replace('text-', 'bg-')}`}
+                      style={{ width: `${Math.min(skill.score, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Schools List */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-6">School Performance Rankings</h2>
+            {analytics.schools.length === 0 ? (
+              <p className="text-gray-600">No schools yet.</p>
+            ) : (
+              <div className="space-y-4">
+                {analytics.schools.map((school, idx) => (
+                  <div
+                    key={school.schoolId}
+                    onClick={() => {
+                      setSelectedSchool(school)
+                      setView('schoolDetail')
+                    }}
+                    className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition cursor-pointer"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl font-bold text-purple-600">#{idx + 1}</span>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-800">{school.schoolName}</h3>
+                            <p className="text-sm text-gray-600">{school.city}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-3xl font-bold text-indigo-600">{school.xp}</p>
+                        <p className="text-xs text-gray-600">Total XP</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
+                      <div>
+                        <p className="text-xs text-gray-600">Students</p>
+                        <p className="text-lg font-bold text-gray-800">{school.students}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">Teachers</p>
+                        <p className="text-lg font-bold text-gray-800">{school.teachers}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">Classes</p>
+                        <p className="text-lg font-bold text-gray-800">{school.classes}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">Avg Score</p>
+                        <p className="text-lg font-bold text-gray-800">{school.avgScore.toFixed(0)}%</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">Pass Rate</p>
+                        <p className="text-lg font-bold text-green-600">{school.passRate.toFixed(0)}%</p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      {[
+                        { label: 'R', score: school.avgReadingScore, color: 'bg-purple-100 text-purple-600' },
+                        { label: 'L', score: school.avgListeningScore, color: 'bg-blue-100 text-blue-600' },
+                        { label: 'S', score: school.avgSpeakingScore, color: 'bg-green-100 text-green-600' },
+                        { label: 'W', score: school.avgWritingScore, color: 'bg-orange-100 text-orange-600' }
+                      ].map((skill) => (
+                        <div key={skill.label} className={`${skill.color} rounded px-3 py-1 text-center text-sm font-bold flex-1`}>
+                          {skill.label}: {skill.score.toFixed(0)}%
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
+    )
+  }
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
-        {/* Key Metrics Section */}
-        <div className="mb-10">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">📊 Platform Overview</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label="Total Students" value={stats?.summary.totalStudents || 0} icon="👥" color="blue" />
-            <StatCard label="Total Schools" value={stats?.summary.totalSchools || 0} icon="🏫" color="purple" />
-            <StatCard label="Active (7 Days)" value={stats?.summary.activeStudentsLast7Days || 0} icon="⚡" color="green" />
-            <StatCard label="Engagement" value={stats?.summary.engagementRate || '0'} unit="%" icon="📈" color="orange" />
-          </div>
-        </div>
-
-        {/* Growth & New Users */}
-        <div className="mb-10">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">📈 Growth Metrics</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <StatCard label="New Last 24h" value={stats?.summary.studentsLast24h || 0} icon="🌟" color="green" />
-            <StatCard label="New Last 7 Days" value={stats?.summary.studentsLast7Days || 0} icon="📅" color="blue" />
-            <StatCard label="New Last 30 Days" value={stats?.summary.studentsLast30Days || 0} icon="📊" color="purple" />
-          </div>
-        </div>
-
-        {/* User Distribution & Sessions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-          {/* User Types */}
-          <div className="bg-white rounded-lg shadow border border-gray-100 p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">👥 User Distribution</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-gray-900">🌐 B2C Users (Public)</p>
-                  <p className="text-sm text-gray-500">Individual sign-ups</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-3xl font-bold text-blue-600">{b2cUsers}</p>
-                  <p className="text-xs text-gray-500">{((b2cUsers / (stats?.summary.totalStudents || 1)) * 100).toFixed(1)}%</p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-gray-900">🏢 B2B Users (Schools)</p>
-                  <p className="text-sm text-gray-500">School-based students</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-3xl font-bold text-green-600">{b2bUsers}</p>
-                  <p className="text-xs text-gray-500">{((b2bUsers / (stats?.summary.totalStudents || 1)) * 100).toFixed(1)}%</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Session Analytics */}
-          <div className="bg-white rounded-lg shadow border border-gray-100 p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">📚 Session Activity</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-orange-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-gray-900">📖 Reading Sessions</p>
-                  <p className="text-sm text-gray-500">Total completed</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-3xl font-bold text-orange-600">{stats?.sessions.totalReadingSessions || 0}</p>
-                  <p className="text-xs text-gray-500">
-                    {((stats?.sessions.totalReadingSessions || 0) / (totalSessions || 1) * 100).toFixed(1)}% of total
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-gray-900">🎤 Speaking Sessions</p>
-                  <p className="text-sm text-gray-500">Total completed</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-3xl font-bold text-purple-600">{stats?.sessions.totalSpeakingSessions || 0}</p>
-                  <p className="text-xs text-gray-500">
-                    {((stats?.sessions.totalSpeakingSessions || 0) / (totalSessions || 1) * 100).toFixed(1)}% of total
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Top Performers */}
-        {stats?.topPerformers && stats.topPerformers.length > 0 && (
-          <div className="bg-white rounded-lg shadow border border-gray-100 p-6 mb-10">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">⭐ Top Performers (Last 7 Days)</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Rank</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">User ID</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Name</th>
-                    <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Type</th>
-                    <th className="text-center py-3 px-4 font-semibold text-gray-700 text-sm">Level</th>
-                    <th className="text-center py-3 px-4 font-semibold text-gray-700 text-sm">Sessions</th>
-                    <th className="text-center py-3 px-4 font-semibold text-gray-700 text-sm">Accuracy</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {stats.topPerformers.map((performer, idx) => (
-                    <tr key={performer.id} className="border-b border-gray-100 hover:bg-blue-50 transition">
-                      <td className="py-3 px-4 font-bold text-gray-900">#{idx + 1}</td>
-                      <td className="py-3 px-4 font-mono text-blue-600 font-medium">{performer.userId}</td>
-                      <td className="py-3 px-4 text-gray-900">{performer.name || 'N/A'}</td>
-                      <td className="py-3 px-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          performer.type === 'PUBLIC'
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'bg-green-100 text-green-700'
-                        }`}>
-                          {performer.type === 'PUBLIC' ? '🌐 B2C' : '🏢 B2B'}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-center font-bold text-gray-900">Level {performer.level}</td>
-                      <td className="py-3 px-4 text-center text-gray-600 font-medium">{performer.sessions}</td>
-                      <td className="py-3 px-4 text-center">
-                        <span className={`font-bold ${
-                          performer.accuracy >= 85 ? 'text-green-600' :
-                          performer.accuracy >= 70 ? 'text-yellow-600' : 'text-gray-600'
-                        }`}>
-                          {performer.accuracy.toFixed(0)}%
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Management Tools */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Password Reset */}
-          <div className="bg-white rounded-lg shadow border border-gray-100 p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">🔐 Reset User Password</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Quick access users: <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">WL214837</span> (Akshit), <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">WL194299</span> (Mamta Rao)
-            </p>
-            <form onSubmit={handlePasswordReset} className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">User ID (e.g., WL214837)</label>
-                <input
-                  type="text"
-                  value={resetUserId}
-                  onChange={(e) => setResetUserId(e.target.value.toUpperCase())}
-                  placeholder="WL214837"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">New Password (min 8 chars)</label>
-                <input
-                  type="password"
-                  value={resetPassword}
-                  onChange={(e) => setResetPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                />
-              </div>
+  // School Detail View
+  if (view === 'schoolDetail' && selectedSchool) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div>
               <button
-                type="submit"
-                disabled={resetting}
-                className="w-full py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+                onClick={() => setView('overview')}
+                className="text-purple-600 hover:text-purple-700 text-sm font-medium mb-2"
               >
-                {resetting ? 'Resetting...' : 'Reset Password'}
+                ← Back to Schools
               </button>
-              {resetMessage && (
-                <p className={`text-sm p-3 rounded-lg ${
-                  resetMessage.includes('✅')
-                    ? 'bg-green-50 text-green-700 border border-green-200'
-                    : 'bg-red-50 text-red-700 border border-red-200'
-                }`}>
-                  {resetMessage}
-                </p>
-              )}
-            </form>
+              <h1 className="text-2xl font-bold text-gray-800">{selectedSchool.schoolName}</h1>
+              <p className="text-gray-600">{selectedSchool.city}</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* School Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600 text-sm">Total Students</p>
+              <p className="text-3xl font-bold text-gray-800">{selectedSchool.students}</p>
+            </div>
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600 text-sm">Total Teachers</p>
+              <p className="text-3xl font-bold text-gray-800">{selectedSchool.teachers}</p>
+            </div>
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600 text-sm">Classes</p>
+              <p className="text-3xl font-bold text-gray-800">{selectedSchool.classes}</p>
+            </div>
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600 text-sm">Sessions Completed</p>
+              <p className="text-3xl font-bold text-gray-800">{selectedSchool.sessions}</p>
+            </div>
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600 text-sm">Total XP</p>
+              <p className="text-3xl font-bold text-indigo-600">{selectedSchool.xp}</p>
+            </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="bg-white rounded-lg shadow border border-gray-100 p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">📊 Quick Insights</h3>
-            <div className="space-y-3">
-              <div className="flex items-start p-3 bg-blue-50 rounded-lg">
-                <span className="text-2xl mr-3">📱</span>
-                <div>
-                  <p className="font-semibold text-gray-900">Avg Sessions per User</p>
-                  <p className="text-lg font-bold text-blue-600">
-                    {((totalSessions || 0) / (stats?.summary.totalStudents || 1)).toFixed(1)}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start p-3 bg-green-50 rounded-lg">
-                <span className="text-2xl mr-3">🎯</span>
-                <div>
-                  <p className="font-semibold text-gray-900">Conversion Rate (7 days)</p>
-                  <p className="text-lg font-bold text-green-600">
-                    {((stats?.summary.activeStudentsLast7Days || 0) / (stats?.summary.totalStudents || 1) * 100).toFixed(1)}%
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start p-3 bg-purple-50 rounded-lg">
-                <span className="text-2xl mr-3">🚀</span>
-                <div>
-                  <p className="font-semibold text-gray-900">Growth (Last 30 Days)</p>
-                  <p className="text-lg font-bold text-purple-600">
-                    {stats?.summary.studentsLast30Days || 0} new users
-                  </p>
-                </div>
+          {/* Performance Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600 text-sm mb-2">School Average Score</p>
+              <p className="text-4xl font-bold text-gray-800">{selectedSchool.avgScore.toFixed(0)}%</p>
+              <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-blue-400 to-blue-600" style={{ width: `${selectedSchool.avgScore}%` }} />
               </div>
             </div>
+
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600 text-sm mb-2">Pass Rate</p>
+              <p className="text-4xl font-bold text-green-600">{selectedSchool.passRate.toFixed(0)}%</p>
+              <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-green-400 to-green-600" style={{ width: `${selectedSchool.passRate}%` }} />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <p className="text-gray-600 text-sm mb-2">Avg XP per Student</p>
+              <p className="text-4xl font-bold text-indigo-600">
+                {selectedSchool.students > 0 ? (selectedSchool.xp / selectedSchool.students).toFixed(0) : 0}
+              </p>
+            </div>
+          </div>
+
+          {/* LSRW Skills */}
+          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 className="text-xl font-bold text-gray-800 mb-6">School Skills Breakdown (LSRW)</h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {[
+                { label: 'Listening', score: selectedSchool.avgListeningScore, color: 'bg-blue-100', textColor: 'text-blue-600' },
+                { label: 'Speaking', score: selectedSchool.avgSpeakingScore, color: 'bg-green-100', textColor: 'text-green-600' },
+                { label: 'Reading', score: selectedSchool.avgReadingScore, color: 'bg-purple-100', textColor: 'text-purple-600' },
+                { label: 'Writing', score: selectedSchool.avgWritingScore, color: 'bg-orange-100', textColor: 'text-orange-600' }
+              ].map((skill) => (
+                <div key={skill.label} className={`${skill.color} rounded-lg p-4`}>
+                  <p className="text-gray-600 text-sm mb-2">{skill.label}</p>
+                  <p className={`text-3xl font-bold ${skill.textColor}`}>{skill.score.toFixed(0)}%</p>
+                  <div className="mt-2 bg-gray-300 h-2 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full ${skill.textColor.replace('text-', 'bg-')}`}
+                      style={{ width: `${Math.min(skill.score, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Top Performers */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-6">Top Performers</h2>
+            {selectedSchool.topStudents.length === 0 ? (
+              <p className="text-gray-600">No student data available.</p>
+            ) : (
+              <div className="space-y-3">
+                {selectedSchool.topStudents.map((student, idx) => (
+                  <div key={student.studentId} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl font-bold text-purple-600">#{idx + 1}</span>
+                      <p className="font-medium text-gray-800">{student.name}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-indigo-600">{student.xp} XP</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
-    </div>
-  );
+    )
+  }
+
+  return null
 }

@@ -1,0 +1,205 @@
+{
+  "grade": 1,
+  "vocabulary": [
+    {
+      "word": "apple",
+      "definition": "A round red, green, or yellow fruit",
+      "partOfSpeech": "noun",
+      "exampleSentence": "I eat an apple for lunch.",
+      "category": "foods",
+      "imageTopic": "red apple",
+      "mastery_level": 1,
+      "pronunciation": "AP-ul"
+    },
+    {
+      "word": "ball",
+      "definition": "A round object used to play games",
+      "partOfSpeech": "noun",
+      "exampleSentence": "The ball is red and round.",
+      "category": "toys",
+      "imageTopic": "bouncy ball",
+      "mastery_level": 1,
+      "pronunciation": "BAWL"
+    },
+    {
+      "word": "cat",
+      "definition": "A small furry animal that people keep as a pet",
+      "partOfSpeech": "noun",
+      "exampleSentence": "My cat likes to sleep on the bed.",
+      "category": "animals",
+      "imageTopic": "orange cat",
+      "mastery_level": 1,
+      "pronunciation": "KAT"
+    },
+    {
+      "word": "dog",
+      "definition": "An animal that barks and is a popular pet",
+      "partOfSpeech": "noun",
+      "exampleSentence": "The dog runs in the park.",
+      "category": "animals",
+      "imageTopic": "brown dog playing",
+      "mastery_level": 1,
+      "pronunciation": "DAWG"
+    },
+    {
+      "word": "eat",
+      "definition": "To take food into your mouth and swallow it",
+      "partOfSpeech": "verb",
+      "exampleSentence": "I eat breakfast in the morning.",
+      "category": "actions",
+      "imageTopic": "person eating",
+      "mastery_level": 1,
+      "pronunciation": "EET"
+    },
+    {
+      "word": "fish",
+      "definition": "An animal that lives in water and has fins",
+      "partOfSpeech": "noun",
+      "exampleSentence": "The fish swims in the tank.",
+      "category": "animals",
+      "imageTopic": "colorful fish",
+      "mastery_level": 1,
+      "pronunciation": "FISH"
+    },
+    {
+      "word": "go",
+      "definition": "To move from one place to another",
+      "partOfSpeech": "verb",
+      "exampleSentence": "Let's go to school now.",
+      "category": "actions",
+      "imageTopic": "person walking",
+      "mastery_level": 1,
+      "pronunciation": "GOH"
+    },
+    {
+      "word": "happy",
+      "definition": "Feeling or showing joy and pleasure",
+      "partOfSpeech": "adjective",
+      "exampleSentence": "I am happy when I play with my friends.",
+      "category": "emotions",
+      "imageTopic": "smiling child",
+      "mastery_level": 1,
+      "pronunciation": "HAP-ee"
+    },
+    {
+      "word": "house",
+      "definition": "A building where people live",
+      "partOfSpeech": "noun",
+      "exampleSentence": "I live in a blue house.",
+      "category": "places",
+      "imageTopic": "house with trees",
+      "mastery_level": 1,
+      "pronunciation": "HOWZ"
+    },
+    {
+      "word": "jump",
+      "definition": "To push yourself up into the air with your legs",
+      "partOfSpeech": "verb",
+      "exampleSentence": "I jump very high.",
+      "category": "actions",
+      "imageTopic": "person jumping",
+      "mastery_level": 1,
+      "pronunciation": "JUMP"
+    },
+    {
+      "word": "kind",
+      "definition": "Being nice and caring about others",
+      "partOfSpeech": "adjective",
+      "exampleSentence": "My teacher is kind to all the students.",
+      "category": "qualities",
+      "imageTopic": "helping hand",
+      "mastery_level": 1,
+      "pronunciation": "KIND"
+    },
+    {
+      "word": "love",
+      "definition": "To care deeply about someone or something",
+      "partOfSpeech": "verb",
+      "exampleSentence": "I love my family.",
+      "category": "emotions",
+      "imageTopic": "heart symbol",
+      "mastery_level": 1,
+      "pronunciation": "LUV"
+    },
+    {
+      "word": "make",
+      "definition": "To create or produce something",
+      "partOfSpeech": "verb",
+      "exampleSentence": "I make a picture with colors.",
+      "category": "actions",
+      "imageTopic": "person drawing",
+      "mastery_level": 1,
+      "pronunciation": "MAYK"
+    },
+    {
+      "word": "name",
+      "definition": "The word by which a person or thing is known",
+      "partOfSpeech": "noun",
+      "exampleSentence": "My name is Priya.",
+      "category": "people",
+      "imageTopic": "nameplate",
+      "mastery_level": 1,
+      "pronunciation": "NAYM"
+    },
+    {
+      "word": "orange",
+      "definition": "A round orange fruit that is sweet and juicy",
+      "partOfSpeech": "noun",
+      "exampleSentence": "I eat an orange for a snack.",
+      "category": "foods",
+      "imageTopic": "orange fruit",
+      "mastery_level": 1,
+      "pronunciation": "OR-inj"
+    },
+    {
+      "word": "play",
+      "definition": "To have fun and enjoy yourself",
+      "partOfSpeech": "verb",
+      "exampleSentence": "Children play in the park.",
+      "category": "actions",
+      "imageTopic": "children playing",
+      "mastery_level": 1,
+      "pronunciation": "PLAY"
+    },
+    {
+      "word": "quick",
+      "definition": "Done or happening fast",
+      "partOfSpeech": "adjective",
+      "exampleSentence": "The rabbit is quick.",
+      "category": "qualities",
+      "imageTopic": "fast rabbit",
+      "mastery_level": 1,
+      "pronunciation": "KWIK"
+    },
+    {
+      "word": "read",
+      "definition": "To look at and understand written words",
+      "partOfSpeech": "verb",
+      "exampleSentence": "I read a story in the library.",
+      "category": "actions",
+      "imageTopic": "person reading book",
+      "mastery_level": 1,
+      "pronunciation": "REED"
+    },
+    {
+      "word": "sun",
+      "definition": "The bright star that gives light and heat to Earth",
+      "partOfSpeech": "noun",
+      "exampleSentence": "The sun is bright and warm.",
+      "category": "nature",
+      "imageTopic": "bright sun",
+      "mastery_level": 1,
+      "pronunciation": "SUN"
+    },
+    {
+      "word": "tree",
+      "definition": "A large plant with a brown stem and green leaves",
+      "partOfSpeech": "noun",
+      "exampleSentence": "The tree has many green leaves.",
+      "category": "nature",
+      "imageTopic": "big green tree",
+      "mastery_level": 1,
+      "pronunciation": "TREE"
+    }
+  ]
+}

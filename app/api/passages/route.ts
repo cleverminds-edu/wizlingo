@@ -1,4 +1,5 @@
 import { getAuth, getStudentIdFromAuth } from "@/lib/auth-utils";
+import { SERVABLE_PASSAGE } from "@/lib/content-status";
 import { prisma } from "@/lib/prisma";
 import { gradeToBand } from "@/lib/scoring";
 import { ageBandToGradeBand } from "@/lib/age-band-mapping";
@@ -12,12 +13,12 @@ export async function GET(request: Request) {
   await ensurePassagesSeeded();
 
   // Debug: Count passages in database
-  const passageCount = await prisma.readingPassage.count();
+  const passageCount = await prisma.readingPassage.count({ where: SERVABLE_PASSAGE });
   console.log(`📊 Database has ${passageCount} passages`);
   if (passageCount === 0) {
     console.error('❌ NO PASSAGES IN DATABASE - This should have been seeded at startup!');
     return Response.json({
-      error: 'No reading passages available in database. System is not properly initialized.',
+      error: 'No approved reading passages available yet. Passages appear once an SME approves them.',
       debug: { passageCount }
     }, { status: 503 });
   }
@@ -34,7 +35,7 @@ export async function GET(request: Request) {
 
   const student = await prisma.student.findUnique({
     where: { id: studentId },
-    include: { class: true, progress: true },
+    include: { progress: true },
   });
   if (!student) {
     console.error('❌ Student not found:', studentId);

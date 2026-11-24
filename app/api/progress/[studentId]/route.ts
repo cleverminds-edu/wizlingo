@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/auth";
+import { primaryClassId } from '@/lib/student-class';
 import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
 
@@ -45,6 +46,7 @@ export async function GET(
     // Fetch basic student info first (no relations)
     const student = await prisma.student.findUnique({
       where: { id: studentId },
+      include: { enrollments: { take: 1, orderBy: { enrolledAt: 'asc' } } },
     });
 
     if (!student) {
@@ -53,10 +55,11 @@ export async function GET(
 
     // Fetch class info safely
     let classInfo = null;
-    if (student.classId) {
+    const classId = primaryClassId(student);
+    if (classId) {
       try {
         classInfo = await prisma.class.findUnique({
-          where: { id: student.classId },
+          where: { id: classId },
           include: { school: { select: { name: true } } },
         });
       } catch (e) {
@@ -160,8 +163,11 @@ export async function GET(
       console.log('Certificates unavailable');
     }
 
+    // Never send login secrets to the browser
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { pin, passwordHash, enrollments, ...safeStudent } = student;
     return Response.json({
-      ...student,
+      ...safeStudent,
       class: classInfo,
       progress,
       sessions,

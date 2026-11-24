@@ -39,7 +39,7 @@ async function createBetaUser() {
     }
 
     // Check if user exists
-    const existing = await prisma.student.findUnique({
+    const existing = await prisma.student.findFirst({
       where: { phone },
     });
 

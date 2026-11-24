@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { classWithSchoolInclude, primaryClass } from "@/lib/student-class";
+import { PrintButton } from "./PrintButton";
 import { BADGE_META } from "@/lib/badges";
 import { notFound } from "next/navigation";
 import CertificateDownloadButton from "@/components/certificate-download-button";
@@ -13,13 +15,7 @@ export default async function CertificatePage({
   const cert = await prisma.certificate.findUnique({
     where: { verifyCode },
     include: {
-      student: {
-        include: {
-          class: {
-            include: { school: { select: { name: true, logoUrl: true } } },
-          },
-        },
-      },
+      student: { include: classWithSchoolInclude },
     },
   });
 
@@ -27,7 +23,9 @@ export default async function CertificatePage({
 
   const meta = BADGE_META[cert.badgeType];
   const student = cert.student;
-  const school = student.class.school;
+  // B2C students have no class or school: show WizLingo as the issuer instead.
+  const cls = primaryClass(student);
+  const school = cls?.school ?? { name: "WizLingo", logoUrl: null };
   const issuedDate = cert.issuedAt.toLocaleDateString("en-IN", {
     day: "numeric",
     month: "long",
@@ -38,7 +36,7 @@ export default async function CertificatePage({
     BAND_3_5: "Grade 3–5",
     BAND_6_8: "Grade 6–8",
     BAND_9_10: "Grade 9–10",
-  }[student.class.grade <= 2 ? "BAND_1_2" : student.class.grade <= 5 ? "BAND_3_5" : student.class.grade <= 8 ? "BAND_6_8" : "BAND_9_10"];
+  }[cls?.grade == null ? "BAND_3_5" : cls.grade <= 2 ? "BAND_1_2" : cls.grade <= 5 ? "BAND_3_5" : cls.grade <= 8 ? "BAND_6_8" : "BAND_9_10"];
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8"
@@ -51,15 +49,10 @@ export default async function CertificatePage({
           badgeType={cert.badgeType}
           verifyCode={verifyCode}
         />
-        <button
-          onClick={() => window.print()}
-          className="px-6 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 transition-colors"
-        >
-          🖨️ Print Certificate
-        </button>
+        <PrintButton />
         <a
           href="/"
-          className="px-6 py-2.5 rounded-xl border border-indigo-200 text-indigo-600 font-semibold text-sm hover:bg-indigo-50 transition-colors"
+          className="px-6 py-2.5 rounded-xl border border-indigo-200 text-blue-600 font-semibold text-sm hover:bg-indigo-50 transition-colors"
         >
           ← Back to WizLingo
         </a>
@@ -121,7 +114,7 @@ export default async function CertificatePage({
             </h1>
 
             <p className="text-gray-500 text-base mb-8">
-              {gradeBand} · Grade {student.class.grade}-{student.class.section}
+              {cls?.grade != null ? `${gradeBand} · Grade ${cls.grade}-${cls.section ?? ""}` : "WizLingo learner"}
             </p>
 
             {/* Badge showcase */}

@@ -44,7 +44,7 @@ export default function WizAdminLogin() {
               type="password"
               value={secret}
               onChange={(e) => setSecret(e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-gray-500"
+              className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-500"
               placeholder="Enter admin secret key"
               required
             />

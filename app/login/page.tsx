@@ -130,7 +130,7 @@ export default function LoginPage() {
         <div className="space-y-8">
           <div className="relative inline-block">
             <Image
-              src="/wiziingo-logo.svg"
+              src="/wizlingo-logo.png"
               alt="WizLingo"
               width={100}
               height={50}
@@ -185,7 +185,7 @@ export default function LoginPage() {
             <div className="flex justify-center">
               <div className="relative">
                 <Image
-                  src="/wiziingo-logo.svg"
+                  src="/wizlingo-logo.png"
                   alt="WizLingo"
                   width={100}
                   height={50}

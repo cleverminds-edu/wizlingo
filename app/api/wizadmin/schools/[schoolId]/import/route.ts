@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { enrollIn } from "@/lib/student-class";
 import { getWizAdminSession, unauthorized } from "@/lib/wizadmin-auth";
 import { Gender } from "@/app/generated/prisma/client";
 
@@ -65,7 +66,7 @@ export async function POST(
           name: row.name,
           admissionNumber,
           pin,
-          classId: cls.id,
+          ...enrollIn(cls.id),
           accountType: "SCHOOL",
           ...(gender ? { gender } : {}),
         },

@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { SERVABLE_PASSAGE, SERVABLE_TOPIC } from './content-status';
 import { ageBandToGradeBand } from './age-band-mapping';
 import { AgeBand } from './age-band';
 
@@ -80,6 +81,7 @@ export async function selectReadingPassage(
     where: {
       gradeBand,
       level: performanceLevel,
+      ...SERVABLE_PASSAGE,
     },
     select: { id: true },
   });
@@ -150,10 +152,11 @@ export async function selectSpeakingTopic(
   const gradeBand = ageBandToGradeBand(ageBand);
 
   // Step 2: Get all topics for this age band + level
-  const availableTopics = await prisma.conversationTopic.findMany({
+  const availableTopics = await prisma.speakingTopic.findMany({
     where: {
       gradeBand,
       level: performanceLevel,
+      ...SERVABLE_TOPIC,
     },
     select: {
       id: true,
@@ -196,13 +199,13 @@ export async function getContentRecommendations(ageBand: AgeBand, currentLevel: 
   // Get counts of available content at different levels
   const readingCounts = await prisma.readingPassage.groupBy({
     by: ['level'],
-    where: { gradeBand },
+    where: { gradeBand, ...SERVABLE_PASSAGE },
     _count: true,
   });
 
-  const speakingCounts = await prisma.conversationTopic.groupBy({
+  const speakingCounts = await prisma.speakingTopic.groupBy({
     by: ['level'],
-    where: { gradeBand },
+    where: { gradeBand, ...SERVABLE_TOPIC },
     _count: true,
   });
 

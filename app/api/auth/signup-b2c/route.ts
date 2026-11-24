@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { enrollIn } from "@/lib/student-class";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
@@ -77,7 +78,7 @@ export async function POST(request: NextRequest) {
         phone,
         dateOfBirth: new Date(dateOfBirth),
         passwordHash: hashedPassword,
-        classId: defaultClass.id,
+        ...enrollIn(defaultClass.id),
         accountType: "PUBLIC",
         loginType: "PHONE_ID",
         passwordChangedAt: null // Flag for force password change

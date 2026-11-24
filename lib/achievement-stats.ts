@@ -1,6 +1,7 @@
 // Server-side achievement stats calculation
 import { prisma } from "@/lib/prisma";
 import { BadgeType } from "@/app/generated/prisma/client";
+import { isWizardBadgeType } from "@/lib/badge-config";
 
 export interface AchievementStats {
   totalBadgesEarned: number;
@@ -32,10 +33,13 @@ export async function calculateAchievementStats(
 ): Promise<AchievementStats> {
   try {
     // Get all badges for student, ordered by earned date
-    const badges = await prisma.badge.findMany({
-      where: { studentId },
-      orderBy: { earnedAt: "asc" },
-    });
+    // Badge.type is text and may hold effort badges (streaks); stats cover wizard badges only.
+    const badges = (
+      await prisma.badge.findMany({
+        where: { studentId },
+        orderBy: { earnedAt: "asc" },
+      })
+    ).filter((b): b is typeof b & { type: BadgeType } => isWizardBadgeType(b.type));
 
     const totalBadgesEarned = badges.length;
 

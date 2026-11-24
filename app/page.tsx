@@ -11,7 +11,7 @@ const FEATURES = [
     title: 'Intelligent Reading Engine',
     description: 'AI-powered passages that adapt to your level with real-time accuracy feedback',
     badge: 'word-wizard-badge.svg',
-    bgColor: 'from-purple-50 to-purple-100',
+    bgColor: 'from-slate-50 to-slate-50',
   },
   {
     icon: '🎤',

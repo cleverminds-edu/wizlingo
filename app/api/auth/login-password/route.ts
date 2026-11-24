@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         }
       } else if (/^\d{10}$/.test(username)) {
         // School login with phone
-        student = await prisma.student.findUnique({
+        student = await prisma.student.findFirst({
           where: { phone: username }
         });
 

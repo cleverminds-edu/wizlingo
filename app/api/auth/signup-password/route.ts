@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     const { phone, password } = validation.data;
 
     // Check if user already exists
-    const existingUser = await prisma.student.findUnique({
+    const existingUser = await prisma.student.findFirst({
       where: { phone },
     });
 
@@ -41,7 +41,9 @@ export async function POST(request: NextRequest) {
       data: {
         phone,
         passwordHash: hashedPassword,
-        hasCompletedOnboarding: false,
+        hasSeenOnboarding: false,
+        accountType: 'B2C',
+        loginType: 'PHONE_ID',
       },
     });
 

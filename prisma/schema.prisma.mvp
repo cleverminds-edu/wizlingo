@@ -1,0 +1,274 @@
+// This is the MVP Prisma schema - simplified for Week 1-2 build
+// Copy this to prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===== CORE STUDENT MODEL =====
+
+model Student {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  name              String
+  passwordHash      String
+
+  // Current proficiency level (1-6, MVP uses 2-3)
+  currentLevel      Int       @default(2)
+
+  // Gamification
+  streakDays        Int       @default(0)
+  longestStreak     Int       @default(0)
+  lastActivityDate  DateTime?
+  totalXP           Int       @default(0)
+
+  // Relations
+  progress          StudentProgress?
+  readingSessions   ReadingSession[]
+  speakingSessions  SpeakingSession[]
+  writingSessions   WritingSession[]
+  listeningSessions ListeningSession[]
+  dailySessions     DailySession[]
+  badges            Badge[]
+  leaderboardEntry  Leaderboard?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([email])
+}
+
+model StudentProgress {
+  id                    String    @id @default(cuid())
+  studentId             String    @unique
+  student               Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  // LSRW levels (independent progression)
+  readingLevel          Int       @default(2)
+  speakingLevel         Int       @default(2)
+  writingLevel          Int       @default(1)
+  listeningLevel        Int       @default(1)
+
+  // Average scores (0-100)
+  avgReadingScore       Float     @default(0)
+  avgSpeakingScore      Float     @default(0)
+  avgWritingScore       Float     @default(0)
+  avgListeningScore     Float     @default(0)
+
+  // Totals
+  totalSessions         Int       @default(0)
+  passedSessions        Int       @default(0)
+
+  updatedAt             DateTime  @updatedAt
+}
+
+// ===== SESSIONS (LSRW) =====
+
+model ReadingSession {
+  id                String    @id @default(cuid())
+  studentId         String
+  student           Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  passageId         String
+  passage           ReadingPassage @relation(fields: [passageId], references: [id])
+
+  // Metrics
+  wpm               Float?
+  accuracy          Float?            // 0-100
+  missedWords       Int?
+
+  completedAt       DateTime?
+  durationSec       Int?
+
+  createdAt         DateTime  @default(now())
+
+  @@index([studentId])
+  @@index([passageId])
+}
+
+model SpeakingSession {
+  id                    String    @id @default(cuid())
+  studentId             String
+  student               Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  topicId               String
+  topic                 SpeakingTopic @relation(fields: [topicId], references: [id])
+
+  // Student's response
+  audioUrl              String?
+  transcript            String?
+
+  // Metrics
+  fluencyScore          Float?            // 0-100
+  pronunciationScore    Float?
+
+  completedAt           DateTime?
+  durationSec           Int?
+
+  createdAt             DateTime  @default(now())
+
+  @@index([studentId])
+  @@index([topicId])
+}
+
+model WritingSession {
+  id                String    @id @default(cuid())
+  studentId         String
+  student           Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  promptId          String
+  prompt            WritingPrompt @relation(fields: [promptId], references: [id])
+
+  // Student's response
+  content           String    @db.Text
+  wordCount         Int?
+
+  // Assessment
+  score             Float?            // 0-100
+  feedback          String?   @db.Text
+
+  completedAt       DateTime?
+
+  createdAt         DateTime  @default(now())
+
+  @@index([studentId])
+  @@index([promptId])
+}
+
+model ListeningSession {
+  id                String    @id @default(cuid())
+  studentId         String
+  student           Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  clipId            String
+  clip              ListeningClip @relation(fields: [clipId], references: [id])
+
+  // Responses to MCQ questions (JSON array: ["a", "b", "c"])
+  responses         String[]  @default([])
+  correctCount      Int?
+  totalQuestions    Int?
+  score             Float?            // 0-100
+
+  completedAt       DateTime?
+
+  createdAt         DateTime  @default(now())
+
+  @@index([studentId])
+  @@index([clipId])
+}
+
+// ===== DAILY SESSION TRACKING =====
+
+model DailySession {
+  id                    String    @id @default(cuid())
+  studentId             String
+  student               Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  date                  String            // YYYY-MM-DD
+
+  // Scores from each activity (0-100)
+  listeningScore        Float?
+  speakingScore         Float?
+  readingScore          Float?
+  writingScore          Float?
+
+  // Summary
+  dailyScore            Float?            // Average of above
+  completed             Boolean   @default(false)
+  xpEarned              Int       @default(0)
+
+  createdAt             DateTime  @default(now())
+
+  @@unique([studentId, date])
+  @@index([studentId])
+  @@index([date])
+}
+
+// ===== CONTENT MODELS =====
+
+model ReadingPassage {
+  id                String    @id @default(cuid())
+  title             String
+  content           String    @db.Text
+  wordCount         Int
+  level             Int                   // 1-6, MVP uses 2-3
+  topic             String                // e.g., "Animals", "Food"
+
+  sessions          ReadingSession[]
+
+  createdAt         DateTime  @default(now())
+}
+
+model SpeakingTopic {
+  id                String    @id @default(cuid())
+  title             String
+  prompt            String    @db.Text
+  level             Int                   // 1-6, MVP uses 2-3
+  topic             String
+
+  sessions          SpeakingSession[]
+
+  createdAt         DateTime  @default(now())
+}
+
+model WritingPrompt {
+  id                String    @id @default(cuid())
+  title             String
+  prompt            String    @db.Text
+  level             Int                   // 1-6, MVP uses 2-3
+  topic             String
+
+  sessions          WritingSession[]
+
+  createdAt         DateTime  @default(now())
+}
+
+model ListeningClip {
+  id                String    @id @default(cuid())
+  title             String
+  audioUrl          String                // S3 path or URL
+  transcript        String    @db.Text
+  level             Int                   // 1-6, MVP uses 2-3
+  topic             String
+
+  // MCQ Questions: Array of {question, options: [a,b,c,d], correct: "a"}
+  questions         Json                  // JSON array
+
+  sessions          ListeningSession[]
+
+  createdAt         DateTime  @default(now())
+}
+
+// ===== GAMIFICATION =====
+
+model Badge {
+  id                String    @id @default(cuid())
+  studentId         String
+  student           Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  type              String                // "streak_7day" for MVP
+  name              String                // "Streak Master"
+  description       String?
+
+  unlockedAt        DateTime  @default(now())
+
+  @@unique([studentId, type])
+  @@index([studentId])
+}
+
+model Leaderboard {
+  id                String    @id @default(cuid())
+  studentId         String    @unique
+  student           Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  rank              Int
+  xpTotal           Int
+
+  updatedAt         DateTime  @updatedAt
+}

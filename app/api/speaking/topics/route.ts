@@ -1,4 +1,5 @@
 import { getAuth, getStudentIdFromAuth } from "@/lib/auth-utils";
+import { SERVABLE_TOPIC } from "@/lib/content-status";
 import { prisma } from "@/lib/prisma";
 import { ageBandToGradeBand } from "@/lib/age-band-mapping";
 import { selectSpeakingTopic } from "@/lib/content-selection";
@@ -18,7 +19,7 @@ export async function GET(request: Request) {
   await ensurePassagesSeeded();
 
   // Debug: Count topics in database
-  let topicCount = await prisma.conversationTopic.count();
+  let topicCount = await prisma.speakingTopic.count();
   console.log(`📊 Database has ${topicCount} conversation topics`);
 
   if (topicCount < 30) {
@@ -80,7 +81,7 @@ export async function GET(request: Request) {
       let created = 0;
       for (const topic of topics) {
         try {
-          await prisma.conversationTopic.create({ data: topic });
+          await prisma.speakingTopic.create({ data: topic });
           created++;
         } catch (e) {
           // Skip duplicates
@@ -88,7 +89,7 @@ export async function GET(request: Request) {
         }
       }
       console.log(`✅ Created ${created} new topics. Total available: ${topics.length}`);
-      topicCount = await prisma.conversationTopic.count();
+      topicCount = await prisma.speakingTopic.count();
     } catch (e) {
       console.error('❌ Emergency seed failed:', e instanceof Error ? e.message : e);
       return Response.json({
@@ -110,7 +111,7 @@ export async function GET(request: Request) {
 
   const student = await prisma.student.findUnique({
     where: { id: studentId },
-    include: { class: true, progress: true, speakingProgress: true },
+    include: { progress: true, speakingProgress: true },
   });
   if (!student) return Response.json({ error: "Student not found" }, { status: 404 });
 
@@ -129,8 +130,8 @@ export async function GET(request: Request) {
   );
 
   // Get topics for this level
-  const allTopics = await prisma.conversationTopic.findMany({
-    where: { gradeBand, level },
+  const allTopics = await prisma.speakingTopic.findMany({
+    where: { gradeBand, level, ...SERVABLE_TOPIC },
     select: {
       id: true,
       title: true,

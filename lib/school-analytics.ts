@@ -1,4 +1,5 @@
 import { prisma } from './prisma';
+import { inSchool } from './student-class';
 
 export interface SchoolMetrics {
   totalStudents: number;
@@ -30,11 +31,7 @@ export interface SchoolComparison {
 export async function getSchoolMetrics(schoolId: string): Promise<SchoolMetrics> {
   // Get all students in the school
   const students = await prisma.student.findMany({
-    where: {
-      class: {
-        schoolId: schoolId,
-      },
-    },
+    where: inSchool(schoolId),
     include: {
       badges: true,
       sessions: {
@@ -122,15 +119,19 @@ export async function getAllSchoolsMetrics(): Promise<
     include: {
       classes: {
         include: {
-          students: {
+          enrollments: {
             include: {
-              badges: true,
-              sessions: {
-                where: {
-                  status: 'COMPLETED',
+              student: {
+                include: {
+                  badges: true,
+                  sessions: {
+                    where: {
+                      status: 'COMPLETED',
+                    },
+                  },
+                  progress: true,
                 },
               },
-              progress: true,
             },
           },
         },
@@ -140,7 +141,7 @@ export async function getAllSchoolsMetrics(): Promise<
 
   const metrics = schools
     .map((school) => {
-      const allStudents = school.classes.flatMap((c) => c.students);
+      const allStudents = school.classes.flatMap((c) => c.enrollments.map((e) => e.student));
       const totalStudents = allStudents.length;
       const totalBadgesEarned = allStudents.reduce(
         (sum, student) => sum + student.badges.length,

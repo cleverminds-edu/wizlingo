@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/auth";
+import { inSchool } from "@/lib/student-class";
 import { prisma } from "@/lib/prisma";
 
 // School runs 2 sessions per week.
@@ -27,21 +28,30 @@ export async function GET() {
   };
   type ClassRow = { id: string; grade: number; section: string; students: StudentRow[] };
 
-  const classes = await prisma.class.findMany({
+  const classRows = await prisma.class.findMany({
     where: { schoolId },
     include: {
-      students: {
+      enrollments: {
         include: {
-          progress: true,
-          sessions: {
-            where: { status: { in: ["COMPLETED", "NEEDS_REVIEW"] } },
-            orderBy: { createdAt: "asc" },
+          student: {
+            include: {
+              progress: true,
+              sessions: {
+                where: { status: { in: ["COMPLETED", "NEEDS_REVIEW"] } },
+                orderBy: { createdAt: "asc" },
+              },
+            },
           },
         },
       },
     },
     orderBy: [{ grade: "asc" }, { section: "asc" }],
-  }) as unknown as ClassRow[];
+  });
+  // Students now reach a class through Enrollment; flatten back to the shape below.
+  const classes = classRows.map((c) => ({
+    ...c,
+    students: c.enrollments.map((e) => e.student),
+  })) as unknown as ClassRow[];
 
   const classStats = classes.map((cls) => {
     const students = cls.students;
@@ -120,7 +130,7 @@ export async function GET() {
 
   const weeklySessions = await prisma.readingSession.findMany({
     where: {
-      student: { class: { schoolId } },
+      student: inSchool(schoolId),
       createdAt: { gte: sevenDaysAgo, lte: today },
       status: { in: ["COMPLETED", "NEEDS_REVIEW"] },
     },
@@ -158,7 +168,7 @@ export async function GET() {
   prevWeekEnd.setSeconds(prevWeekEnd.getSeconds() - 1);
   const prevWeekCount = await prisma.readingSession.count({
     where: {
-      student: { class: { schoolId } },
+      student: inSchool(schoolId),
       createdAt: { gte: fourteenDaysAgo, lte: prevWeekEnd },
       status: { in: ["COMPLETED", "NEEDS_REVIEW"] },
     },

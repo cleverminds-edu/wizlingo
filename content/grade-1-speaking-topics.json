@@ -1,0 +1,73 @@
+{
+  "grade": 1,
+  "speakingTopics": [
+    {
+      "id": "g1-speak-001",
+      "title": "My Family",
+      "prompt": "Tell me about your family. Who lives with you? What is your favorite thing to do with your family?",
+      "difficulty": "easy",
+      "expectedResponseLength": "2-3 sentences",
+      "estimatedTimeSeconds": 30,
+      "keyVocabulary": ["family", "mother", "father", "sister", "brother", "love", "play", "together"],
+      "sampleResponse": "I have a mother, a father, and a sister. My name is Priya. I love my family. We play together. My favorite thing is to play games with them.",
+      "pronunciationFocus": ["family", "favorite", "together"],
+      "assessmentCriteria": {
+        "clarity": "Can the AI understand the response clearly?",
+        "vocabulary": "Does the student use appropriate words?",
+        "grammar": "Are the sentences mostly correct?",
+        "fluency": "Does the student speak smoothly or with many pauses?"
+      }
+    },
+    {
+      "id": "g1-speak-002",
+      "title": "My Pet",
+      "prompt": "Do you have a pet? If yes, tell me about it. What is its name? What does it like to do?",
+      "difficulty": "easy",
+      "expectedResponseLength": "2-3 sentences",
+      "estimatedTimeSeconds": 30,
+      "keyVocabulary": ["pet", "cat", "dog", "bird", "name", "play", "eat", "sleep"],
+      "sampleResponse": "I have a cat. Her name is Fluffy. Fluffy is orange and white. She likes to sleep and play with a ball. I love my cat.",
+      "pronunciationFocus": ["cat", "orange", "white", "Fluffy"],
+      "assessmentCriteria": {
+        "clarity": "Pronunciation is clear and understandable",
+        "vocabulary": "Uses learned vocabulary correctly",
+        "grammar": "Simple sentences with correct structure",
+        "fluency": "Speaks with natural pace and rhythm"
+      }
+    },
+    {
+      "id": "g1-speak-003",
+      "title": "My Favorite Food",
+      "prompt": "What is your favorite food? Why do you like it? How often do you eat it?",
+      "difficulty": "easy",
+      "expectedResponseLength": "2-3 sentences",
+      "estimatedTimeSeconds": 30,
+      "keyVocabulary": ["favorite", "food", "apple", "bread", "rice", "like", "eat", "delicious"],
+      "sampleResponse": "My favorite food is apple. I like apples because they are sweet and red. I eat apples every day. Apples are good for me.",
+      "pronunciationFocus": ["favorite", "delicious", "apple"],
+      "assessmentCriteria": {
+        "clarity": "Words are pronounced correctly",
+        "vocabulary": "Food words used appropriately",
+        "grammar": "Simple past and present tense correct",
+        "fluency": "Speaks without long hesitations"
+      }
+    },
+    {
+      "id": "g1-speak-004",
+      "title": "What I Like at School",
+      "prompt": "What do you like at school? Is it your teacher, your friends, or the activities? Tell me why.",
+      "difficulty": "medium",
+      "expectedResponseLength": "2-4 sentences",
+      "estimatedTimeSeconds": 45,
+      "keyVocabulary": ["school", "teacher", "friend", "class", "play", "read", "learn", "favorite"],
+      "sampleResponse": "I like my school. My teacher is very kind. I have many friends. I like to play with them at lunch time. I also like to read stories in class.",
+      "pronunciationFocus": ["teacher", "friend", "favorite", "school"],
+      "assessmentCriteria": {
+        "clarity": "Pronunciation is mostly clear",
+        "vocabulary": "Uses school-related vocabulary",
+        "grammar": "Simple and some compound sentences",
+        "fluency": "Maintains pace and completes thoughts"
+      }
+    }
+  ]
+}

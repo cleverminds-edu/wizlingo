@@ -1,4 +1,5 @@
 import { prisma } from './prisma';
+import { classInclude, primaryClass } from './student-class';
 import { randomBytes } from 'crypto';
 
 /**
@@ -59,7 +60,7 @@ export async function trackReferralClick(code: string): Promise<{
     where: { referralCode: code },
     include: {
       referrer: {
-        include: { class: true },
+        include: classInclude,
       },
     },
   });
@@ -70,7 +71,7 @@ export async function trackReferralClick(code: string): Promise<{
 
   return {
     isValid: true,
-    schoolId: referral.referrer.class?.schoolId,
+    schoolId: primaryClass(referral.referrer)?.schoolId,
     studentId: referral.referrerId,
     code: referral.referralCode,
   };
@@ -201,14 +202,12 @@ export async function getReferralLinkWithSchool(
 
   const student = await prisma.student.findUnique({
     where: { id: studentId },
-    include: {
-      class: true,
-    },
+    include: classInclude,
   });
 
   return {
     link: `${appUrl}/r/${code}`,
     code,
-    schoolId: student?.class?.schoolId,
+    schoolId: primaryClass(student)?.schoolId ?? undefined,
   };
 }

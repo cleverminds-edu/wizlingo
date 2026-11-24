@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { enrollIn } from '@/lib/student-class';
 import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -64,7 +65,7 @@ export async function POST() {
         name: 'Badge Demo',
         admissionNumber: 'DEMO001',
         pin: '1234',
-        classId: cls.id,
+        ...enrollIn(cls.id),
         accountType: 'SCHOOL',
       },
     });
@@ -79,6 +80,7 @@ export async function POST() {
         gradeBand: 'BAND_3_5',
         level: 1,
         topic: 'Stories',
+        status: 'APPROVED', // demo content: approved so the demo shows it
       },
     });
 
@@ -117,7 +119,7 @@ export async function POST() {
     });
 
     // 6. Create conversation topic
-    const topic = await prisma.conversationTopic.create({
+    const topic = await prisma.speakingTopic.create({
       data: {
         title: 'Ordering Food',
         gradeBand: 'BAND_3_5',
@@ -125,6 +127,7 @@ export async function POST() {
         character: 'Waiter',
         openingLine:
           'Welcome to our restaurant! What would you like to order?',
+        status: 'APPROVED', // demo content
       },
     });
 

@@ -111,18 +111,23 @@ export async function GET(request: NextRequest) {
     });
 
     // Recent signups (last 10)
-    const recentSignups = await prisma.student.findMany({
+    const recentSignupRows = await prisma.student.findMany({
       where: { accountType: 'B2C' },
       select: {
         id: true,
         name: true,
         phone: true,
         createdAt: true,
-        class: { select: { name: true } },
+        enrollments: { take: 1, select: { class: { select: { name: true } } } },
       },
       orderBy: { createdAt: 'desc' },
       take: 10,
     });
+    // Keep the response shape the dashboard page expects (`class: { name } | null`).
+    const recentSignups = recentSignupRows.map(({ enrollments, ...s }) => ({
+      ...s,
+      class: enrollments[0]?.class ?? null,
+    }));
 
     // Top performing students (by accuracy)
     const topPerformers = await prisma.studentProgress.findMany({

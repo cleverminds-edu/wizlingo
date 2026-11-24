@@ -87,7 +87,7 @@ export default function SignupB2CPage() {
           <div className="flex justify-center mb-3">
             <div className="relative">
               <Image
-                src="/wiziingo-logo.svg"
+                src="/wizlingo-logo.png"
                 alt="WizLingo"
                 width={100}
                 height={50}

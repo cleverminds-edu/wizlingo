@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WizLingo Logo - PNG Exporter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 500px;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .preview {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            gap: 20px;
+        }
+
+        .preview-box {
+            flex: 1;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .light-bg {
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+        }
+
+        .dark-bg {
+            background: #333;
+            border: 2px solid #666;
+        }
+
+        svg {
+            width: 150px;
+            height: 150px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .dark-bg svg {
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e8e8e8;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d8d8d8;
+        }
+
+        .sizes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .size-btn {
+            padding: 10px;
+            font-size: 12px;
+        }
+
+        .info {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .info strong {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧙 WizLingo Logo</h1>
+        <p>Export your transparent PNG logo</p>
+
+        <div class="preview">
+            <div class="preview-box light-bg">
+                <p style="margin: 0 0 10px 0; font-size: 12px; color: #666;"><strong>Light Background</strong></p>
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="wizardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                        </linearGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <circle cx="100" cy="100" r="95" fill="url(#wizardGradient)" filter="url(#glow)"/>
+                    <rect x="70" y="45" width="8" height="50" fill="#8B7355" rx="4"/>
+                    <g transform="translate(74, 38)">
+                        <polygon points="0,-8 2,-2 8,-1 3,3 5,9 0,6 -5,9 -3,3 -8,-1 -2,-2" fill="#FFD700" filter="url(#glow)"/>
+                    </g>
+                    <circle cx="110" cy="50" r="3" fill="#FFD700" opacity="0.8"/>
+                    <circle cx="120" cy="60" r="2.5" fill="#FFC107" opacity="0.7"/>
+                    <circle cx="85" cy="35" r="2" fill="#FFD700" opacity="0.9"/>
+                    <path d="M 60 100 Q 75 95 85 115 L 85 140 Q 75 135 60 140 Z" fill="#e8f4f8" stroke="#667eea" stroke-width="1.5"/>
+                    <path d="M 140 100 Q 125 95 115 115 L 115 140 Q 125 135 140 140 Z" fill="#f0f8ff" stroke="#667eea" stroke-width="1.5"/>
+                    <rect x="95" y="100" width="10" height="40" fill="#667eea"/>
+                    <line x1="65" y1="110" x2="80" y2="110" stroke="#667eea" stroke-width="1" opacity="0.6"/>
+                    <line x1="65" y1="120" x2="78" y2="120" stroke="#667eea" stroke-width="1" opacity="0.6"/>
+                    <line x1="65" y1="130" x2="75" y2="130" stroke="#667eea" stroke-width="1" opacity="0.6"/>
+                    <line x1="120" y1="110" x2="135" y2="110" stroke="#667eea" stroke-width="1" opacity="0.6"/>
+                    <line x1="120" y1="120" x2="135" y2="120" stroke="#667eea" stroke-width="1" opacity="0.6"/>
+                    <line x1="120" y1="130" x2="130" y2="130" stroke="#667eea" stroke-width="1" opacity="0.6"/>
+                    <circle cx="50" cy="80" r="2.5" fill="#FFD700" opacity="0.7"/>
+                    <circle cx="150" cy="85" r="2" fill="#FFC107" opacity="0.6"/>
+                    <circle cx="55" cy="155" r="1.8" fill="#FFD700" opacity="0.8"/>
+                    <circle cx="145" cy="150" r="2.2" fill="#FFC107" opacity="0.7"/>
+                    <circle cx="100" cy="100" r="95" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.3"/>
+                </svg>
+            </div>
+
+            <div class="preview-box dark-bg">
+                <p style="margin: 0 0 10px 0; font-size: 12px; color: #999;"><strong>Dark Background</strong></p>
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="wizardGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                        </linearGradient>
+                        <filter id="glow2">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <circle cx="100" cy="100" r="95" fill="url(#wizardGradient2)" filter="url(#glow2)"/>
+                    <rect x="70" y="45" width="8" height="50" fill="#8B7355" rx="4"/>
+                    <g transform="translate(74, 38)">
+                        <polygon points="0,-8 2,-2 8,-1 3,3 5,9 0,6 -5,9 -3,3 -8,-1 -2,-2" fill="#FFD700" filter="url(#glow2)"/>
+                    </g>
+                    <circle cx="110" cy="50" r="3" fill="#FFD700" opacity="0.8"/>
+                    <circle cx="120" cy="60" r="2.5" fill="#FFC107" opacity="0.7"/>
+                    <circle cx="85" cy="35" r="2" fill="#FFD700" opacity="0.9"/>
+                    <path d="M 60 100 Q 75 95 85 115 L 85 140 Q 75 135 60 140 Z" fill="#e8f4f8" stroke="#667eea" stroke-width="1.5"/>
+                    <path d="M 140 100 Q 125 95 115 115 L 115 140 Q 125 135 140 140 Z" fill="#f0f8ff" stroke="#667eea" stroke-width="1.5"/>
+                    <rect x="95" y="100" width="10" height="40" fill="#667eea"/>
+                    <line x1="65" y1="110" x2="80" y2="110" stroke="#667eea" stroke-width="1" opacity="0.6"/>
+                    <line x1="65" y1="120" x2="78" y2="120" stroke="#667eea" stroke-width="1" opacity="0.6"/>
+                    <line x1="65" y1="130" x2="75" y2="130" stroke="#667eea" stroke-width="1" opacity="0.6"/>
+                    <line x1="120" y1="110" x2="135" y2="110" stroke="#667eea" stroke-width="1" opacity="0.6"/>
+                    <line x1="120" y1="120" x2="135" y2="120" stroke="#667eea" stroke-width="1" opacity="0.6"/>
+                    <line x1="120" y1="130" x2="130" y2="130" stroke="#667eea" stroke-width="1" opacity="0.6"/>
+                    <circle cx="50" cy="80" r="2.5" fill="#FFD700" opacity="0.7"/>
+                    <circle cx="150" cy="85" r="2" fill="#FFC107" opacity="0.6"/>
+                    <circle cx="55" cy="155" r="1.8" fill="#FFD700" opacity="0.8"/>
+                    <circle cx="145" cy="150" r="2.2" fill="#FFC107" opacity="0.7"/>
+                    <circle cx="100" cy="100" r="95" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.3"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="downloadPNG(512)">📥 Download 512×512 PNG</button>
+            <button class="btn-primary" onclick="downloadPNG(256)">📥 Download 256×256 PNG</button>
+        </div>
+
+        <div class="sizes">
+            <button class="btn-secondary size-btn" onclick="downloadPNG(1024)">1024×1024</button>
+            <button class="btn-secondary size-btn" onclick="downloadPNG(128)">128×128</button>
+            <button class="btn-secondary size-btn" onclick="downloadPNG(64)">64×64</button>
+            <button class="btn-secondary size-btn" onclick="downloadPNG(32)">32×32</button>
+        </div>
+
+        <div class="info">
+            <strong>✨ About This Logo:</strong>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+                <li>Wizard's wand with magic sparkles</li>
+                <li>Open book representing learning</li>
+                <li>Purple gradient (WizLingo brand colors)</li>
+                <li>Transparent PNG ready for any background</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function downloadPNG(size) {
+            const svg = document.querySelector('svg');
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+
+            const ctx = canvas.getContext('2d');
+            // Keep background transparent
+
+            const svgString = new XMLSerializer().serializeToString(svg);
+            const img = new Image();
+
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, size, size);
+
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `wizlingo_logo_${size}x${size}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                });
+            };
+
+            img.src = 'data:image/svg+xml;base64,' + btoa(svgString);
+        }
+    </script>
+</body>
+</html>

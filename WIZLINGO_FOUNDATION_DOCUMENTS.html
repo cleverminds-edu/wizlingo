@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WizLingo Foundation Documents - Complete K-12 Curriculum & Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        /* Cover Page */
+        .cover-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            page-break-after: always;
+        }
+
+        .cover-page h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .cover-page .subtitle {
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .cover-page .description {
+            font-size: 1.1em;
+            max-width: 700px;
+            margin-bottom: 50px;
+            line-height: 1.8;
+        }
+
+        .cover-page .version {
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            border-top: 2px solid white;
+            padding-top: 20px;
+        }
+
+        .cover-page .copyright {
+            font-size: 0.9em;
+            margin-top: 80px;
+            opacity: 0.8;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            padding-top: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: #667eea;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 4px solid #764ba2;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* Copyright Notice */
+        .copyright-notice {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 30px;
+            border-radius: 4px;
+        }
+
+        .copyright-notice h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .copyright-notice p {
+            font-size: 0.95em;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .copyright-notice .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: #f8f9fa;
+            padding: 40px;
+            page-break-after: always;
+        }
+
+        .toc h2 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .toc-section {
+            margin-bottom: 25px;
+        }
+
+        .toc-section h3 {
+            color: #764ba2;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .toc-section ul {
+            list-style: none;
+            margin-left: 20px;
+        }
+
+        .toc-section li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .toc-section li:before {
+            content: "▸ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        /* Main Content */
+        .content {
+            padding: 40px;
+        }
+
+        .document-section {
+            margin-bottom: 60px;
+            page-break-after: always;
+        }
+
+        .document-section h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .document-section h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .document-section h4 {
+            color: #667eea;
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .document-section p {
+            margin-bottom: 15px;
+            text-align: justify;
+            color: #444;
+        }
+
+        .document-section ul,
+        .document-section ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        .document-section li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .document-section code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+
+        .document-section pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        /* Highlights */
+        .highlight-box {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .highlight-box strong {
+            color: #667eea;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        table tr:hover {
+            background: #f0f0f0;
+        }
+
+        /* Page Break */
+        .page-break {
+            page-break-after: always;
+            margin-bottom: 50px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #667eea;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            font-size: 0.9em;
+            margin-top: 50px;
+        }
+
+        .footer-divider {
+            border-top: 1px solid rgba(255,255,255,0.3);
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+            }
+
+            .page-break {
+                page-break-after: always;
+            }
+
+            a {
+                color: #667eea;
+                text-decoration: underline;
+            }
+        }
+
+        /* Accessibility */
+        @media (max-width: 768px) {
+            .cover-page h1 {
+                font-size: 2.5em;
+            }
+
+            .cover-page .subtitle {
+                font-size: 1.3em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .document-section h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- COVER PAGE -->
+        <div class="cover-page">
+            <h1>WizLingo</h1>
+            <div class="subtitle">Complete Foundation Documents</div>
+            <div class="description">
+                <p>Comprehensive K-12 English Language Curriculum & System Architecture</p>
+                <p>Core Intellectual Property for the WizLingo Learning Platform</p>
+            </div>
+            <div class="version">
+                <p><strong>Version 1.0 - Foundational Edition</strong></p>
+                <p>Created: July 7, 2026</p>
+                <p>Scope: K-12 (Ages 3-18) | Pre-A1 to B2+ | 20 Progressive Levels</p>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2026 Edvanta Solutions LLP. All Rights Reserved.</p>
+                <p>This document contains proprietary and confidential information.</p>
+            </div>
+        </div>
+
+        <!-- COPYRIGHT NOTICE -->
+        <div class="content">
+            <div class="copyright-notice">
+                <h3>📋 INTELLECTUAL PROPERTY & COPYRIGHT NOTICE</h3>
+                <p><span class="highlight">© 2026 Edvanta Solutions LLP</span>. All Rights Reserved.</p>
+                <p><strong>Confidentiality:</strong> This document contains proprietary, confidential, and trade-secret information belonging exclusively to Edvanta Solutions LLP. Unauthorized reproduction, distribution, or use is strictly prohibited.</p>
+                <p><strong>Permitted Use:</strong> This document is intended for authorized internal use by WizLingo team members, board members, investors, and hired consultants under signed confidentiality agreements only.</p>
+                <p><strong>Protection:</strong> The curriculum framework, educational methodology, content specifications, assessment rubrics, and strategic roadmap are protected intellectual property. All derivative works, adaptations, and implementations remain the exclusive property of Edvanta Solutions LLP.</p>
+                <p><strong>Citation:</strong> If referenced externally, proper attribution to Edvanta Solutions LLP must be provided.</p>
+                <p><strong>Penalties:</strong> Unauthorized use may result in legal action including injunctive relief and monetary damages.</p>
+            </div>
+        </div>
+
+        <!-- TABLE OF CONTENTS -->
+        <div class="toc">
+            <h2>📑 Table of Contents</h2>
+
+            <div class="toc-section">
+                <h3>Document 1: WIZLINGO Complete Specification</h3>
+                <ul>
+                    <li>Executive Summary</li>
+                    <li>Technology Stack</li>
+                    <li>Application Architecture</li>
+                    <li>System Design</li>
+                    <li>Database Schema</li>
+                    <li>API Specifications</li>
+                    <li>Frontend Architecture</li>
+                    <li>Implementation Roadmap</li>
+                </ul>
+            </div>
+
+            <div class="toc-section">
+                <h3>Document 2: Curriculum Framework - Detailed</h3>
+                <ul>
+                    <li>Curriculum Philosophy & Principles</li>
+                    <li>Age-Grade-CEFR Mapping</li>
+                    <li>Learning Objectives Framework</li>
+                    <li>Vocabulary Scope & Sequence</li>
+                    <li>Grammar Scope & Sequence</li>
+                    <li>Content Specifications for All Types</li>
+                    <li>Assessment Rubrics</li>
+                    <li>Quality Assurance Checklist</li>
+                    <li>Consultant Review Template</li>
+                </ul>
+            </div>
+
+            <div class="toc-section">
+                <h3>Document 3: Comprehensive K-12 Curriculum</h3>
+                <ul>
+                    <li>Vision & Core Principles</li>
+                    <li>Science of Reading Foundation</li>
+                    <li>CEFR Standards Integration</li>
+                    <li>20-Level Progression Framework</li>
+                    <li>Grade Band Curricula (PreK through Grade 12)</li>
+                    <li>LSRW Integration Framework</li>
+                    <li>Assessment & Progression</li>
+                    <li>Support for Special Populations</li>
+                    <li>Implementation & Teacher Support</li>
+                    <li>Quality Assurance & Continuous Improvement</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="content">
+            <!-- Document Overview -->
+            <div class="document-section">
+                <h2>📚 Overview: WizLingo Foundation Documents</h2>
+
+                <h3>Three Cornerstone Documents</h3>
+                <p>The WizLingo platform is built on three foundational documents that represent convergence of international best practices in language education, educational technology, and curriculum design.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Document</th>
+                            <th>Scope</th>
+                            <th>Audience</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Complete Specification</strong></td>
+                            <td>Full system architecture</td>
+                            <td>Tech team & stakeholders</td>
+                            <td>How the system works</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Curriculum Framework - Detailed</strong></td>
+                            <td>Content generation & review</td>
+                            <td>AI + Curriculum Consultants</td>
+                            <td>How to create & review content</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Comprehensive K-12 Curriculum</strong></td>
+                            <td>Complete educational foundation</td>
+                            <td>Core intellectual property</td>
+                            <td>WHAT to teach at every level</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="highlight-box">
+                    <strong>Key Achievement:</strong> These three documents represent the complete intellectual property foundation for WizLingo's 10+ year competitive advantage. They combine:
+                    <ul style="margin-top: 10px; margin-left: 20px;">
+                        <li>✅ Science of Reading research (40+ years)</li>
+                        <li>✅ CEFR international standards</li>
+                        <li>✅ Cambridge English expertise</li>
+                        <li>✅ Montessori educational principles</li>
+                        <li>✅ Jolly Phonics methodology</li>
+                        <li>✅ AI-ready architecture</li>
+                        <li>✅ Equity and inclusion framework</li>
+                        <li>✅ 21st-century skills integration</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Document 1 Summary -->
+            <div class="document-section page-break">
+                <h2>📋 Document 1: Complete System Specification</h2>
+
+                <h3>Purpose</h3>
+                <p>Provides complete technical architecture for the WizLingo platform, including technology stack, system design, database schema, API endpoints, and implementation roadmap.</p>
+
+                <h3>Key Sections</h3>
+                <ul>
+                    <li><strong>Technology Stack:</strong> Next.js, Prisma, PostgreSQL, Claude API, Whisper API</li>
+                    <li><strong>Architecture Diagram:</strong> Client → Frontend → API Layer → Services → Databases</li>
+                    <li><strong>Core Services:</strong> Content Generation, Answer Validation, Assessment, Progression</li>
+                    <li><strong>Authentication:</strong> B2B (School) and B2C (Individual) flows</li>
+                    <li><strong>Lesson Workflow:</strong> End-to-end student learning journey</li>
+                    <li><strong>Database Schema:</strong> 15+ models for complete data structure</li>
+                    <li><strong>API Specifications:</strong> 10+ endpoints with request/response examples</li>
+                    <li><strong>Frontend Architecture:</strong> Component structure, state management, pages</li>
+                    <li><strong>Implementation Roadmap:</strong> 7 phases over 26 weeks</li>
+                </ul>
+
+                <h3>Audience</h3>
+                <p>Technology team, product managers, system architects, stakeholders evaluating technical feasibility.</p>
+            </div>
+
+            <!-- Document 2 Summary -->
+            <div class="document-section page-break">
+                <h2>📚 Document 2: Curriculum Framework - Detailed Edition</h2>
+
+                <h3>Purpose</h3>
+                <p>Provides comprehensive framework for AI content generation and consultant review. This is the bridge between what the curriculum says to teach and how content gets created and quality-assured.</p>
+
+                <h3>Key Sections</h3>
+                <ul>
+                    <li><strong>Curriculum Philosophy:</strong> CLT, thematic organization, scaffolding, skill integration</li>
+                    <li><strong>Age-Grade-CEFR Mapping:</strong> Proficiency levels aligned to ages and grades</li>
+                    <li><strong>Detailed Learning Objectives:</strong> Bloom's taxonomy applied to each skill</li>
+                    <li><strong>Vocabulary Framework:</strong> Tier 1/2/3 vocabulary with progression</li>
+                    <li><strong>Grammar Scope & Sequence:</strong> 6 phases from Pre-A1 to B2+</li>
+                    <li><strong>Content Specifications:</strong> JSON specs for all 5 content types (Vocabulary, Reading, Speaking, Writing, Listening)</li>
+                    <li><strong>Assessment Rubrics:</strong> 4 levels for each skill area</li>
+                    <li><strong>Quality Assurance Checklist:</strong> Comprehensive review criteria</li>
+                    <li><strong>Consultant Review Template:</strong> Professional form for content evaluation</li>
+                    <li><strong>Implementation Guidelines:</strong> For AI generators and consultants</li>
+                </ul>
+
+                <h3>Audience</h3>
+                <p>AI content generators, curriculum consultants, quality assurance team, content reviewers.</p>
+            </div>
+
+            <!-- Document 3 Summary -->
+            <div class="document-section page-break">
+                <h2>📖 Document 3: Comprehensive K-12 Curriculum</h2>
+
+                <h3>Purpose</h3>
+                <p>The definitive K-12 curriculum document representing international expert consensus on language learning. This is WizLingo's core intellectual property and competitive advantage.</p>
+
+                <h3>Key Sections</h3>
+                <ul>
+                    <li><strong>Vision & Principles:</strong> Convergence of 5 research traditions</li>
+                    <li><strong>Science of Reading:</strong> 5 components (phonological awareness, phonics, fluency, vocabulary, comprehension)</li>
+                    <li><strong>CEFR Integration:</strong> Pre-A1 to B2+ proficiency levels</li>
+                    <li><strong>Montessori Principles:</strong> Child-centered, sensitive periods, scaffolding</li>
+                    <li><strong>5 Learning Pillars:</strong> Sound Foundation → Communication → Mastery</li>
+                    <li><strong>20-Level Architecture:</strong> Progressive levels from ages 3-18</li>
+                    <li><strong>Grade Band Curricula:</strong> PreK through Grade 12 with detailed weekly rhythms</li>
+                    <li><strong>Special Populations:</strong> Struggling readers, advanced learners, ELL support</li>
+                    <li><strong>Professional Development:</strong> 12-module teacher training</li>
+                    <li><strong>Sustainability:</strong> Future-proofing and continuous improvement</li>
+                </ul>
+
+                <h3>Audience</h3>
+                <p>All stakeholders. This is the foundation document that informs all other decisions.</p>
+            </div>
+
+            <!-- Integration -->
+            <div class="document-section page-break">
+                <h2>🔗 How These Documents Integrate</h2>
+
+                <h3>Workflow</h3>
+                <div class="highlight-box">
+                    <p><strong>Step 1: Curriculum Framework (Document 3)</strong><br>
+                    Defines WHAT content should be created for each level</p>
+                </div>
+
+                <div class="highlight-box" style="margin-top: 15px;">
+                    <p><strong>Step 2: Detailed Framework (Document 2)</strong><br>
+                    Specifies HOW content should be created and reviewed</p>
+                </div>
+
+                <div class="highlight-box" style="margin-top: 15px;">
+                    <p><strong>Step 3: Complete Specification (Document 1)</strong><br>
+                    Describes the SYSTEM that delivers content to learners</p>
+                </div>
+
+                <h3>Interdependencies</h3>
+                <ul>
+                    <li><strong>Curriculum → Framework:</strong> Vocabulary lists, grammar scope, content types flow from curriculum to generation framework</li>
+                    <li><strong>Framework → Specification:</strong> Content specifications inform API design and database schema</li>
+                    <li><strong>Specification → Curriculum:</strong> System capabilities (adaptive AI, assessment) are reflected in curriculum design</li>
+                </ul>
+            </div>
+
+            <!-- Quality Assurance -->
+            <div class="document-section page-break">
+                <h2>✅ Quality Assurance & Standards</h2>
+
+                <h3>These documents meet international standards:</h3>
+                <ul>
+                    <li>✅ <strong>CEFR:</strong> Common European Framework for Languages compliance</li>
+                    <li>✅ <strong>Cambridge English:</strong> Recognized assessment standards</li>
+                    <li>✅ <strong>Science of Reading:</strong> Grounded in 40+ years of peer-reviewed research</li>
+                    <li>✅ <strong>Montessori:</strong> Child development principles</li>
+                    <li>✅ <strong>21st Century Skills:</strong> Critical thinking, communication, collaboration, creativity</li>
+                    <li>✅ <strong>Equity:</strong> Support for all learners (struggling, advanced, ELL)</li>
+                    <li>✅ <strong>Technology:</strong> AI-ready, scalable, future-proof</li>
+                </ul>
+
+                <h3>Consultant Review Ready</h3>
+                <p>All content generated through this framework includes:</p>
+                <ul>
+                    <li>Detailed specifications for consultant evaluation</li>
+                    <li>Rubrics aligned to CEFR standards</li>
+                    <li>Quality assurance checklists</li>
+                    <li>Professional review templates</li>
+                    <li>Approval workflows</li>
+                </ul>
+            </div>
+
+            <!-- Usage Guide -->
+            <div class="document-section page-break">
+                <h2>📖 How to Use These Documents</h2>
+
+                <h3>For Technology Team</h3>
+                <ul>
+                    <li>Read: Complete System Specification (Document 1)</li>
+                    <li>Reference: Architecture diagram, API specs, database schema</li>
+                    <li>Use: Technology stack, implementation roadmap</li>
+                </ul>
+
+                <h3>For AI Content Generation</h3>
+                <ul>
+                    <li>Read: Detailed Curriculum Framework (Document 2)</li>
+                    <li>Reference: Content specifications, vocabulary lists, grammar scope</li>
+                    <li>Use: JSON specifications for each content type</li>
+                </ul>
+
+                <h3>For Curriculum Consultants</h3>
+                <ul>
+                    <li>Read: Comprehensive K-12 Curriculum (Document 3)</li>
+                    <li>Reference: Learning objectives, assessment rubrics</li>
+                    <li>Use: Review templates, quality checklists from Document 2</li>
+                </ul>
+
+                <h3>For Leadership/Investors</h3>
+                <ul>
+                    <li>Read: All three documents</li>
+                    <li>Focus: Overview section, key features, competitive advantages</li>
+                    <li>Understand: 10+ year IP advantage, research-based approach</li>
+                </ul>
+
+                <h3>For Teachers/Trainers</h3>
+                <ul>
+                    <li>Read: Comprehensive K-12 Curriculum (Document 3)</li>
+                    <li>Reference: Weekly rhythms, detailed level descriptors, grade band curricula</li>
+                    <li>Use: Implementation guidance, professional development modules</li>
+                </ul>
+            </div>
+
+            <!-- IP Protection -->
+            <div class="document-section page-break">
+                <h2>🔐 Intellectual Property Protection</h2>
+
+                <div class="warning-box">
+                    <h3>CONFIDENTIAL & PROPRIETARY</h3>
+                    <p>This document contains trade secrets and confidential information belonging exclusively to Edvanta Solutions LLP.</p>
+                </div>
+
+                <h3>Protected Components</h3>
+                <ul>
+                    <li>📋 <strong>Curriculum Framework:</strong> 20-level progression system</li>
+                    <li>🎯 <strong>Learning Objectives:</strong> Grade-by-grade educational outcomes</li>
+                    <li>📚 <strong>Vocabulary System:</strong> Tier 1/2/3 vocabulary scaffolding</li>
+                    <li>🔤 <strong>Grammar Scope & Sequence:</strong> 6-phase progression model</li>
+                    <li>✍️ <strong>Content Specifications:</strong> JSON specifications for all content types</li>
+                    <li>📊 <strong>Assessment Framework:</strong> Rubrics and evaluation criteria</li>
+                    <li>🏛️ <strong>Organizational Structure:</strong> 5 Learning Pillars architecture</li>
+                    <li>🤖 <strong>AI Integration:</strong> Content generation specifications</li>
+                    <li>🌍 <strong>Global Adaptation:</strong> CEFR + Cambridge alignment + Indian localization</li>
+                </ul>
+
+                <h3>Permitted Uses</h3>
+                <ul>
+                    <li>✅ Internal WizLingo team development and implementation</li>
+                    <li>✅ Board review and strategic planning</li>
+                    <li>✅ Investor due diligence under NDA</li>
+                    <li>✅ Hired consultants under confidentiality agreements</li>
+                    <li>✅ Teacher training (authorized personnel only)</li>
+                </ul>
+
+                <h3>Prohibited Uses</h3>
+                <ul>
+                    <li>❌ Public distribution or sharing</li>
+                    <li>❌ Reproduction without explicit permission</li>
+                    <li>❌ Use by competitors or unauthorized parties</li>
+                    <li>❌ Adaptation or derivative works without authorization</li>
+                    <li>❌ Reverse engineering or extraction for competing products</li>
+                </ul>
+
+                <h3>Legal Protection</h3>
+                <p>These documents and the intellectual property they contain are protected by:</p>
+                <ul>
+                    <li>Copyright law (© 2026 Edvanta Solutions LLP)</li>
+                    <li>Trade secret law (confidential business information)</li>
+                    <li>Patent law (for novel methodologies and systems)</li>
+                    <li>Contract law (confidentiality agreements with recipients)</li>
+                </ul>
+            </div>
+
+            <!-- Timeline -->
+            <div class="document-section page-break">
+                <h2>📅 Development Timeline</h2>
+
+                <h3>Document Creation History</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Document</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Version</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Complete System Specification</td>
+                            <td>Final</td>
+                            <td>July 2026</td>
+                            <td>2.0</td>
+                        </tr>
+                        <tr>
+                            <td>Curriculum Framework - Detailed</td>
+                            <td>Final</td>
+                            <td>July 2026</td>
+                            <td>3.0</td>
+                        </tr>
+                        <tr>
+                            <td>Comprehensive K-12 Curriculum</td>
+                            <td>Final</td>
+                            <td>July 7, 2026</td>
+                            <td>1.0 - Foundational Edition</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Next Steps (Post-Release)</h3>
+                <ul>
+                    <li>📅 <strong>August 2026:</strong> Complete Assessment Design and Implementation for Individual and B2B Beta Testing</li>
+                    <li>📅 <strong>August 2026:</strong> Consultant review and feedback incorporation</li>
+                    <li>📅 <strong>September 2026:</strong> Grade 2-3 detailed curriculum expansion</li>
+                    <li>📅 <strong>October 2026:</strong> High school literature analysis guide</li>
+                    <li>📅 <strong>November 2026:</strong> Teacher training materials (Modules 1-6)</li>
+                </ul>
+
+                <h3>Beta Testing Phases (August 2026)</h3>
+                <p>As part of the August 2026 milestone, WizLingo will execute two parallel beta testing phases:</p>
+                <ul>
+                    <li><strong>Individual Beta Testing:</strong> Validate the complete B2C user journey with independent learners to ensure assessment systems, adaptive progression, and content delivery work seamlessly for individual users</li>
+                    <li><strong>B2B Beta Testing with Schools:</strong> Partner with select schools to validate B2B workflows including class management, student onboarding, teacher dashboards, progress monitoring, and assessment integration with school administration systems</li>
+                </ul>
+            </div>
+
+            <!-- Contact & Support -->
+            <div class="document-section page-break">
+                <h2>📞 Support & Inquiries</h2>
+
+                <h3>For Access & Permissions</h3>
+                <p>
+                    <strong>Email:</strong> support@edvanta.co.in<br>
+                    <strong>Organization:</strong> Edvanta Solutions LLP<br>
+                    <strong>Purpose:</strong> WizLingo Platform - Educational Technology
+                </p>
+
+                <h3>Confidentiality Agreement</h3>
+                <p>All recipients of this document must sign a Confidentiality and Non-Disclosure Agreement before receipt. This protects the intellectual property and ensures responsible use.</p>
+
+                <h3>Citation</h3>
+                <p>If any part of this curriculum is referenced or cited in publications, presentations, or external materials, proper attribution must be given:</p>
+                <p style="margin-top: 10px; margin-left: 20px; font-style: italic;">
+                    "WizLingo Comprehensive K-12 Curriculum, © 2026 Edvanta Solutions LLP. Used with permission."
+                </p>
+
+                <h3>Questions or Feedback</h3>
+                <p>For questions about implementation, curriculum updates, or feedback on these documents, contact the WizLingo team at the email address above.</p>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <div style="margin-bottom: 20px;">
+                <strong>WizLingo Foundation Documents</strong><br>
+                Complete K-12 Curriculum & System Architecture
+            </div>
+            <div class="footer-divider">
+                <p>&copy; 2026 Edvanta Solutions LLP. All Rights Reserved.</p>
+                <p>This document contains proprietary and confidential information.</p>
+                <p>Unauthorized reproduction, distribution, or use is strictly prohibited.</p>
+                <p style="margin-top: 15px; opacity: 0.8;">
+                    <strong>Document Version:</strong> 1.0 (Combined Edition)<br>
+                    <strong>Created:</strong> July 7, 2026<br>
+                    <strong>Classification:</strong> Confidential - Internal Use Only
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Print optimization
+        window.addEventListener('beforeprint', function() {
+            // Ensure proper page breaks
+            document.querySelectorAll('.page-break').forEach(el => {
+                el.style.pageBreakBefore = 'always';
+            });
+        });
+    </script>
+</body>
+</html>

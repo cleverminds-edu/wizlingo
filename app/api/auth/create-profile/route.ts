@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { gradeToCategory } from '@/lib/student-class';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if student already exists with this phone
-    const existingStudent = await prisma.student.findUnique({
+    const existingStudent = await prisma.student.findFirst({
       where: { phone },
     });
 
@@ -51,20 +52,18 @@ export async function POST(request: NextRequest) {
       data: {
         name: name.trim(),
         phone,
-        grade: parseInt(grade),
+        // Student has no numeric grade column; store the grade category instead.
+        gradeCategory: gradeToCategory(parseInt(grade)),
         dateOfBirth: new Date(dateOfBirth),
-        emailVerified: false, // Phone-verified instead
-        phoneVerified: true,
+        accountType: 'B2C',
+        loginType: 'PHONE_ID',
       },
     });
 
     // Create initial student progress record
     await prisma.studentProgress.create({
       data: {
-        studentId: student.id,
-        readingAccuracy: 0,
-        speakingFluency: 0,
-        totalSessionsCompleted: 0,
+        studentId: student.id, // all scores start at their schema defaults (0)
       },
     });
 

@@ -1,3 +1,15 @@
+// ════════════════════════════════════════════════════════════════════════════
+// WizLingo — TARGET SCHEMA (task 1.0, docs/plans/SCHEMA_REPLACEMENT_PLAN.md)
+//
+// = July 2026 rewrite (backup: prisma/schema.july-rewrite.prisma.bak)
+// + production models still in use (git HEAD:prisma/schema.prisma)
+// + Phase 1 additions (docs/plans/PHASE_1_PILOT_BUILD_PLAN.md)
+//
+// Field map signed off by the product owner 2026-11-19.
+// DO NOT apply to production with `migrate reset` or `db push`. Production moves
+// only through the forward data migration written in step S4.
+// ════════════════════════════════════════════════════════════════════════════
+
 generator client {
   provider = "prisma-client"
   output   = "../app/generated/prisma"
@@ -7,235 +19,11 @@ datasource db {
   provider = "postgresql"
 }
 
+// ════════════════════════════════════════════════════════════════
+// ENUMS
+// ════════════════════════════════════════════════════════════════
 
-model School {
-  id                      String                       @id @default(cuid())
-  name                    String
-  code                    String                       @unique
-  logoUrl                 String?
-  createdAt               DateTime                     @default(now())
-  updatedAt               DateTime                     @updatedAt
-  admins                  Admin[]
-  classes                 Class[]
-  teachers                Teacher[]
-  schoolSubscription      SchoolSubscription?
-  schoolAdmins            SchoolAdmin[]
-  schoolInvites           SchoolInvite[]
-  leaderboardSnapshots    SchoolLeaderboardSnapshot[]
-}
-
-model Admin {
-  id          String        @id @default(cuid())
-  name        String
-  empCode     String        @unique
-  pin         String
-  role        AdminRole
-  schoolId    String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  school      School        @relation(fields: [schoolId], references: [id])
-  schoolAdmin SchoolAdmin[]
-}
-
-model Teacher {
-  id        String   @id @default(cuid())
-  name      String
-  empCode   String   @unique
-  pin       String
-  schoolId  String
-  createdAt DateTime @default(now())
-  classes   Class[]
-  school    School   @relation(fields: [schoolId], references: [id])
-}
-
-model Class {
-  id        String    @id @default(cuid())
-  grade     Int
-  section   String
-  schoolId  String
-  teacherId String?
-  school    School    @relation(fields: [schoolId], references: [id])
-  teacher   Teacher?  @relation(fields: [teacherId], references: [id])
-  students  Student[]
-}
-
-model Student {
-  id                   String                   @id @default(cuid())
-  name                 String?
-  dateOfBirth          DateTime?
-  admissionNumber      String?                  @unique
-  userId               String?                  @unique
-  pin                  String?
-  phone                String?
-  passwordHash         String?
-  classId              String?
-  accountType          AccountType              @default(SCHOOL)
-  loginType            String?                  // SCHOOL or PHONE_ID for B2C
-  gender               Gender?
-  parentEmail          String?
-  hasSeenOnboarding    Boolean                  @default(false)
-  passwordChangedAt    DateTime?
-  createdAt            DateTime                 @default(now())
-  badges               Badge[]
-  certificates         Certificate[]
-  sessions             ReadingSession[]
-  speakingProgress     SpeakingProgress?
-  speakingSessions     SpeakingSession[]
-  class                Class?                   @relation(fields: [classId], references: [id])
-  progress             StudentProgress?
-  notificationPrefs    NotificationPreference?
-  sentEmails           SentEmail[]
-  referralsCreated     Referral[]              @relation("ReferrerRelation")
-  referralsReceived    Referral[]              @relation("ReferredRelation")
-  referralReward       ReferralReward?
-  betaFeedback         BetaFeedback[]
-  speakingPreference   SpeakingPreference?
-
-  @@index([userId])
-  @@index([phone])
-}
-
-model StudentProgress {
-  id             String    @id @default(cuid())
-  studentId      String    @unique
-  currentLevel   Int       @default(2)
-  ageBand        String    @default("9-11")     // 6-8, 9-11, 12-14, 15+
-  gradeBand      GradeBand
-  totalSessions  Int       @default(0)
-  passedSessions Int       @default(0)
-  avgWpm         Float     @default(0)
-  avgAccuracy    Float     @default(0)
-  avgFluency     Float     @default(0)
-  updatedAt      DateTime  @updatedAt
-  student        Student   @relation(fields: [studentId], references: [id])
-}
-
-model ReadingPassage {
-  id        String           @id @default(cuid())
-  title     String
-  content   String
-  wordCount Int
-  gradeBand GradeBand
-  level     Int
-  topic     String
-  createdAt DateTime         @default(now())
-  sessions  ReadingSession[]
-}
-
-model ConversationTopic {
-  id              String            @id @default(cuid())
-  title           String
-  gradeBand       GradeBand
-  level           Int
-  character       String
-  characterGender Gender?           // NEW: M/F/OTHER/NEUTRAL
-  characterRole   String?           // NEW: Teacher, Shopkeeper, Friend, etc.
-  openingLine     String
-  mode            TopicMode         @default(SCRIPTED)
-  script          Json?
-  createdAt       DateTime          @default(now())
-  sessions        SpeakingSession[]
-}
-
-model SpeakingSession {
-  id           String            @id @default(cuid())
-  studentId    String
-  topicId      String
-  startedAt    DateTime          @default(now())
-  completedAt  DateTime?
-  turns        Json?
-  totalWords   Int?
-  durationSec  Int?
-  wpm          Float?
-  fluencyScore Float?
-  status       SessionStatus     @default(IN_PROGRESS)
-  createdAt    DateTime          @default(now())
-  student      Student           @relation(fields: [studentId], references: [id])
-  topic        ConversationTopic @relation(fields: [topicId], references: [id])
-}
-
-model SpeakingProgress {
-  id             String   @id @default(cuid())
-  studentId      String   @unique
-  currentLevel   Int      @default(1)
-  passedSessions Int      @default(0)
-  totalSessions  Int      @default(0)
-  avgWpm         Float    @default(0)
-  avgFluency     Float    @default(0)
-  updatedAt      DateTime @updatedAt
-  student        Student  @relation(fields: [studentId], references: [id])
-}
-
-model ReadingSession {
-  id          String         @id @default(cuid())
-  studentId   String
-  passageId   String
-  startedAt   DateTime       @default(now())
-  completedAt DateTime?
-  durationSec Int?
-  transcript  String?
-  wpm         Float?
-  accuracy    Float?
-  missedWords String[]
-  wrongWords  Json?
-  status      SessionStatus  @default(IN_PROGRESS)
-  teacherNote String?
-  createdAt   DateTime       @default(now())
-  passage     ReadingPassage @relation(fields: [passageId], references: [id])
-  student     Student        @relation(fields: [studentId], references: [id])
-}
-
-model Badge {
-  id        String    @id @default(cuid())
-  studentId String
-  type      BadgeType
-  earnedAt  DateTime  @default(now())
-  student   Student   @relation(fields: [studentId], references: [id])
-
-  @@unique([studentId, type])
-}
-
-model Certificate {
-  id         String    @id @default(cuid())
-  studentId  String
-  badgeType  BadgeType
-  verifyCode String    @unique @default(cuid())
-  issuedAt   DateTime  @default(now())
-  student    Student   @relation(fields: [studentId], references: [id])
-
-  @@unique([studentId, badgeType])
-}
-
-model BadgeVariantLog {
-  id        String   @id @default(cuid())
-  studentId String
-  badgeType BadgeType
-  variant   String   // 'current', 'style_a', 'style_b'
-  action    String   // 'viewed', 'shared'
-  platform  String?  // 'whatsapp', 'clipboard', 'native'
-  metadata  Json?
-  createdAt DateTime @default(now())
-
-  @@index([studentId])
-  @@index([badgeType])
-  @@index([variant])
-  @@index([action])
-  @@index([createdAt])
-}
-
-model BadgeColorVariant {
-  id                String    @id @default(cuid())
-  studentId         String
-  badgeType         BadgeType
-  colorVariant      String    // 'gold', 'rainbow', 'glow', etc.
-  unlockedAt        DateTime  @default(now())
-  unlockedBy        String    // 'shares:3', 'referral:2', etc.
-
-  @@unique([studentId, badgeType, colorVariant])
-  @@index([studentId])
-  @@index([badgeType])
-}
-
+// ---- from production ----
 enum AccountType {
   SCHOOL
   PUBLIC
@@ -247,9 +35,11 @@ enum Gender {
   FEMALE
 }
 
+// Stage badges (PD-003) + Grand Wizard. STORY_WIZARD is new.
 enum BadgeType {
   SPARK
   WORD_WIZARD
+  STORY_WIZARD
   VOICE_WIZARD
   LANGUAGE_WIZARD
   GRAND_WIZARD
@@ -260,6 +50,7 @@ enum AdminRole {
   ACADEMIC_INCHARGE
 }
 
+// Age/grade context for content (kept: Grade ⊥ level, PD-003)
 enum GradeBand {
   BAND_1_2
   BAND_3_5
@@ -286,13 +77,1009 @@ enum LeaderboardType {
   FLUENCY
 }
 
+enum EmailFrequency {
+  IMMEDIATE
+  DAILY
+  WEEKLY
+  NEVER
+}
+
+enum SchoolTierType {
+  FREE
+  STARTER
+  GROWTH
+  ENTERPRISE
+}
+
+// Edvanta-side roles. SME roles added for task 1.12/1.13.
+enum ManagerRole {
+  MANAGER
+  ADMIN
+  SUPER_ADMIN
+  LEAD_SME
+  SME
+  LANGUAGE_REVIEWER
+}
+
+// ---- from July rewrite ----
+enum GradeCategory {
+  PREPRIMARY // Ages 3-5
+  GR_1_3 // Ages 6-9
+  GR_4_7 // Ages 10-13
+  GR_8_10 // Ages 14-16
+  GR_11_12 // Ages 17-18
+}
+
+enum LearningPillar {
+  SOUND_FOUNDATION
+  LANGUAGE_FOUNDATION
+  CORE_SKILLS
+  COMMUNICATION
+  HIGHER_ORDER_LANGUAGE
+}
+
+enum ProgressionStage {
+  STAGE_1
+  STAGE_2
+  STAGE_3
+  STAGE_4
+  STAGE_5
+  STAGE_6
+  STAGE_7
+  STAGE_8
+  STAGE_9
+  STAGE_10
+  STAGE_11
+  STAGE_12
+  STAGE_13
+}
+
+enum ContentType {
+  EXERCISE
+  LESSON
+  ACTIVITY
+  ASSESSMENT
+  INTERACTIVE
+  SPEAKING
+  LISTENING
+  WRITING
+}
+
+// ---- Phase 1 ----
+// Telugu/Hindi add-on (owner decision 2026-11-19)
+enum SupportLanguage {
+  NONE
+  TE
+  HI
+}
+
+// Nothing reaches students unless APPROVED (task 1.12)
+enum ContentStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  NEEDS_CHANGES
+  REJECTED
+}
+
+enum ReviewDecision {
+  APPROVE
+  NEEDS_CHANGES
+  REJECT
+}
+
+enum ActivityType {
+  VOCAB_REVIEW
+  READING
+  COMPREHENSION
+  SPEAKING
+  SPELLING
+}
+
+enum EvidenceFormat {
+  RECOGNITION
+  PRODUCTION
+}
+
+enum PracticeContext {
+  SCHOOL
+  HOME
+}
+
+enum PolicyScope {
+  GLOBAL
+  SCHOOL
+  CLASS
+}
+
+// ════════════════════════════════════════════════════════════════
+// PLATFORM (Edvanta) — managers, SMEs
+// ════════════════════════════════════════════════════════════════
+
+// Production `Manager` table kept (existing logins keep working);
+// July `GlobalManager` merged into it (row 3 of the field map).
+model Manager {
+  id                 String           @id @default(cuid())
+  name               String
+  email              String           @unique
+  phone              String?
+  passwordHash       String
+  role               ManagerRole      @default(MANAGER)
+  organization       String?
+  isActive           Boolean          @default(true)
+  lastLogin          DateTime?
+  mustChangePassword Boolean          @default(false) // SME first login (task 1.12)
+  reviewLanguage     SupportLanguage? // LANGUAGE_REVIEWER only: TE or HI
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  schools        School[]
+  contentReviews ContentReview[]
+  smeActivity    SmeActivity[]
+  auditsDone     ReviewAudit[]   @relation("Auditor")
+
+  @@index([email])
+  @@index([isActive])
+  @@index([role])
+}
+
+// ════════════════════════════════════════════════════════════════
+// SCHOOLS, STAFF, CLASSES
+// ════════════════════════════════════════════════════════════════
+
+model School {
+  id             String  @id @default(cuid())
+  name           String
+  code           String  @unique
+  logoUrl        String?
+  city           String?
+  state          String?
+  principalEmail String?
+
+  // Phase 1 settings (PD-001, task 0.4)
+  dailyLimitMinutes   Int     @default(20)
+  leaderboardsEnabled Boolean @default(false)
+  homePracticeEnabled Boolean @default(true)
+
+  managerId String?
+  manager   Manager? @relation(fields: [managerId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  admins               Admin[]
+  classes              Class[]
+  teachers             Teacher[]
+  schoolSubscription   SchoolSubscription?
+  schoolAdmins         SchoolAdmin[]
+  schoolInvites        SchoolInvite[]
+  leaderboardSnapshots SchoolLeaderboardSnapshot[]
+
+  @@index([managerId])
+}
+
+// School admins: principal, academic in-charge (production, unchanged)
+model Admin {
+  id          String        @id @default(cuid())
+  name        String
+  empCode     String        @unique
+  pin         String
+  role        AdminRole
+  schoolId    String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  school      School        @relation(fields: [schoolId], references: [id])
+  schoolAdmin SchoolAdmin[]
+}
+
+// Production login (empCode + PIN) kept; July email/password login added as optional.
+model Teacher {
+  id           String   @id @default(cuid())
+  name         String
+  empCode      String?  @unique
+  pin          String?
+  email        String?  @unique
+  passwordHash String?
+  phone        String?
+  schoolName   String? // July field: free-text school name for self-signup teachers
+  schoolId     String?
+  school       School?  @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  classes       Class[]
+  weeklyFocuses ClassWeeklyFocus[]
+  grants        PracticeGrant[]
+
+  @@index([schoolId])
+}
+
+model Class {
+  id         String         @id @default(cuid())
+  // production fields
+  grade      Int?
+  section    String?
+  // July fields
+  name       String?
+  gradeLevel GradeCategory?
+  code       String?        @unique // join code
+
+  // Phase 1
+  medium            SupportLanguage @default(NONE) // medium of instruction → add-on default
+  dailyLimitMinutes Int? // optional override within school range
+
+  schoolId  String?
+  school    School?  @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+  teacherId String?
+  teacher   Teacher? @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollments   Enrollment[]
+  weeklyFocuses ClassWeeklyFocus[]
+
+  @@index([schoolId])
+  @@index([teacherId])
+}
+
+// Replaces Student.classId (row 2). Migration creates one row per existing student with a class.
+model Enrollment {
+  id         String   @id @default(cuid())
+  classId    String
+  class      Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+  studentId  String
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  enrolledAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([classId, studentId])
+  @@index([classId])
+  @@index([studentId])
+}
+
+// ════════════════════════════════════════════════════════════════
+// STUDENTS
+// ════════════════════════════════════════════════════════════════
+
+model Student {
+  id String @id @default(cuid())
+
+  // ---- login (row 1) ----
+  // School: admissionNumber + pin. B2C: userId (WL + 6 digits) or phone + password.
+  // Phone is NOT unique: several children can share one parent phone (B2C).
+  admissionNumber   String?     @unique
+  pin               String?
+  userId            String?     @unique
+  email             String?     @unique
+  phone             String?
+  passwordHash      String?
+  accountType       AccountType @default(SCHOOL)
+  loginType         String? // SCHOOL or PHONE_ID
+  passwordChangedAt DateTime?
+
+  // ---- profile ----
+  name              String?
+  dateOfBirth       DateTime?
+  gender            Gender?
+  gradeCategory     GradeCategory?
+  parentEmail       String?
+  hasSeenOnboarding Boolean        @default(false)
+  currentLevel      Int            @default(2) // July field; legacy level used by auth/me and signup
+
+  // ---- gamification (July) ----
+  streakDays       Int       @default(0)
+  longestStreak    Int       @default(0)
+  lastActivityDate DateTime?
+  totalXP          Int       @default(0)
+
+  // ---- Phase 1 ----
+  stage                   Int             @default(1) // 1–5 (PD-002/PD-003)
+  stageLevel              Int             @default(1) // 1–3: level inside the stage
+  supportLanguage         SupportLanguage @default(NONE) // Telugu/Hindi add-on
+  parentDailyLimitMinutes Int? // can only lower the limit (PD-001)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // ---- relations ----
+  enrollments        Enrollment[]
+  progress           StudentProgress?
+  journeyProgress    JourneyProgress?
+  speakingProgress   SpeakingProgress?
+  speakingPreference SpeakingPreference?
+  notificationPrefs  NotificationPreference?
+  referralReward     ReferralReward?
+
+  sessions          ReadingSession[]
+  speakingSessions  SpeakingSession[]
+  writingSessions   WritingSession[]
+  listeningSessions ListeningSession[]
+  lessonSessions    LessonSession[]
+  dailySessions     DailySession[]
+
+  badges            Badge[]
+  certificates      Certificate[]
+  sentEmails        SentEmail[]
+  referralsCreated  Referral[]     @relation("ReferrerRelation")
+  referralsReceived Referral[]     @relation("ReferredRelation")
+  betaFeedback      BetaFeedback[]
+
+  attempts        ActivityAttempt[]
+  words           StudentWord[]
+  practiceGrants  PracticeGrant[]
+  weeklySummaries WeeklyStudentSummary[]
+  addonPurchases  AddonPurchase[]
+
+  @@index([userId])
+  @@index([phone])
+  @@index([gradeCategory])
+}
+
+// Production fields + July LSRW fields.
+model StudentProgress {
+  id        String  @id @default(cuid())
+  studentId String  @unique
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  // production
+  currentLevel Int        @default(2)
+  ageBand      String     @default("9-11") // 6-8, 9-11, 12-14, 15+
+  gradeBand    GradeBand?
+  avgWpm       Float      @default(0)
+  avgAccuracy  Float      @default(0)
+  avgFluency   Float      @default(0)
+
+  // July
+  readingLevel      Int   @default(1)
+  speakingLevel     Int   @default(1)
+  writingLevel      Int   @default(1)
+  listeningLevel    Int   @default(1)
+  avgReadingScore   Float @default(0)
+  avgSpeakingScore  Float @default(0)
+  avgWritingScore   Float @default(0)
+  avgListeningScore Float @default(0)
+
+  totalSessions  Int      @default(0)
+  passedSessions Int      @default(0)
+  updatedAt      DateTime @updatedAt
+}
+
+model SpeakingProgress {
+  id             String   @id @default(cuid())
+  studentId      String   @unique
+  currentLevel   Int      @default(1)
+  passedSessions Int      @default(0)
+  totalSessions  Int      @default(0)
+  avgWpm         Float    @default(0)
+  avgFluency     Float    @default(0)
+  updatedAt      DateTime @updatedAt
+  student        Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model SpeakingPreference {
+  id                  String   @id @default(cuid())
+  studentId           String   @unique
+  characterGenderPref String   @default("ANY") // ANY, SAME, DIFFERENT, MALE, FEMALE, NEUTRAL
+  pronouns            String?
+  startedAt           DateTime @default(now())
+  progressionWeek     Int      @default(1)
+  updatedAt           DateTime @updatedAt
+  student             Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([characterGenderPref])
+  @@index([progressionWeek])
+}
+
+// B2C Telugu/Hindi add-on purchase record
+model AddonPurchase {
+  id         String          @id @default(cuid())
+  studentId  String
+  student    Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  language   SupportLanguage
+  amount     Float?
+  currency   String          @default("INR")
+  paymentRef String?
+  startsAt   DateTime        @default(now())
+  expiresAt  DateTime?
+  createdAt  DateTime        @default(now())
+
+  @@index([studentId])
+}
+
+// ════════════════════════════════════════════════════════════════
+// CURRICULUM (July rewrite, unchanged)
+// ════════════════════════════════════════════════════════════════
+
+model JourneyProgress {
+  id                      String             @id @default(cuid())
+  studentId               String             @unique
+  student                 Student            @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  currentPillar           LearningPillar     @default(SOUND_FOUNDATION)
+  currentStage            ProgressionStage   @default(STAGE_1)
+  stageProgress           Float              @default(0)
+  soundFoundationScore    Float              @default(0)
+  languageFoundationScore Float              @default(0)
+  coreSkillsScore         Float              @default(0)
+  communicationScore      Float              @default(0)
+  higherOrderScore        Float              @default(0)
+  masteredStages          ProgressionStage[] @default([])
+  completedAt             DateTime?
+  updatedAt               DateTime           @updatedAt
+
+  @@index([currentPillar])
+  @@index([currentStage])
+}
+
+model CurriculumUnit {
+  id            String           @id @default(cuid())
+  gradeCategory GradeCategory
+  pillar        LearningPillar
+  stage         ProgressionStage
+  title         String
+  description   String?          @db.Text
+  sequence      Int
+  skills        String[]         @default([])
+  objectives    String[]         @default([])
+  lessons       Lesson[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@unique([gradeCategory, pillar, stage, sequence])
+  @@index([gradeCategory])
+  @@index([pillar])
+  @@index([stage])
+}
+
+model Lesson {
+  id               String          @id @default(cuid())
+  unitId           String
+  unit             CurriculumUnit  @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  title            String
+  description      String?         @db.Text
+  sequence         Int
+  estimatedMinutes Int             @default(15)
+  contents         LessonContent[]
+  sessions         LessonSession[]
+  createdAt        DateTime        @default(now())
+
+  @@index([unitId])
+}
+
+model LessonContent {
+  id           String      @id @default(cuid())
+  lessonId     String
+  lesson       Lesson      @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  type         ContentType
+  sequence     Int
+  title        String
+  description  String?     @db.Text
+  content      Json
+  mediaUrl     String?
+  isGraded     Boolean     @default(true)
+  passingScore Float?      @default(80)
+  createdAt    DateTime    @default(now())
+
+  @@index([lessonId])
+}
+
+model LessonSession {
+  id          String    @id @default(cuid())
+  studentId   String
+  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  lessonId    String
+  lesson      Lesson    @relation(fields: [lessonId], references: [id])
+  startedAt   DateTime
+  completedAt DateTime?
+  durationSec Int?
+  score       Float?
+  passed      Boolean   @default(false)
+  xpEarned    Int       @default(0)
+  responses   Json      @default("{}")
+  createdAt   DateTime  @default(now())
+
+  @@index([studentId])
+  @@index([lessonId])
+  @@index([studentId, completedAt])
+}
+
+// ════════════════════════════════════════════════════════════════
+// CONTENT (reviewed by SMEs before students see it)
+// ════════════════════════════════════════════════════════════════
+
+// Production + July + Phase 1 (stage/level, review, control items).
+// A passage is the root of a review bundle (task 1.12).
+model ReadingPassage {
+  id        String     @id @default(cuid())
+  title     String
+  content   String     @db.Text
+  wordCount Int
+  gradeBand GradeBand? // age context for topic choice
+  level     Int // legacy performance level 1–3
+  topic     String
+
+  // Phase 1 — PD-003
+  stage          Int? // 1–5
+  internalLevel  String? // "2.2" etc. SME-confirmed
+  suggestedLevel String? // from the measurement script
+  avgSentenceLen Float?
+
+  // Phase 1 — review
+  status       ContentStatus @default(DRAFT)
+  version      Int           @default(1)
+  reviewedById String?
+  reviewedAt   DateTime?
+  isControl    Boolean       @default(false) // planted test bundle, never served (1.13)
+  knownDefect  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions       ReadingSession[]
+  words          VocabWord[]
+  questions      PassageQuestion[]
+  speakingTopics SpeakingTopic[]
+
+  @@index([status])
+  @@index([stage, internalLevel])
+  @@index([gradeBand, level])
+}
+
+// Production ConversationTopic merged in (row 4).
+model SpeakingTopic {
+  id        String     @id @default(cuid())
+  title     String
+  prompt    String?    @db.Text // July: open prompt
+  topic     String?
+  gradeBand GradeBand?
+  level     Int
+
+  // from ConversationTopic
+  character       String?
+  characterGender Gender?
+  characterRole   String?
+  openingLine     String?
+  mode            TopicMode @default(SCRIPTED)
+  script          Json?
+
+  // Phase 1
+  stage         Int?
+  internalLevel String?
+  passageId     String? // when the prompt is about a passage
+  passage       ReadingPassage? @relation(fields: [passageId], references: [id], onDelete: SetNull)
+  status        ContentStatus   @default(DRAFT)
+  version       Int             @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions SpeakingSession[]
+
+  @@index([gradeBand, level])
+  @@index([status])
+}
+
+model WritingPrompt {
+  id        String           @id @default(cuid())
+  title     String
+  prompt    String           @db.Text
+  level     Int
+  topic     String
+  sessions  WritingSession[]
+  createdAt DateTime         @default(now())
+}
+
+model ListeningClip {
+  id         String             @id @default(cuid())
+  title      String
+  audioUrl   String
+  transcript String             @db.Text
+  level      Int
+  topic      String
+  questions  Json
+  sessions   ListeningSession[]
+  createdAt  DateTime           @default(now())
+}
+
+// Vocabulary for the daily loop (task 1.5/1.6). Telugu/Hindi glosses
+// carry their own review status: shown only to add-on students, only when APPROVED.
+model VocabWord {
+  id        String          @id @default(cuid())
+  word      String
+  meaning   String
+  example   String
+  audioUrl  String? // pre-generated TTS
+  stage     Int
+  passageId String?
+  passage   ReadingPassage? @relation(fields: [passageId], references: [id], onDelete: SetNull)
+
+  status  ContentStatus @default(DRAFT) // English content
+  version Int           @default(1)
+
+  glossTe       String?
+  glossTeStatus ContentStatus @default(DRAFT)
+  glossHi       String?
+  glossHiStatus ContentStatus @default(DRAFT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  learners StudentWord[]
+
+  @@unique([word, stage])
+  @@index([stage])
+  @@index([status])
+}
+
+model PassageQuestion {
+  id          String         @id @default(cuid())
+  passageId   String
+  passage     ReadingPassage @relation(fields: [passageId], references: [id], onDelete: Cascade)
+  kind        String // LITERAL / INFERENCE / WORD_IN_CONTEXT
+  prompt      String
+  options     Json? // null = typed answer
+  answer      String
+  explanation String?
+  hintTe      String?
+  hintHi      String?
+  status      ContentStatus  @default(DRAFT)
+  version     Int            @default(1)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([passageId])
+  @@index([status])
+}
+
+// ════════════════════════════════════════════════════════════════
+// SESSIONS (production + July fields)
+// ════════════════════════════════════════════════════════════════
+
+model ReadingSession {
+  id          String         @id @default(cuid())
+  studentId   String
+  student     Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  passageId   String
+  passage     ReadingPassage @relation(fields: [passageId], references: [id])
+  startedAt   DateTime       @default(now())
+  completedAt DateTime?
+  durationSec Int?
+  transcript  String?
+  wpm         Float?
+  accuracy    Float?
+  missedWords String[]       @default([])
+  wrongWords  Json?
+  status      SessionStatus  @default(IN_PROGRESS)
+  teacherNote String?
+  createdAt   DateTime       @default(now())
+
+  @@index([studentId])
+  @@index([passageId])
+}
+
+model SpeakingSession {
+  id                 String        @id @default(cuid())
+  studentId          String
+  student            Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  topicId            String
+  topic              SpeakingTopic @relation(fields: [topicId], references: [id])
+  startedAt          DateTime      @default(now())
+  completedAt        DateTime?
+  turns              Json?
+  totalWords         Int?
+  durationSec        Int?
+  wpm                Float?
+  fluencyScore       Float?
+  pronunciationScore Float?
+  audioUrl           String?
+  transcript         String?
+  status             SessionStatus @default(IN_PROGRESS)
+  createdAt          DateTime      @default(now())
+
+  @@index([studentId])
+  @@index([topicId])
+}
+
+model WritingSession {
+  id          String        @id @default(cuid())
+  studentId   String
+  student     Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  promptId    String
+  prompt      WritingPrompt @relation(fields: [promptId], references: [id])
+  content     String        @db.Text
+  wordCount   Int?
+  score       Float?
+  feedback    String?       @db.Text
+  completedAt DateTime?
+  createdAt   DateTime      @default(now())
+
+  @@index([studentId])
+  @@index([promptId])
+}
+
+model ListeningSession {
+  id             String        @id @default(cuid())
+  studentId      String
+  student        Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  clipId         String
+  clip           ListeningClip @relation(fields: [clipId], references: [id])
+  responses      String[]      @default([])
+  correctCount   Int?
+  totalQuestions Int?
+  score          Float?
+  completedAt    DateTime?
+  createdAt      DateTime      @default(now())
+
+  @@index([studentId])
+  @@index([clipId])
+}
+
+// One row per student per day (IST). Phase 1 adds the practice budget (PD-001).
+model DailySession {
+  id               String  @id @default(cuid())
+  studentId        String
+  student          Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  date             String // YYYY-MM-DD (IST)
+  lessonsCompleted Int     @default(0)
+  totalScore       Float?
+  xpEarned         Int     @default(0)
+  completed        Boolean @default(false)
+
+  practiceSeconds Int       @default(0) // charged
+  exemptSeconds   Int       @default(0) // teacher-led / competition
+  schoolSeconds   Int       @default(0)
+  homeSeconds     Int       @default(0)
+  limitSeconds    Int? // limit that applied
+  lastHeartbeatAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@unique([studentId, date])
+  @@index([studentId])
+  @@index([date])
+}
+
+// ════════════════════════════════════════════════════════════════
+// PHASE 1 — practice budget, activity log, learner state, config
+// ════════════════════════════════════════════════════════════════
+
+model PracticeGrant {
+  id           String   @id @default(cuid())
+  studentId    String
+  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  date         String // YYYY-MM-DD (IST)
+  extraMinutes Int
+  teacherId    String?
+  teacher      Teacher? @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  reason       String?
+  createdAt    DateTime @default(now())
+
+  @@index([studentId, date])
+}
+
+// Immutable: one row per answered item. No update/delete API.
+model ActivityAttempt {
+  id             String          @id @default(cuid())
+  studentId      String
+  student        Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  date           String // YYYY-MM-DD (IST)
+  activityType   ActivityType
+  itemType       String // word, question, passage, speaking_prompt
+  itemId         String
+  itemVersion    Int             @default(1)
+  competencyTags String[]        @default([])
+  questionKind   String? // LITERAL / INFERENCE / WORD_IN_CONTEXT
+  format         EvidenceFormat
+  correct        Boolean?
+  score          Float?
+  durationSec    Int
+  hintsUsed      Int             @default(0)
+  context        PracticeContext
+  reasonCode     String?
+  meta           Json? // speaking talk time, word count, turns
+  createdAt      DateTime        @default(now())
+
+  @@index([studentId, date])
+  @@index([studentId, activityType, createdAt])
+  @@index([itemType, itemId])
+}
+
+// Spaced vocabulary review (boxes 1, 2, 4, 7, 14 days)
+model StudentWord {
+  id           String    @id @default(cuid())
+  studentId    String
+  student      Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  wordId       String
+  word         VocabWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  box          Int       @default(1)
+  dueAt        DateTime
+  lastSeenAt   DateTime?
+  timesCorrect Int       @default(0)
+  timesWrong   Int       @default(0)
+
+  @@unique([studentId, wordId])
+  @@index([studentId, dueAt])
+}
+
+// PD-002/PD-003: 5 stages, 3 internal levels each
+model StageDefinition {
+  stage          Int       @id // 1–5
+  name           String
+  badgeType      BadgeType
+  description    String?
+  minLegacyLevel Int?
+  maxLegacyLevel Int?
+}
+
+model SessionMixPolicy {
+  id           String       @id @default(cuid())
+  scope        PolicyScope
+  scopeId      String? // schoolId / classId; null for GLOBAL
+  stage        Int?
+  activityType ActivityType
+  minShare     Float
+  maxShare     Float
+  weight       Float        @default(1)
+
+  @@unique([scope, scopeId, stage, activityType])
+}
+
+model ClassWeeklyFocus {
+  id        String       @id @default(cuid())
+  classId   String
+  class     Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  week      String // ISO week, e.g. 2026-W48
+  focus     ActivityType
+  teacherId String?
+  teacher   Teacher?     @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  createdAt DateTime     @default(now())
+
+  @@unique([classId, week])
+}
+
+model WeeklyStudentSummary {
+  id              String   @id @default(cuid())
+  studentId       String
+  student         Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  week            String
+  daysPractised   Int
+  schoolMinutes   Int
+  homeMinutes     Int
+  newWords        Int
+  wordsRetained   Int
+  literalPct      Float?
+  inferencePct    Float?
+  speakingSeconds Int
+  stage           Int
+  stageLevel      Int
+  flags           String[] @default([])
+  createdAt       DateTime @default(now())
+
+  @@unique([studentId, week])
+}
+
+// ════════════════════════════════════════════════════════════════
+// PHASE 1 — SME review and monitoring (tasks 1.12, 1.13)
+// ════════════════════════════════════════════════════════════════
+
+model ContentReview {
+  id          String         @id @default(cuid())
+  itemType    String // passage, word, question, speaking_topic, gloss_te, gloss_hi
+  itemId      String
+  itemVersion Int
+  bundleId    String? // ReadingPassage.id of the bundle
+  decision    ReviewDecision
+  reasonCodes String[]       @default([])
+  comment     String?
+  reviewerId  String
+  reviewer    Manager        @relation(fields: [reviewerId], references: [id])
+  createdAt   DateTime       @default(now())
+
+  audits ReviewAudit[]
+
+  @@index([itemType, itemId])
+  @@index([reviewerId, createdAt])
+  @@index([bundleId])
+}
+
+// Lead SME spot-check (10%); admin audits of the lead SME
+model ReviewAudit {
+  id        String        @id @default(cuid())
+  reviewId  String
+  review    ContentReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  auditorId String
+  auditor   Manager       @relation("Auditor", fields: [auditorId], references: [id])
+  agrees    Boolean
+  notes     String?
+  createdAt DateTime      @default(now())
+
+  @@index([reviewId])
+  @@index([auditorId])
+}
+
+model SmeActivity {
+  id          String   @id @default(cuid())
+  managerId   String
+  manager     Manager  @relation(fields: [managerId], references: [id], onDelete: Cascade)
+  action      String // login, open_bundle, play_audio, open_gloss, edit, decide
+  itemType    String?
+  itemId      String?
+  durationSec Int?
+  createdAt   DateTime @default(now())
+
+  @@index([managerId, createdAt])
+}
+
+// ════════════════════════════════════════════════════════════════
+// BADGES, CERTIFICATES, LEADERBOARDS (production; row 6, row 7)
+// ════════════════════════════════════════════════════════════════
+
+// `type` holds BadgeType values (stage badges) and July string types
+// (e.g. "streak_7day"). Migration casts the production enum column to text.
+model Badge {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  type        String
+  name        String?
+  description String?
+  icon        String?
+  earnedAt    DateTime @default(now())
+
+  @@unique([studentId, type])
+  @@index([studentId])
+}
+
+// verifyCode values must not change: links are shared publicly.
+model Certificate {
+  id         String    @id @default(cuid())
+  studentId  String
+  student    Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  badgeType  BadgeType
+  verifyCode String    @unique @default(cuid())
+  issuedAt   DateTime  @default(now())
+
+  @@unique([studentId, badgeType])
+}
+
+model BadgeVariantLog {
+  id        String    @id @default(cuid())
+  studentId String
+  badgeType BadgeType
+  variant   String
+  action    String
+  platform  String?
+  metadata  Json?
+  createdAt DateTime  @default(now())
+
+  @@index([studentId])
+  @@index([badgeType])
+  @@index([variant])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model BadgeColorVariant {
+  id           String    @id @default(cuid())
+  studentId    String
+  badgeType    BadgeType
+  colorVariant String
+  unlockedAt   DateTime  @default(now())
+  unlockedBy   String
+
+  @@unique([studentId, badgeType, colorVariant])
+  @@index([studentId])
+  @@index([badgeType])
+}
+
 model Leaderboard {
   id        String          @id @default(cuid())
   type      LeaderboardType
-  scope     String          // class_id, school_id, all
+  scope     String // class_id, school_id, all
   studentId String
   rank      Int
-  value     Float           // badges count, sessions, accuracy %, etc
+  value     Float
   updatedAt DateTime        @updatedAt
 
   @@unique([type, scope, studentId])
@@ -307,161 +1094,25 @@ model LeaderboardSnapshot {
   studentId String
   rank      Int
   value     Float
-  trend     String          // "up", "down", "same"
+  trend     String
   takenAt   DateTime        @default(now())
 
   @@unique([type, scope, studentId, takenAt])
   @@index([takenAt])
 }
 
-enum EmailFrequency {
-  IMMEDIATE
-  DAILY
-  WEEKLY
-  NEVER
-}
-
-model NotificationPreference {
-  id                  String        @id @default(cuid())
-  studentId           String        @unique
-  badgeEarnedStudent  Boolean       @default(true)
-  badgeEarnedParent   Boolean       @default(true)
-  milestoneEmail      Boolean       @default(true)
-  weeklySummary       Boolean       @default(true)
-  leaderboardUpdate   Boolean       @default(true)
-  emailFrequency      EmailFrequency @default(WEEKLY)
-  updatedAt           DateTime      @updatedAt
-  student             Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
-}
-
-model SentEmail {
-  id          String    @id @default(cuid())
-  studentId   String
-  type        String    // badge_earned, milestone, weekly_summary, leaderboard
-  recipientEmail String
-  subject     String
-  body        String
-  sentAt      DateTime  @default(now())
-  status      String    @default("sent") // sent, failed, bounced
-  error       String?
-  student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@index([studentId])
-  @@index([sentAt])
-}
-
-model Referral {
-  id            String    @id @default(cuid())
-  referrerId    String
-  referredId    String?
-  referralCode  String    @unique
-  status        String    @default("pending") // pending, completed, expired
-  createdAt     DateTime  @default(now())
-  completedAt   DateTime?
-  referrer      Student   @relation("ReferrerRelation", fields: [referrerId], references: [id], onDelete: Cascade)
-  referred      Student?  @relation("ReferredRelation", fields: [referredId], references: [id], onDelete: SetNull)
-
-  @@index([referralCode])
-  @@index([referrerId])
-  @@index([status])
-}
-
-model ReferralReward {
-  id                      String    @id @default(cuid())
-  studentId               String    @unique
-  referralCount           Int       @default(0)
-  badgeColorVariantsUnlocked String[] @default([])
-  bonusStreakDays         Int       @default(0)
-  createdAt               DateTime  @default(now())
-  updatedAt               DateTime  @updatedAt
-  student                 Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@index([studentId])
-}
-
-model ConversionFunnel {
-  id              String    @id @default(cuid())
-  step            String    // share, landing_click, landing_view, signup_start, signup_complete
-  sourceStudentId String?
-  newStudentEmail String?
-  referralCode    String?
-  badgeType       String?
-  schoolId        String?
-  timestamp       DateTime  @default(now())
-
-  @@index([sourceStudentId])
-  @@index([referralCode])
-  @@index([timestamp])
-  @@index([schoolId])
-}
-
-enum SchoolTierType {
-  FREE
-  STARTER
-  GROWTH
-  ENTERPRISE
-}
-
-model SchoolSubscription {
-  id                String         @id @default(cuid())
-  schoolId          String         @unique
-  tier              SchoolTierType @default(FREE)
-  studentsIncluded  Int            @default(50) // DEFAULT varies by tier
-  activeStudents    Int            @default(0)
-  startDate         DateTime       @default(now())
-  renewalDate       DateTime
-  price             Float?
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  school            School         @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-
-  @@index([schoolId])
-  @@index([tier])
-  @@index([renewalDate])
-}
-
-model SchoolAdmin {
-  id          String   @id @default(cuid())
-  schoolId    String
-  adminId     String
-  role        String   // admin, manager, principal
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  school      School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  admin       Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
-
-  @@unique([schoolId, adminId])
-  @@index([schoolId])
-  @@index([adminId])
-}
-
-model SchoolInvite {
-  id        String    @id @default(cuid())
-  schoolId  String
-  code      String    @unique
-  email     String
-  usedBy    String?
-  createdAt DateTime  @default(now())
-  expiresAt DateTime
-  school    School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-
-  @@index([schoolId])
-  @@index([code])
-  @@index([expiresAt])
-}
-
 model SchoolLeaderboardSnapshot {
-  id                 String    @id @default(cuid())
-  schoolId           String
-  rank               Int
-  totalStudents      Int
-  totalBadgesEarned  Int
-  grandWizardCount   Int
-  avgAccuracy        Float
+  id                    String   @id @default(cuid())
+  schoolId              String
+  rank                  Int
+  totalStudents         Int
+  totalBadgesEarned     Int
+  grandWizardCount      Int
+  avgAccuracy           Float
   avgSessionsPerStudent Float
-  monthlyGrowth      Int
-  takenAt            DateTime  @default(now())
-  school             School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  monthlyGrowth         Int
+  takenAt               DateTime @default(now())
+  school                School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 
   @@unique([schoolId, takenAt])
   @@index([schoolId])
@@ -470,45 +1121,171 @@ model SchoolLeaderboardSnapshot {
 }
 
 // ════════════════════════════════════════════════════════════════
-// PARENT EMAIL SYSTEM
+// SCHOOL COMMERCIAL (production, unchanged)
 // ════════════════════════════════════════════════════════════════
 
+model SchoolSubscription {
+  id               String         @id @default(cuid())
+  schoolId         String         @unique
+  tier             SchoolTierType @default(FREE)
+  studentsIncluded Int            @default(50)
+  activeStudents   Int            @default(0)
+  startDate        DateTime       @default(now())
+  renewalDate      DateTime
+  price            Float?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  school           School         @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  @@index([schoolId])
+  @@index([tier])
+  @@index([renewalDate])
+}
+
+model SchoolAdmin {
+  id        String   @id @default(cuid())
+  schoolId  String
+  adminId   String
+  role      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  admin     Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@unique([schoolId, adminId])
+  @@index([schoolId])
+  @@index([adminId])
+}
+
+model SchoolInvite {
+  id        String   @id @default(cuid())
+  schoolId  String
+  code      String   @unique
+  email     String
+  usedBy    String?
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+
+  @@index([schoolId])
+  @@index([code])
+  @@index([expiresAt])
+}
+
+// ════════════════════════════════════════════════════════════════
+// NOTIFICATIONS, EMAIL, REFERRALS, FUNNEL, BETA, OTP (production, unchanged — row 8)
+// ════════════════════════════════════════════════════════════════
+
+model NotificationPreference {
+  id                 String         @id @default(cuid())
+  studentId          String         @unique
+  badgeEarnedStudent Boolean        @default(true)
+  badgeEarnedParent  Boolean        @default(true)
+  milestoneEmail     Boolean        @default(true)
+  weeklySummary      Boolean        @default(true)
+  leaderboardUpdate  Boolean        @default(true)
+  emailFrequency     EmailFrequency @default(WEEKLY)
+  updatedAt          DateTime       @updatedAt
+  student            Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model SentEmail {
+  id             String   @id @default(cuid())
+  studentId      String
+  type           String
+  recipientEmail String
+  subject        String
+  body           String
+  sentAt         DateTime @default(now())
+  status         String   @default("sent")
+  error          String?
+  student        Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([sentAt])
+}
+
+model Referral {
+  id           String    @id @default(cuid())
+  referrerId   String
+  referredId   String?
+  referralCode String    @unique
+  status       String    @default("pending")
+  createdAt    DateTime  @default(now())
+  completedAt  DateTime?
+  referrer     Student   @relation("ReferrerRelation", fields: [referrerId], references: [id], onDelete: Cascade)
+  referred     Student?  @relation("ReferredRelation", fields: [referredId], references: [id], onDelete: SetNull)
+
+  @@index([referralCode])
+  @@index([referrerId])
+  @@index([status])
+}
+
+model ReferralReward {
+  id                         String   @id @default(cuid())
+  studentId                  String   @unique
+  referralCount              Int      @default(0)
+  badgeColorVariantsUnlocked String[] @default([])
+  bonusStreakDays            Int      @default(0)
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+  student                    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+}
+
+model ConversionFunnel {
+  id              String   @id @default(cuid())
+  step            String
+  sourceStudentId String?
+  newStudentEmail String?
+  referralCode    String?
+  badgeType       String?
+  schoolId        String?
+  timestamp       DateTime @default(now())
+
+  @@index([sourceStudentId])
+  @@index([referralCode])
+  @@index([timestamp])
+  @@index([schoolId])
+}
+
 model ParentEmailPreference {
-  id                  String   @id @default(cuid())
-  parentEmail         String   @unique
-  frequency           String   @default("immediate") // immediate, daily, weekly
-  badgeEarned         Boolean  @default(true)
-  weeklyProgress      Boolean  @default(true)
-  monthlyMilestone    Boolean  @default(true)
-  schoolRanking       Boolean  @default(true)
-  sendTime            String?  // "6pm", "8pm", etc
-  timezone            String   @default("Asia/Kolkata")
-  unsubscribeToken    String   @unique @default(cuid())
-  unsubscribedAt      DateTime?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id               String    @id @default(cuid())
+  parentEmail      String    @unique
+  frequency        String    @default("immediate")
+  badgeEarned      Boolean   @default(true)
+  weeklyProgress   Boolean   @default(true)
+  monthlyMilestone Boolean   @default(true)
+  schoolRanking    Boolean   @default(true)
+  sendTime         String?
+  timezone         String    @default("Asia/Kolkata")
+  unsubscribeToken String    @unique @default(cuid())
+  unsubscribedAt   DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@index([parentEmail])
   @@index([unsubscribeToken])
 }
 
 model EmailLog {
-  id                String       @id @default(cuid())
-  studentId         String
-  parentEmail       String
-  type              String       // badge_earned, weekly_summary, monthly_achievement, milestone, school_ranking
-  subject           String
-  body              String       @db.Text
-  referralCode      String?
-  sentAt            DateTime     @default(now())
-  status            String       @default("sent") // sent, failed, bounced, unsubscribed
-  opens             Int          @default(0)
-  clicks            Int          @default(0)
-  lastOpenedAt      DateTime?
-  lastClickedAt     DateTime?
-  variant           String?      // A/B test variant
-  createdAt         DateTime     @default(now())
-  emailClicks       EmailClick[]
+  id            String       @id @default(cuid())
+  studentId     String
+  parentEmail   String
+  type          String
+  subject       String
+  body          String       @db.Text
+  referralCode  String?
+  sentAt        DateTime     @default(now())
+  status        String       @default("sent")
+  opens         Int          @default(0)
+  clicks        Int          @default(0)
+  lastOpenedAt  DateTime?
+  lastClickedAt DateTime?
+  variant       String?
+  createdAt     DateTime     @default(now())
+  emailClicks   EmailClick[]
 
   @@index([studentId])
   @@index([parentEmail])
@@ -518,15 +1295,15 @@ model EmailLog {
 }
 
 model EmailClick {
-  id          String    @id @default(cuid())
-  emailId     String
-  eventType   String    // open, click
-  linkType    String?   // view_cert, share_whatsapp, view_dashboard, signup, pixel
-  timestamp   DateTime  @default(now())
-  userAgent   String?
-  ipAddress   String?
-  createdAt   DateTime  @default(now())
-  emailLog    EmailLog  @relation(fields: [emailId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  emailId   String
+  eventType String
+  linkType  String?
+  timestamp DateTime @default(now())
+  userAgent String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+  emailLog  EmailLog @relation(fields: [emailId], references: [id], onDelete: Cascade)
 
   @@index([emailId])
   @@index([eventType])
@@ -535,18 +1312,18 @@ model EmailClick {
 }
 
 model EmailSchedule {
-  id            String    @id @default(cuid())
-  studentId     String
-  parentEmail   String
-  type          String
-  subject       String
-  html          String    @db.Text
-  scheduledFor  DateTime
-  sent          Boolean   @default(false)
-  sentAt        DateTime?
-  error         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id           String    @id @default(cuid())
+  studentId    String
+  parentEmail  String
+  type         String
+  subject      String
+  html         String    @db.Text
+  scheduledFor DateTime
+  sent         Boolean   @default(false)
+  sentAt       DateTime?
+  error        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@index([parentEmail])
   @@index([scheduledFor])
@@ -555,34 +1332,30 @@ model EmailSchedule {
 }
 
 model EmailVariantTest {
-  id          String       @id @default(cuid())
-  type        String       // badge_earned, weekly_summary, etc
-  variant     String       // A, B, C, etc
+  id          String   @id @default(cuid())
+  type        String
+  variant     String
   subject     String?
   ctaText     String?
   layoutType  String?
-  conversions Int          @default(0)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  conversions Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@unique([type, variant])
   @@index([type])
   @@index([createdAt])
 }
 
-// ════════════════════════════════════════════════════════════════
-// BETA FEEDBACK (Collect feedback during beta launch)
-// ════════════════════════════════════════════════════════════════
-
 model BetaFeedback {
-  id              String    @id @default(cuid())
-  studentId       String
-  sessionType     String    // "reading" or "speaking"
-  rating          Int       // 1-5 stars
-  selectedIssues  String[]  // ["too_easy", "speech_failed", etc]
-  comment         String?   // Free text feedback
-  createdAt       DateTime  @default(now())
-  student         Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id             String   @id @default(cuid())
+  studentId      String
+  sessionType    String
+  rating         Int
+  selectedIssues String[]
+  comment        String?
+  createdAt      DateTime @default(now())
+  student        Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@index([studentId])
   @@index([sessionType])
@@ -590,10 +1363,7 @@ model BetaFeedback {
   @@index([rating])
 }
 
-// ════════════════════════════════════════════════════════════════
-// EMAIL VERIFICATION (Temporary codes for signup verification)
-// ════════════════════════════════════════════════════════════════
-
+// Email OTP today; WhatsApp/SMS OTP for B2C is a later piece of work.
 model VerificationCode {
   id        String    @id @default(cuid())
   email     String
@@ -605,51 +1375,4 @@ model VerificationCode {
   @@index([email])
   @@index([expiresAt])
   @@index([usedAt])
-}
-
-// ════════════════════════════════════════════════════════════════
-// SPEAKING PREFERENCES (Gender-aware character selection)
-// ════════════════════════════════════════════════════════════════
-
-model SpeakingPreference {
-  id                    String    @id @default(cuid())
-  studentId             String    @unique
-  characterGenderPref   String    @default("ANY")  // ANY, SAME, DIFFERENT, MALE, FEMALE, NEUTRAL
-  pronouns              String?   // he/him, she/her, they/them, custom
-  startedAt             DateTime  @default(now())
-  progressionWeek       Int       @default(1)      // Week 1: choice, Week 2+: varied
-  updatedAt             DateTime  @updatedAt
-
-  student               Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@index([studentId])
-  @@index([characterGenderPref])
-  @@index([progressionWeek])
-}
-
-// ════════════════════════════════════════════════════════════════
-// PLATFORM MANAGER (Global admin for B2B/B2C management)
-// ════════════════════════════════════════════════════════════════
-
-model Manager {
-  id              String    @id @default(cuid())
-  name            String
-  email           String    @unique
-  phone           String?
-  passwordHash    String
-  role            ManagerRole @default(MANAGER)
-  organization    String?          // Edvanta / Company name
-  isActive        Boolean   @default(true)
-  lastLogin       DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  @@index([email])
-  @@index([isActive])
-}
-
-enum ManagerRole {
-  MANAGER
-  ADMIN
-  SUPER_ADMIN
 }

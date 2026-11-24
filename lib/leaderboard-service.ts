@@ -1,5 +1,6 @@
 import { prisma } from './prisma';
-import type { LeaderboardType } from '@/app/generated/prisma/client';
+import type { LeaderboardType, Prisma } from '@/app/generated/prisma/client';
+import { inClass, inSchool } from './student-class';
 
 export interface LeaderboardEntry {
   rank: number;
@@ -26,7 +27,6 @@ export async function calculateBadgeCountRanking(scope: string) {
     where: getStudentFilter(scope),
     include: {
       badges: true,
-      class: true,
     },
   });
 
@@ -438,19 +438,19 @@ export async function getLeaderboard(
 /**
  * Get student filter based on scope
  */
-function getStudentFilter(scope: string) {
+function getStudentFilter(scope: string): Prisma.StudentWhereInput {
   if (scope === 'all') {
     return {};
   }
 
   if (scope.startsWith('class_')) {
     const classId = scope.replace('class_', '');
-    return { classId };
+    return inClass(classId);
   }
 
   if (scope.startsWith('school_')) {
     const schoolId = scope.replace('school_', '');
-    return { class: { schoolId } };
+    return inSchool(schoolId);
   }
 
   return {};

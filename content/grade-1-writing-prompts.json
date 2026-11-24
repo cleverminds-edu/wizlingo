@@ -1,0 +1,122 @@
+{
+  "grade": 1,
+  "writingPrompts": [
+    {
+      "id": "g1-write-001",
+      "title": "My Best Friend",
+      "prompt": "Write about your best friend. What is their name? What do you like about them? What do you do together?",
+      "difficulty": "easy",
+      "wordCountTarget": {
+        "minimum": 30,
+        "maximum": 100
+      },
+      "estimatedTimeMinutes": 5,
+      "sampleResponse": "My best friend is Rahul. He is very kind and funny. He has brown eyes and black hair. We like to play games together at school. We eat lunch together. Rahul makes me happy.",
+      "keyVocabulary": ["friend", "name", "kind", "funny", "play", "together", "happy"],
+      "rubric": {
+        "organization": {
+          "excellent": "Writing has a clear beginning, middle, and end",
+          "good": "Ideas are organized and somewhat clear",
+          "satisfactory": "Some organization but may be confusing",
+          "needsWork": "Ideas are scattered and hard to follow"
+        },
+        "vocabulary": {
+          "excellent": "Uses varied and interesting vocabulary",
+          "good": "Uses some descriptive words",
+          "satisfactory": "Uses simple vocabulary",
+          "needsWork": "Limited vocabulary, repetitive words"
+        },
+        "grammar": {
+          "excellent": "Mostly correct grammar and punctuation",
+          "good": "Few grammar errors that don't confuse meaning",
+          "satisfactory": "Some grammar errors but mostly understandable",
+          "needsWork": "Many grammar errors, hard to understand"
+        },
+        "creativity": {
+          "excellent": "Shows creative thinking and unique ideas",
+          "good": "Some creative elements",
+          "satisfactory": "Basic ideas without much creativity",
+          "needsWork": "Very basic ideas, no creativity"
+        }
+      }
+    },
+    {
+      "id": "g1-write-002",
+      "title": "A Day at the Park",
+      "prompt": "Write about a day you went to the park. What did you do there? Who went with you? What was your favorite part?",
+      "difficulty": "easy",
+      "wordCountTarget": {
+        "minimum": 30,
+        "maximum": 100
+      },
+      "estimatedTimeMinutes": 5,
+      "sampleResponse": "I went to the park with my family. We played on the slide and the swing. My little sister laughed a lot. We saw a dog playing. The dog was very friendly. We gave him water to drink. Then we ate ice cream. I loved the park.",
+      "keyVocabulary": ["park", "play", "slide", "swing", "dog", "ice cream", "family", "favorite"],
+      "rubric": {
+        "organization": {
+          "excellent": "Clear sequence of events",
+          "good": "Most events in logical order",
+          "satisfactory": "Some sense of sequence",
+          "needsWork": "Events not in order"
+        },
+        "vocabulary": {
+          "excellent": "Action words and descriptive words used well",
+          "good": "Some action and descriptive words",
+          "satisfactory": "Simple vocabulary mostly",
+          "needsWork": "Very limited vocabulary"
+        },
+        "grammar": {
+          "excellent": "Correct capitalization and punctuation",
+          "good": "Mostly correct with few errors",
+          "satisfactory": "Several errors but understandable",
+          "needsWork": "Many errors, confusing"
+        },
+        "creativity": {
+          "excellent": "Adds interesting details",
+          "good": "Some interesting details",
+          "satisfactory": "Basic details only",
+          "needsWork": "Very minimal details"
+        }
+      }
+    },
+    {
+      "id": "g1-write-003",
+      "title": "My Dream House",
+      "prompt": "Imagine your dream house. What does it look like? How many rooms does it have? What is your favorite room? Why?",
+      "difficulty": "medium",
+      "wordCountTarget": {
+        "minimum": 40,
+        "maximum": 120
+      },
+      "estimatedTimeMinutes": 7,
+      "sampleResponse": "My dream house is very big and beautiful. It has a red door and blue windows. There are six rooms in my house. My favorite room is my bedroom. My room is very big. I have a big bed and a pink desk. I have many books on my shelf. I love to read in my room. There is also a beautiful garden with flowers.",
+      "keyVocabulary": ["house", "room", "beautiful", "bedroom", "door", "window", "favorite", "garden"],
+      "rubric": {
+        "organization": {
+          "excellent": "Organized with clear description of details",
+          "good": "Well-organized with good details",
+          "satisfactory": "Somewhat organized with some details",
+          "needsWork": "Poorly organized or lacking details"
+        },
+        "vocabulary": {
+          "excellent": "Descriptive adjectives used effectively",
+          "good": "Several descriptive words",
+          "satisfactory": "Some descriptive words",
+          "needsWork": "Few descriptive words"
+        },
+        "grammar": {
+          "excellent": "Excellent grammar throughout",
+          "good": "Minor grammar errors",
+          "satisfactory": "Several grammar errors but understandable",
+          "needsWork": "Many errors affecting understanding"
+        },
+        "creativity": {
+          "excellent": "Creative and imaginative",
+          "good": "Shows some imagination",
+          "satisfactory": "Basic imagination",
+          "needsWork": "Lacks imagination"
+        }
+      }
+    }
+  ]
+}

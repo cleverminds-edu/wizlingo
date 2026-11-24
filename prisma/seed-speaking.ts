@@ -13,7 +13,7 @@ async function main() {
 
   for (const t of SPEAKING_TOPICS) {
     const id = `topic-${t.gradeBand}-l${t.level}-${t.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-    await prisma.conversationTopic.upsert({
+    await prisma.speakingTopic.upsert({
       where: { id },
       update: { openingLine: t.openingLine, script: t.script as object },
       create: {

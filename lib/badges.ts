@@ -120,6 +120,12 @@ export const BADGE_META: Record<BadgeType, { emoji: string; label: string; descr
     description: "Levelled up your reading skills",
     color: "from-blue-400 to-indigo-500",
   },
+  STORY_WIZARD: {
+    emoji: "📖",
+    label: "Story Wizard",
+    description: "Reads for meaning (Stage 3)",
+    color: "from-teal-400 to-emerald-500",
+  },
   VOICE_WIZARD: {
     emoji: "🎤",
     label: "Voice Wizard",

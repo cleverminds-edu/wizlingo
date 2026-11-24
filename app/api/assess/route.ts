@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/auth";
+import { classInclude, primaryClass } from "@/lib/student-class";
 import { prisma } from "@/lib/prisma";
 import { scoreReading, gradeToBand, getLevelConfig } from "@/lib/scoring";
 import { checkAndAwardBadges } from "@/lib/badges";
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
       where: { id: sessionId },
       include: {
         passage: true,
-        student: { include: { class: true, progress: true, speakingProgress: true } },
+        student: { include: { ...classInclude, progress: true, speakingProgress: true } },
       },
     });
     if (!readingSession) {
@@ -47,7 +48,9 @@ export async function POST(request: Request) {
     }
 
     const student = readingSession.student;
-    const gradeBand = student.progress?.gradeBand ?? gradeToBand(student.class.grade);
+    // B2C students have no class; their grade is unknown (null) and Grade 3 is used for defaults.
+    const classGrade = primaryClass(student)?.grade ?? null;
+    const gradeBand = student.progress?.gradeBand ?? gradeToBand(classGrade ?? 3);
     const level = student.progress?.currentLevel ?? 1;
 
     const score = scoreReading(
@@ -68,7 +71,7 @@ export async function POST(request: Request) {
         wrongWords: score.wrongWords,
         durationSec: durationSec ?? 0,
         completedAt: new Date(),
-        status: student.class.grade <= 2 ? "NEEDS_REVIEW" : "COMPLETED",
+        status: classGrade !== null && classGrade <= 2 ? "NEEDS_REVIEW" : "COMPLETED",
       },
     });
 
@@ -123,7 +126,7 @@ export async function POST(request: Request) {
     try {
       aiFeedback = await getReadingFeedback({
         studentName: student.name,
-        grade: student.class.grade,
+        grade: classGrade ?? 3,
         level,
         wpm: Math.round(score.wpm),
         targetWpm: config.targetWpm,

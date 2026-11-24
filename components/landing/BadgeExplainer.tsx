@@ -29,6 +29,12 @@ export function BadgeExplainer({ badgeType, earnedCount, onCtaClick }: BadgeExpl
         'Learn from mistakes the AI points out',
         'Master word pronunciation and comprehension',
       ],
+      STORY_WIZARD: [
+        'Complete Stage 3 — reading for meaning',
+        'Look for clues and explain why things happen',
+        'Retell stories in your own words',
+        'Read a little every day',
+      ],
       VOICE_WIZARD: [
         'Achieve 75%+ fluency in speaking',
         'Practice speaking English out loud',

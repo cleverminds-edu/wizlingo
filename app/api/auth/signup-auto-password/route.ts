@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     const { phone } = validation.data;
 
     // Check if user already exists
-    const existingUser = await prisma.student.findUnique({
+    const existingUser = await prisma.student.findFirst({
       where: { phone },
     });
 

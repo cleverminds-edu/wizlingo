@@ -12,21 +12,28 @@ export async function GET(
   const classes = await prisma.class.findMany({
     where: { schoolId },
     include: {
-      students: {
-        orderBy: [{ class: { grade: "asc" } }, { name: "asc" }],
+      enrollments: {
+        orderBy: { student: { name: "asc" } },
         select: {
-          id: true,
-          name: true,
-          admissionNumber: true,
-          pin: true,
-          createdAt: true,
-          class: { select: { grade: true, section: true } },
+          student: {
+            select: {
+              id: true,
+              name: true,
+              admissionNumber: true,
+              pin: true,
+              createdAt: true,
+            },
+          },
         },
       },
     },
     orderBy: [{ grade: "asc" }, { section: "asc" }],
   });
 
-  const students = classes.flatMap((c) => c.students);
+  // Same response shape as before: each student with `class: { grade, section }`,
+  // ordered by grade (classes are already ordered) then name.
+  const students = classes.flatMap((c) =>
+    c.enrollments.map((e) => ({ ...e.student, class: { grade: c.grade, section: c.section } }))
+  );
   return Response.json({ students });
 }

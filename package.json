@@ -7,7 +7,7 @@
     "npm": ">=9.0.0"
   },
   "scripts": {
-    "dev": "NODE_OPTIONS='--max-old-space-size=1024' next dev --webpack",
+    "dev": "NODE_OPTIONS='--max-old-space-size=1024' next dev --webpack -p 5001",
     "build": "next build",
     "start": "node scripts/init.js; next start",
     "lint": "eslint",
@@ -24,7 +24,9 @@
     "leaderboards:update": "tsx scripts/update-leaderboards.ts",
     "validate:aws": "tsx scripts/validate-aws-credentials.ts",
     "test:email": "tsx scripts/test-email-service.ts",
-    "test:s3": "tsx scripts/test-s3-service.ts"
+    "test:s3": "tsx scripts/test-s3-service.ts",
+    "generate:grade1": "NODE_OPTIONS='--max-old-space-size=2048' npx tsx scripts/generate-grade-1-curriculum.ts",
+    "generate:grade1-optimized": "NODE_OPTIONS='--max-old-space-size=2048' npx tsx scripts/generate-grade-1-optimized.ts"
   },
   "prisma": {
     "seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts"
@@ -47,6 +49,7 @@
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.11.0",
     "next": "^16.2.4",
+    "node-fetch": "^3.3.2",
     "openai": "^6.34.0",
     "pg": "^8.20.0",
     "prisma": "^7.8.0",

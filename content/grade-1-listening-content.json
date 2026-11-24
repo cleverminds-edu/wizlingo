@@ -1,0 +1,129 @@
+{
+  "grade": 1,
+  "listeningContent": [
+    {
+      "id": "g1-listen-001",
+      "title": "The Little Bird",
+      "transcript": "One day, a little bird was sitting on a tree. The bird was very tired. It was a hot day. The bird wanted to drink water. It flew down to a small pond. The water was cool and clean. The bird drank some water. Then it felt much better. The bird flew back to the tree and sang a beautiful song.",
+      "duration_seconds": 45,
+      "readingLevel": "A1",
+      "keyVocabulary": ["bird", "tree", "tired", "water", "pond", "flew", "sang", "beautiful"],
+      "backgroundInfo": "This is a simple story about a bird finding relief on a hot day.",
+      "comprehensionQuestions": [
+        {
+          "question": "What animal is in the story?",
+          "type": "literal",
+          "options": ["A cat", "A dog", "A bird", "A fish"],
+          "correctAnswer": "A bird",
+          "explanation": "The story is about a little bird."
+        },
+        {
+          "question": "Where was the bird sitting at first?",
+          "type": "literal",
+          "options": ["On the ground", "In water", "On a tree", "In a house"],
+          "correctAnswer": "On a tree",
+          "explanation": "The text says 'One day, a little bird was sitting on a tree.'"
+        },
+        {
+          "question": "Why was the bird tired?",
+          "type": "inferential",
+          "options": ["It was sleeping", "It was a hot day", "It was sad", "It had no food"],
+          "correctAnswer": "It was a hot day",
+          "explanation": "The text mentions 'It was a hot day' and the bird was tired, suggesting the heat made it tired."
+        },
+        {
+          "question": "What did the bird do after drinking water?",
+          "type": "literal",
+          "options": ["Slept", "Flew away", "Sang a song", "Ate food"],
+          "correctAnswer": "Sang a song",
+          "explanation": "The text says 'The bird flew back to the tree and sang a beautiful song.'"
+        }
+      ]
+    },
+    {
+      "id": "g1-listen-002",
+      "title": "The Two Friends",
+      "transcript": "Anu and Ravi are two friends. They go to the same school. Every day they play together at lunch time. They like to play games like hopscotch and jumping. One day, Anu fell and hurt her knee. She was sad. But Ravi helped her stand up. He gave her a tissue to clean her knee. Ravi stayed with Anu. Anu was happy because she had a good friend. The two friends went to the teacher and got a bandage.",
+      "duration_seconds": 50,
+      "readingLevel": "A1",
+      "keyVocabulary": ["friends", "school", "play", "games", "hurt", "help", "bandage"],
+      "backgroundInfo": "A story about friendship and helping friends.",
+      "comprehensionQuestions": [
+        {
+          "question": "What are the names of the friends?",
+          "type": "literal",
+          "options": ["Anu and Ravi", "Priya and Rahul", "Sita and Ram", "Meera and Arjun"],
+          "correctAnswer": "Anu and Ravi",
+          "explanation": "The text says 'Anu and Ravi are two friends.'"
+        },
+        {
+          "question": "When do they play together?",
+          "type": "literal",
+          "options": ["After school", "At lunch time", "In the morning", "At home"],
+          "correctAnswer": "At lunch time",
+          "explanation": "The text says 'Every day they play together at lunch time.'"
+        },
+        {
+          "question": "What happened to Anu?",
+          "type": "literal",
+          "options": ["She lost her book", "She fell and hurt her knee", "She was sick", "She was late"],
+          "correctAnswer": "She fell and hurt her knee",
+          "explanation": "The text says 'One day, Anu fell and hurt her knee.'"
+        },
+        {
+          "question": "How did Ravi help Anu?",
+          "type": "inferential",
+          "options": ["He gave her candy", "He helped her stand up and stayed with her", "He pushed her", "He laughed at her"],
+          "correctAnswer": "He helped her stand up and stayed with her",
+          "explanation": "The text describes how Ravi helped her stand, gave her a tissue, and stayed with her."
+        },
+        {
+          "question": "What does this story teach us?",
+          "type": "inferential",
+          "options": ["Not to play games", "Games are dangerous", "Good friends help each other", "Bandages hurt"],
+          "correctAnswer": "Good friends help each other",
+          "explanation": "The story shows Ravi helping Anu when she was hurt, demonstrating friendship."
+        }
+      ]
+    },
+    {
+      "id": "g1-listen-003",
+      "title": "The Magic Garden",
+      "transcript": "One morning, Karan found a small door in his garden. He opened the door and stepped inside. It was a magic garden! Everything was beautiful. There were flowers of every color. The flowers were very big and colorful. There were also many butterflies. The butterflies had blue, yellow, and orange wings. Karan walked around and smelled the flowers. They smelled very sweet. He saw a butterfly with purple wings. It was so pretty. Karan picked one flower and put it in his pocket. When he left the garden, he looked at the flower again. It was still beautiful. Karan smiled and kept the flower as a special memory.",
+      "duration_seconds": 65,
+      "readingLevel": "A1-A2",
+      "keyVocabulary": ["magic", "garden", "door", "flowers", "butterflies", "colorful", "wings", "memory"],
+      "backgroundInfo": "A magical and imaginative story for encouraging imagination.",
+      "comprehensionQuestions": [
+        {
+          "question": "Where did Karan find a door?",
+          "type": "literal",
+          "options": ["In his house", "In his garden", "In the park", "In school"],
+          "correctAnswer": "In his garden",
+          "explanation": "The text says 'One morning, Karan found a small door in his garden.'"
+        },
+        {
+          "question": "What did the garden have?",
+          "type": "literal",
+          "options": ["Only trees", "Flowers and butterflies", "Only grass", "Only birds"],
+          "correctAnswer": "Flowers and butterflies",
+          "explanation": "The text mentions beautiful flowers and butterflies in the magic garden."
+        },
+        {
+          "question": "What colors did the butterflies have?",
+          "type": "literal",
+          "options": ["Red and green", "Blue, yellow, and orange", "Only black", "Pink and white"],
+          "correctAnswer": "Blue, yellow, and orange",
+          "explanation": "The text says 'The butterflies had blue, yellow, and orange wings.'"
+        },
+        {
+          "question": "Why did Karan keep the flower?",
+          "type": "inferential",
+          "options": ["To eat it", "As a special memory", "To give to teacher", "To throw away"],
+          "correctAnswer": "As a special memory",
+          "explanation": "The text says 'Karan kept the flower as a special memory,' meaning he wanted to remember the magic garden."
+        }
+      ]
+    }
+  ]
+}

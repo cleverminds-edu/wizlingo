@@ -1,4 +1,5 @@
 import { BadgeType } from "@/app/generated/prisma/client";
+import { enrollIn } from "../lib/student-class";
 import { prisma } from "../lib/prisma";
 
 async function main() {
@@ -28,7 +29,7 @@ async function main() {
         admissionNumber: "badge-test@example.com",
         name: "Badge Tester",
         pin: "1234",
-        classId: classRecord.id,
+        ...enrollIn(classRecord.id),
         accountType: "PUBLIC",
       },
     });

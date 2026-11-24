@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/auth";
+import { classInclude, primaryClass } from "@/lib/student-class";
 import { prisma } from "@/lib/prisma";
 import { scoreSpeakingSession } from "@/lib/speaking-score";
 import { gradeToBand } from "@/lib/scoring";
@@ -28,7 +29,7 @@ export async function PATCH(
   const speakingSession = await prisma.speakingSession.findUnique({
     where: { id: sessionId },
     include: {
-      student: { include: { class: true, speakingProgress: true } },
+      student: { include: { ...classInclude, speakingProgress: true, progress: true } },
     },
   });
   if (!speakingSession) return Response.json({ error: "Session not found" }, { status: 404 });
@@ -37,7 +38,9 @@ export async function PATCH(
   }
 
   const student = speakingSession.student;
-  const gradeBand = gradeToBand(student.class.grade);
+  // B2C students have no class: fall back to their progress grade band, else Grade 3.
+  const classGrade = primaryClass(student)?.grade ?? null;
+  const gradeBand = classGrade !== null ? gradeToBand(classGrade) : student.progress?.gradeBand ?? gradeToBand(3);
   const level = student.speakingProgress?.currentLevel ?? 1;
 
   const score = scoreSpeakingSession(turns, gradeBand, level);
@@ -112,7 +115,7 @@ export async function PATCH(
   try {
     aiFeedback = await getSpeakingFeedback({
       studentName: student.name,
-      grade: student.class.grade,
+      grade: classGrade ?? 3,
       level,
       wpm: Math.round(score.wpm),
       fluencyScore: Math.round(score.fluencyScore),
