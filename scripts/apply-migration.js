@@ -20,11 +20,15 @@ ALTER TABLE "Student" ADD COLUMN IF NOT EXISTS "userId" TEXT;
 ALTER TABLE "Student" ADD COLUMN IF NOT EXISTS "loginType" TEXT;
 ALTER TABLE "Student" ADD COLUMN IF NOT EXISTS "passwordChangedAt" TIMESTAMP(3);
 
--- Add unique constraint for userId
-ALTER TABLE "Student" ADD CONSTRAINT "Student_userId_key" UNIQUE("userId");
+-- Unique userId. Idempotent: Prisma creates this as a unique INDEX named "Student_userId_key";
+-- the old "ADD CONSTRAINT" failed on every restart once it existed (which, before the fallback was
+-- removed, silently triggered \`prisma db push --accept-data-loss\` on each start).
+CREATE UNIQUE INDEX IF NOT EXISTS "Student_userId_key" ON "Student"("userId");
 
--- Change phone constraint from UNIQUE to INDEX (allow multiple users per phone)
+-- Change phone from UNIQUE to a plain INDEX (allow multiple users per phone).
+-- It may exist as a constraint or as a unique index depending on how the DB was created.
 ALTER TABLE "Student" DROP CONSTRAINT IF EXISTS "Student_phone_key";
+DROP INDEX IF EXISTS "Student_phone_key";
 CREATE INDEX IF NOT EXISTS "Student_phone_idx" ON "Student"("phone");
 
 -- Add index for userId

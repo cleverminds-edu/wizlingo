@@ -84,8 +84,9 @@ async function seed() {
       for (const p of passages) {
         try {
           await client.query(
-            `INSERT INTO "ReadingPassage" (id, title, content, "wordCount", "gradeBand", level, topic, "createdAt")
-             VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())`,
+            // status defaults to DRAFT: seeded passages reach students only after SME approval
+            `INSERT INTO "ReadingPassage" (id, title, content, "wordCount", "gradeBand", level, topic, "createdAt", "updatedAt")
+             VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())`,
             [p.id, p.title, p.content, p.wordCount, p.gradeBand, p.level, p.topic]
           );
         } catch (e) {
@@ -98,23 +99,14 @@ async function seed() {
       console.log(`✅ Inserted ${passages.length} passages`);
     }
 
-    // Check conversation topics
-    const topicResult = await client.query('SELECT COUNT(*) FROM "ConversationTopic"');
+    // Speaking topics: ConversationTopic was merged into SpeakingTopic by the target-schema
+    // migration (existing topics are copied there). scripts/seed-topics.sql still targets the old
+    // table, so it is not run; new topics come through the content pipeline and SME review.
+    const topicResult = await client.query('SELECT COUNT(*) FROM "SpeakingTopic"');
     const topicCount = parseInt(topicResult.rows[0].count);
-
-    console.log(`📊 Found ${topicCount} existing conversation topics`);
-
+    console.log(`📊 Found ${topicCount} existing speaking topics`);
     if (topicCount === 0) {
-      console.log('🌱 Seeding conversation topics via SQL...');
-      try {
-        const sqlFile = path.join(__dirname, 'seed-topics.sql');
-        const sql = fs.readFileSync(sqlFile, 'utf8');
-        await client.query(sql);
-        console.log(`✅ Seeded conversation topics from SQL`);
-      } catch (e) {
-        console.error('❌ Failed to seed topics from SQL:', e.message);
-        throw e;
-      }
+      console.log('ℹ️  No speaking topics yet: add them through the content pipeline (SME review).');
     }
 
     console.log('✅ Seeding complete!');

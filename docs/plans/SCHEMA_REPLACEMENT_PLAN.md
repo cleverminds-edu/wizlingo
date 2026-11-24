@@ -156,6 +156,32 @@ students; referral links; manager self-signup blocked; deactivated SME cannot lo
 - **Tests:** 10/10 suites fail for setup reasons (Prisma mocks undefined, no jsdom, `setup.ts` run as a
   suite, one integration test needs a real DB) — same failure modes, unrelated to the schema.
 
+## Deploy startup path (2026-11-24)
+
+- Railway runs `npm start` (`railway.json` overrides the Dockerfile) → `scripts/init.js`, which runs
+  `scripts/sync-db.js` (enums + `prisma migrate deploy`), `scripts/apply-migration.js` and
+  `scripts/seed-direct.js`, then starts Next.
+- **All `prisma db push --accept-data-loss` fallbacks removed** (`init.js`, `sync-db.js`,
+  `docker-entrypoint.sh`, `nixpacks.toml`). `npm start` is now `init.js && next start`: if migration
+  fails, the app does not start and the previous deployment keeps serving.
+- `apply-migration.js` was not re-runnable (`ADD CONSTRAINT "Student_userId_key"` fails once the
+  index exists), so in production it has probably failed on **every** start and triggered the
+  `db push` fallback each time. Made idempotent.
+- `seed-direct.js` aligned with the new schema (`updatedAt`; topics now in `SpeakingTopic`).
+- Tested on a local copy migrated to the target schema: without migration history,
+  `migrate deploy` stops with **P3005** and the app doesn't start, data unchanged; after baselining,
+  startup succeeds twice in a row and the database still matches the schema.
+
+### S6 must include baselining
+
+If production has no (or an incomplete) `_prisma_migrations` table, which is likely given the
+`db push` history, the deploy will stop at P3005. On the restored backup, S6 must:
+1. inspect `_prisma_migrations` and compare the real structure with the committed `main` schema;
+2. mark the old migrations as applied: `prisma migrate resolve --applied <name>` for each
+   migration before `20261120000000_target_schema`;
+3. fix any differences between the real structure and `main`'s schema by hand;
+4. then run `prisma migrate deploy` (applies only the target migration) and the full S6 checks.
+
 ## Still a deployment risk today
 
 S5 is done, but S6 (rehearsal on a **real production backup**) is not. The real production structure
